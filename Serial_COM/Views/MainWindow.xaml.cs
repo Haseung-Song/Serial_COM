@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using Serial_COM.ViewModels;
+using System.Windows;
 
 namespace Serial_COM
 {
@@ -7,9 +8,12 @@ namespace Serial_COM
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly MainVM vm = new MainVM();
+
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = vm;
         }
 
     }
