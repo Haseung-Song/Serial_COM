@@ -73,7 +73,7 @@ namespace Serial_COM.Models
             {
                 int bytesToRead = _serialPort.BytesToRead;
                 byte[] buffer = new byte[bytesToRead];
-                _serialPort.Read(buffer, 0, bytesToRead);
+                _ = _serialPort.Read(buffer, 0, bytesToRead);
                 Parser parser = new Parser();
                 byte[] filteredData = parser.CheckDataCondition(buffer);
                 foreach (byte fd in filteredData)

@@ -1,7 +1,6 @@
 ﻿using Serial_COM.Common;
 using Serial_COM.Models;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -125,6 +124,7 @@ namespace Serial_COM.ViewModels
             try
             {
                 Parser parser = new Parser();
+                parser.RunExample();
                 CCUtoCPCField parserData = parser.Parse(messageListen);
             }
             catch (Exception ex)
