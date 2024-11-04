@@ -38,16 +38,59 @@ namespace Serial_COM.Models
 
         public CCUtoCPCField Parse(byte[] data)
         {
+            // filteredData = [CheckDataCondition] 함수에서 [DLE]를 제외한 실제 메시지를 포함!
+            // msgData = [filteredData]에서 [STX, Length, Destination, Source] 4바이트를 제외!
+            // 이후, [Checksum, ETX] 제외한 총 합 [6]을 빼준 값을 반환했을 때, 온전한 msgData! 
             try
             {
                 byte[] filteredData = CheckDataCondition(data);
-                using (ByteStream stream = new ByteStream(filteredData, 0, filteredData.Length))
+                byte[] msgData = filteredData.Skip(4).Take(filteredData.Length - 6).ToArray();
+                using (ByteStream stream = new ByteStream(msgData, 0, msgData.Length))
                 {
                     CCUtoCPCField field = new CCUtoCPCField
                     {
-                        EngineStart = (byte)stream.GetBits(5, 1, 7, 1)
+                        // # [GetBits] 메서드 #
+                        // 바이트 스트림의 특정 위치에서 비트 추출 역할
+                        // 첫 번째 인자: 시작 위치. (0 바이트부터 시작)
+                        // 두 번째 인자: 추출할 바이트 수.
+                        // 세 번째 인자: 비트 시작 위치.
+                        // 네 번째 인자: 추출할 비트 수.
+
+                        // [Byte #0.]
+                        // 7    번째 비트를 추출
+                        PowerSwitch = (byte)stream.GetBits(0, 1, 7, 1),
+
+                        // [Byte #1.]
+                        // 7    번째 비트를 추출
+                        EngineStart = (byte)stream.GetBits(1, 1, 7, 1),
+                        // 6    번째 비트를 추출
+                        EngineRestart = (byte)stream.GetBits(1, 1, 6, 1),
+                        // 5    번째 비트를 추출
+                        EngineKill = (byte)stream.GetBits(1, 1, 5, 1),
+                        // 4    번째 비트를 추출
+                        TakeOff = (byte)stream.GetBits(1, 1, 4, 1),
+                        // 3    번째 비트를 추출
+                        ReturnToBase = (byte)stream.GetBits(1, 1, 3, 1),
+                        // 2    번째 비트를 추출
+                        AltitudeKnob = (byte)stream.GetBits(1, 1, 2, 1),
+                        // 1    번째 비트를 추출
+                        HeadingKnob = (byte)stream.GetBits(1, 1, 1, 1),
+                        // 0    번째 비트를 추출
+                        SpeedKnob = (byte)stream.GetBits(1, 1, 0, 1),
                     };
-                    Console.WriteLine(field.EngineStart);
+                    // [Byte #0.]
+                    Console.Write(field.PowerSwitch + " ");
+
+                    // [Byte #1.]
+                    Console.Write(field.EngineStart + " ");
+                    Console.Write(field.EngineRestart + " ");
+                    Console.Write(field.EngineKill + " ");
+                    Console.Write(field.TakeOff + " ");
+                    Console.Write(field.ReturnToBase + " ");
+                    Console.Write(field.AltitudeKnob + " ");
+                    Console.Write(field.HeadingKnob + " ");
+                    Console.WriteLine(field.SpeedKnob + " ");
+
                     return field;
                 }
 
@@ -138,7 +181,68 @@ namespace Serial_COM.Models
 
         public class CCUtoCPCField
         {
+            /// <summary>
+            /// [파워 스위치]
+            /// [Power]
+            /// [Byte #0.] 7번째(MSB) 비트
+            /// </summary>
+            public byte PowerSwitch { get; set; }
+
+            /// <summary>
+            /// [비행조종장치 스위치]
+            /// [Engine Start]
+            /// [Byte #1.] 7번째(MSB) 비트
+            /// </summary>
             public byte EngineStart { get; set; }
+
+            /// <summary>
+            /// [비행조종장치 스위치]
+            /// [Engine Restart]
+            /// [Byte #1.] 6번째 비트
+            /// </summary>
+            public byte EngineRestart { get; set; }
+
+            /// <summary>
+            /// [비행조종장치 스위치]
+            /// [Engine Kill]
+            /// [Byte #1.] 5번째 비트
+            /// </summary>
+            public byte EngineKill { get; set; }
+
+            /// <summary>
+            /// [비행조종장치 스위치]
+            /// [Take off]
+            /// [Byte #1.] 4번째 비트
+            /// </summary>
+            public byte TakeOff { get; set; }
+
+            /// <summary>
+            /// [비행조종장치 스위치]
+            /// [Return to Base]
+            /// [Byte #1.] 3번째 비트
+            /// </summary>
+            public byte ReturnToBase { get; set; }
+
+            /// <summary>
+            /// [비행조종장치 스위치]
+            /// [Altitude Knob]
+            /// [Byte #1.] 2번째 비트
+            /// </summary>
+            public byte AltitudeKnob { get; set; }
+
+            /// <summary>
+            /// [비행조종장치 스위치]
+            /// [Altitude Knob]
+            /// [Byte #1.] 1번째 비트
+            /// </summary>
+            public byte HeadingKnob { get; set; }
+
+            /// <summary>
+            /// [비행조종장치 스위치]
+            /// [Altitude Knob]
+            /// [Byte #1.] 0번째(LSB) 비트
+            /// </summary>
+            public byte SpeedKnob { get; set; }
         }
 
     }
