@@ -11,8 +11,7 @@ namespace Serial_COM.Models
     {
         public SerialPort _serialPort;
 
-        public event Action<byte[], DateTime> MessageReceived; // 이벤트 정의
-
+        public event Action<byte[], DateTime> MessageReceived;
 
         public ObservableCollection<string> GetPortNames()
         {
@@ -44,12 +43,6 @@ namespace Serial_COM.Models
             return lstSortedBR;
         }
 
-        public EnvironmentSet()
-        {
-
-        }
-
-
         public void Open(string portName, int baudRate)
         {
             _serialPort = new SerialPort(portName, baudRate)
@@ -61,12 +54,16 @@ namespace Serial_COM.Models
                 ReadTimeout = 500, // 데이터 읽기 타임아웃 설정 (0.5초)
                 WriteTimeout = 500 // 데이터 쓰기 타임아웃 설정 (0.5초)
             };
+            /// <summary>
+            /// [시리얼 포트] (열기)
+            /// </summary>
             if (!_serialPort.IsOpen)
             {
                 _serialPort.Open();
             }
-            _serialPort.DataReceived += OnDataReceived; // 데이터 수신 이벤트 핸들러 연결
+            _serialPort.DataReceived += OnDataReceived;
         }
+
         private void OnDataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             try
@@ -90,22 +87,9 @@ namespace Serial_COM.Models
 
         }
 
-
-
-        public void SendData(byte[] data)
-        {
-            if (_serialPort.IsOpen)
-            {
-                _serialPort.Write(data, 0, data.Length);
-            }
-            else
-            {
-                Console.WriteLine("Serial port is not open. Cannot send data.");
-            }
-
-        }
-
-        // 시리얼 포트 [닫기]
+        /// <summary>
+        /// [시리얼 포트] (닫기)
+        /// </summary>
         public void Close()
         {
             if (_serialPort.IsOpen)

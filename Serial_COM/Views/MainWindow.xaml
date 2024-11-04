@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="CPC 시뮬레이터 v0.0.0.1(Oct 31 2024)"
+        Title="CPC 시뮬레이터 v0.0.0.1(Nov. 05 2024)"
         Height="665"
         Width="730">
     <Window.Resources>
@@ -30,19 +30,16 @@
             <RowDefinition Height="2.8*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
         <Border Grid.Row="0"
                 BorderBrush="LightGray"
                 BorderThickness="1"
                 Margin="5"
                 Padding="10">
-
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="0.8*"/>
                     <ColumnDefinition Width="1.2*"/>
                 </Grid.ColumnDefinitions>
-
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="0.25*"/>
@@ -689,9 +686,7 @@
                                    VerticalAlignment="Top"/>
                     </Border>
                 </StackPanel>
-
             </Grid>
-
         </Border>
 
         <!--  Rcv Status-->
@@ -714,13 +709,11 @@
                     BorderBrush="LightGray"
                     BorderThickness="1"
                     Margin="5">
-
                 <Grid Margin="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="4*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="*"/>
@@ -873,9 +866,7 @@
                             </Button.Template>
                         </Button>
                     </StackPanel>
-
                 </Grid>
-
             </Border>
 
             <!--  Expected LCD-->
@@ -1006,11 +997,8 @@
                             </ControlTemplate>
                         </Button.Template>
                     </Button>
-
                 </Grid>
-
             </Border>
-
         </Grid>
     </Grid>
 </Window>
