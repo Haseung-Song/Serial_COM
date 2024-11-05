@@ -18,10 +18,8 @@ namespace Serial_COM.ViewModels
         private EnvironmentSet _environmentSet;
         private ObservableCollection<string> _lstBoxItem;
         private bool _isPortConnected;
-
         private List<string> _portNames;
         private List<int> _baudRates;
-
         private string _selectingPort;
         private int _selectedBaudRate;
 
@@ -522,7 +520,6 @@ namespace Serial_COM.ViewModels
             StartSerialCommand = new RelayCommand(StartSerial);
             EnvironmentSet = new EnvironmentSet();
             LstBoxItem = new ObservableCollection<string>();
-            IsPortConnected = false;
             LstPortNames = EnvironmentSet.GetPortNames();
             LstBaudRates = EnvironmentSet.GetBaudRates();
         }

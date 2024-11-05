@@ -36,10 +36,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Soletop">
-      <HintPath>..\..\UDP\UDP_Server\Lib\Soletop.dll</HintPath>
+      <HintPath>..\Lib\Soletop.dll</HintPath>
     </Reference>
     <Reference Include="Soletop.IO">
-      <HintPath>..\..\UDP\UDP_Server\Lib\Soletop.IO.dll</HintPath>
+      <HintPath>..\Lib\Soletop.IO.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -108,8 +108,6 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
