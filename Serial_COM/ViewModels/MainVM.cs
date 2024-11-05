@@ -14,12 +14,16 @@ namespace Serial_COM.ViewModels
     {
         #region [프로퍼티]
 
-        private EnvironmentSet _environmentSet;
+        private readonly EnvironmentSet _environmentSet;
         private ObservableCollection<string> _portNames;
         private ObservableCollection<int> _baudRates;
 
-        private string _selectedPort;
+        private string _selectingPort;
         private int _selectedBaudRate;
+        private bool _isEngineStarted;
+        private bool _isEngineRestarted;
+        private bool _isEngineKilled;
+        private bool _isPowerSwitchOn;
 
         #endregion
 
@@ -65,12 +69,17 @@ namespace Serial_COM.ViewModels
 
         public string SelectedPort
         {
-            get => _selectedPort;
+            get => _selectingPort;
             set
             {
-                _selectedPort = value;
-                OnPropertyChanged();
+                if (_selectingPort != value)
+                {
+                    _selectingPort = value;
+                    OnPropertyChanged();
+                }
+
             }
+
         }
 
         public int SelectedBaudRate
@@ -78,9 +87,86 @@ namespace Serial_COM.ViewModels
             get => _selectedBaudRate;
             set
             {
-                _selectedBaudRate = value;
-                OnPropertyChanged();
+                if (_selectedBaudRate != value)
+                {
+                    _selectedBaudRate = value;
+                    OnPropertyChanged();
+                }
+
             }
+
+        }
+
+        /// <summary>
+        /// [IsPowerSwitchOn]
+        /// </summary>
+        public bool IsPowerSwitchOn
+        {
+            get => _isPowerSwitchOn;
+            set
+            {
+                if (_isPowerSwitchOn != value)
+                {
+                    _isPowerSwitchOn = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [IsEngineStarted]
+        /// </summary>
+        public bool IsEngineStarted
+        {
+            get => _isEngineStarted;
+            set
+            {
+                if (_isEngineStarted != value)
+                {
+                    _isEngineStarted = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [IsEngineRestarted]
+        /// </summary>
+        public bool IsEngineRestarted
+        {
+            get => _isEngineRestarted;
+            set
+            {
+                if (_isEngineRestarted != value)
+                {
+                    _isEngineRestarted = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [IsEngineKilled]
+        /// </summary>
+        public bool IsEngineKilled
+        {
+            get => _isEngineKilled;
+            set
+            {
+                if (_isEngineKilled != value)
+                {
+                    _isEngineKilled = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
         }
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -126,6 +212,15 @@ namespace Serial_COM.ViewModels
                 Parser parser = new Parser();
                 parser.RunExample();
                 CCUtoCPCField parserData = parser.Parse(messageListen);
+                if (parserData != null)
+                {
+                    IsPowerSwitchOn = parserData.PowerSwitch == 1;
+
+                    IsEngineStarted = parserData.EngineStart == 1;
+                    IsEngineRestarted = parserData.EngineRestart == 1;
+                    IsEngineKilled = parserData.EngineKill == 1;
+                }
+
             }
             catch (Exception ex)
             {

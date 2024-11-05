@@ -3,6 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BoolToBrushConverter"
+        xmlns:viewmodels="clr-namespace:Serial_COM.ViewModels"
+        d:DataContext="{d:DesignInstance Type=viewmodels:MainVM}"
         mc:Ignorable="d"
         Title="CPC 시뮬레이터 v0.0.0.1(Nov. 05 2024)"
         Height="665"
@@ -23,6 +26,8 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <!-- [BoolToBrushConverter] local 지정-->
+        <local:BoolToBrushConverter x:Key="BoolToBrushConverter"/>
     </Window.Resources>
 
     <Grid Margin="5,12,5,2">
@@ -58,7 +63,7 @@
                         Height="50"
                         BorderBrush="LightGray"
                         BorderThickness="1"
-                        Background="LightGray"
+                        Background="{Binding IsEngineStarted, Converter={StaticResource BoolToBrushConverter}}"
                         HorizontalAlignment="Left"       
                         Margin="7,3,0,10">
                     <TextBlock Margin="1"
@@ -81,7 +86,7 @@
                         Height="50"
                         BorderBrush="LightGray"
                         BorderThickness="1"
-                        Background="LightGray"
+                        Background="{Binding IsEngineRestarted, Converter={StaticResource BoolToBrushConverter}}"
                         HorizontalAlignment="Left"
                         Margin="67,3,0,10">
                     <TextBlock Margin="1"
@@ -104,7 +109,7 @@
                         Height="50"
                         BorderBrush="LightGray"
                         BorderThickness="1"
-                        Background="LightGray"
+                        Background="{Binding IsEngineKilled, Converter={StaticResource BoolToBrushConverter}}"
                         HorizontalAlignment="Left"
                         Margin="127,3,0,10">
                     <TextBlock Margin="1"
@@ -127,7 +132,7 @@
                         Height="50"
                         BorderBrush="LightGray"
                         BorderThickness="1"
-                        Background="LightGray"
+                        Background="{Binding IsPowerSwitchOn, Converter={StaticResource BoolToBrushConverter}}"
                         HorizontalAlignment="Right"       
                         Margin="7,3,0,10">
                     <TextBlock Margin="1"
@@ -927,11 +932,11 @@
 
                     <!-- ComboBox 추가 -->
                     <ComboBox Grid.Row="1"
+                              ItemsSource="{Binding LstPortNames}"
+                              SelectedItem="{Binding SelectedPort}"
                               Height="20"
                               Margin="20,0,0,5"
-                              FontSize="11"
-                              ItemsSource="{Binding LstPortNames}"
-                              SelectedItem="{Binding SelectedPort}">
+                              FontSize="11">
                         <!-- 아이템 스타일 설정으로 촘촘하게 -->
                         <ComboBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem">
@@ -953,11 +958,11 @@
 
                     <!-- ComboBox 추가 -->
                     <ComboBox Grid.Row="3"
+                              ItemsSource="{Binding LstBaudRates}"
+                              SelectedItem="{Binding SelectedBaudRate}"
                               Height="20"
                               Margin="20,0,0,5"
-                              FontSize="11"
-                              ItemsSource="{Binding LstBaudRates}"
-                              SelectedItem="{Binding SelectedBaudRate}">
+                              FontSize="11">
                         <!-- 아이템 스타일 설정으로 촘촘하게 -->
                         <ComboBox.ItemContainerStyle>
                             <Style TargetType="ListBoxItem">
