@@ -538,7 +538,7 @@ namespace Serial_COM.ViewModels
                     EnvironmentSet.MessageReceived += OnMessageReceived;
                     AddLogMessage($"Connected to {SelectedPort}");
                 }
-                else
+                else if (!IsPortConnected)
                 {
                     AddLogMessage($"Disconnected");
                 }

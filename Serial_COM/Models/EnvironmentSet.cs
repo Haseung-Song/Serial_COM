@@ -109,7 +109,13 @@ namespace Serial_COM.Models
                 catch (ArgumentOutOfRangeException ex)
                 {
                     Debug.WriteLine(ex.ToString());
-                    _ = MessageBox.Show($"'Baudrate'가 설정되지 않았습니다.", "통신 실패", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _ = MessageBox.Show("'Baudrate'가 설정되지 않았습니다.", "통신 실패", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return false;
+                }
+                catch (ArgumentException ex)
+                {
+                    Debug.WriteLine(ex.ToString());
+                    _ = MessageBox.Show("지정한 포트 이름이 COM 또는 com으로 시작하지 않거나 올바른 직렬 포트로 확인되지 않습니다.", "통신 실패", MessageBoxButton.OK, MessageBoxImage.Error);
                     return false;
                 }
                 catch (Exception ex)
