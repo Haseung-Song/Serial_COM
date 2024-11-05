@@ -93,8 +93,6 @@ namespace Serial_COM.Models
                     {
                         serialPort.Close();
                         Console.WriteLine("Serial_COM closed successfully on " + portName + " port.");
-                        //serialPort.DiscardInBuffer();
-                        //serialPort.DiscardOutBuffer();
                         serialPort.Dispose();
                         return false;
                     }
@@ -109,13 +107,17 @@ namespace Serial_COM.Models
                 catch (ArgumentOutOfRangeException ex)
                 {
                     Debug.WriteLine(ex.ToString());
-                    _ = MessageBox.Show("'Baudrate'가 설정되지 않았습니다.", "통신 실패", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return false;
+                }
+                catch (ArgumentNullException ex)
+                {
+                    Debug.WriteLine(ex.ToString());
                     return false;
                 }
                 catch (ArgumentException ex)
                 {
                     Debug.WriteLine(ex.ToString());
-                    _ = MessageBox.Show("지정한 포트 이름이 COM 또는 com으로 시작하지 않거나 올바른 직렬 포트로 확인되지 않습니다.", "통신 실패", MessageBoxButton.OK, MessageBoxImage.Error);
+                    _ = MessageBox.Show($"지정한 '{portName}' 포트가 올바른 직렬 포트로 확인되지 않습니다.", "통신 실패", MessageBoxButton.OK, MessageBoxImage.Error);
                     return false;
                 }
                 catch (Exception ex)
@@ -135,13 +137,13 @@ namespace Serial_COM.Models
                 int bytesToRead = serialPort.BytesToRead;
                 byte[] buffer = new byte[bytesToRead];
                 int bytesToSave = serialPort.Read(buffer, 0, bytesToRead);
-                Debug.WriteLine($"Total [{bytesToSave} bytes] read from '{serialPort.PortName}' port.");
                 Parser parser = new Parser();
                 byte[] filteredData = parser.CheckDataCondition(buffer);
                 foreach (byte fd in filteredData)
                 {
                     Console.Write($"{fd:X2} ");
                 }
+                Debug.WriteLine($"Total [{bytesToSave} bytes] read from '{serialPort.PortName}' port.");
                 Console.WriteLine("");
                 MessageReceived?.Invoke(buffer, DateTime.Now); // [수신 데이터] + [수신 메시지] 전달 이벤트 호출
             }

@@ -18,12 +18,15 @@ namespace Serial_COM.ViewModels
         private EnvironmentSet _environmentSet;
         private ObservableCollection<string> _lstBoxItem;
         private bool _isPortConnected;
+
         private List<string> _portNames;
         private List<int> _baudRates;
+
         private string _selectingPort;
         private int _selectedBaudRate;
 
         private bool _isPowerSwitch;
+
         private bool _isEngineStart;
         private bool _isEngineRestart;
         private bool _isEngineKill;
@@ -530,19 +533,16 @@ namespace Serial_COM.ViewModels
 
         private void StartSerial()
         {
-            if (EnvironmentSet != null)
+            if (EnvironmentSet == null || SelectedPort == null || SelectedBaudRate == 0) return;
+            IsPortConnected = EnvironmentSet.OpenToClose(SelectedPort, SelectedBaudRate);
+            if (IsPortConnected)
             {
-                IsPortConnected = EnvironmentSet.OpenToClose(SelectedPort, SelectedBaudRate);
-                if (IsPortConnected)
-                {
-                    EnvironmentSet.MessageReceived += OnMessageReceived;
-                    AddLogMessage($"Connected to {SelectedPort}");
-                }
-                else if (!IsPortConnected)
-                {
-                    AddLogMessage($"Disconnected");
-                }
-
+                EnvironmentSet.MessageReceived += OnMessageReceived;
+                AddLogMessage($"Connected to {SelectedPort}");
+            }
+            else
+            {
+                AddLogMessage($"Disconnected");
             }
 
         }
