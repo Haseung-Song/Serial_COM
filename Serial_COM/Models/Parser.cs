@@ -110,7 +110,7 @@ namespace Serial_COM.Models
                     Console.Write(field.ReturnToBase + " ");
                     Console.Write(field.AltitudeKnob + " ");
                     Console.Write(field.HeadingKnob + " ");
-                    Console.WriteLine(field.SpeedKnob + " ");
+                    Console.Write(field.SpeedKnob + " ");
 
                     // ...
 
