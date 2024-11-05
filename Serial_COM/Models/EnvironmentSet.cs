@@ -51,8 +51,7 @@ namespace Serial_COM.Models
             {
                 try
                 {
-                    // [시리얼 포트] (열기)
-                    if (!serialPort.IsOpen)
+                    if (!serialPort.IsOpen) // [시리얼 포트] (열기)
                     {
                         if (portName == "COM11")
                         {
@@ -90,11 +89,12 @@ namespace Serial_COM.Models
                         }
 
                     }
-                    // [시리얼 포트] (닫기)
-                    else
+                    else // [시리얼 포트] (닫기)
                     {
                         serialPort.Close();
                         Console.WriteLine("Serial_COM closed successfully on " + portName + " port.");
+                        //serialPort.DiscardInBuffer();
+                        //serialPort.DiscardOutBuffer();
                         serialPort.Dispose();
                         return false;
                     }
@@ -129,7 +129,7 @@ namespace Serial_COM.Models
                 int bytesToRead = serialPort.BytesToRead;
                 byte[] buffer = new byte[bytesToRead];
                 int bytesToSave = serialPort.Read(buffer, 0, bytesToRead);
-                Debug.WriteLine($"Total [{bytesToSave} bytes] reads from '{serialPort.PortName}' port.");
+                Debug.WriteLine($"Total [{bytesToSave} bytes] read from '{serialPort.PortName}' port.");
                 Parser parser = new Parser();
                 byte[] filteredData = parser.CheckDataCondition(buffer);
                 foreach (byte fd in filteredData)

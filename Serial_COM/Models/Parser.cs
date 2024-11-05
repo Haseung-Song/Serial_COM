@@ -20,6 +20,7 @@ namespace Serial_COM.Models
             // 예시 데이터 [exampleData1] 설정: 목적지 0x10, 송신지 0x03, 메시지: 0x38, 0x39
             byte[] examplesData1 = { STX, DLE, 0x02, DLE, 0x10, DLE, 0x03, 0x38, 0x39, DLE, ETX };
             byte[] filteredData1 = CheckDataCondition(examplesData1);
+
             //Console.WriteLine("Original Data: " + BitConverter.ToString(examplesData1));
             //Console.WriteLine("Filtered Data (with DLE Escaping): " + BitConverter.ToString(filteredData1));
 
@@ -29,6 +30,7 @@ namespace Serial_COM.Models
             // 예시 데이터 [exampleData2] 설정: 목적지 0x22, 송신지 0x33, 메시지: 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x10, 0x11
             byte[] examplesData2 = { STX, 0x08, 0x22, 0x33, 0x00, 0x01, DLE, 0x02, DLE, 0x03, 0x04, 0x05, DLE, 0x10, 0x11, ETX };
             byte[] filteredData2 = CheckDataCondition(examplesData2);
+
             //Console.WriteLine("Original Data: " + BitConverter.ToString(examplesData2));
             //Console.WriteLine("Filtered Data (with DLE Escaping): " + BitConverter.ToString(filteredData2));
 
@@ -57,11 +59,11 @@ namespace Serial_COM.Models
                         // 네 번째 인자: 추출할 비트 수.
 
                         // [Byte #0.]
-                        // 7    번째 비트를 추출
+                        // 7    번째 비트(MSB)를 추출
                         PowerSwitch = (byte)stream.GetBits(0, 1, 7, 1),
 
                         // [Byte #1.]
-                        // 7    번째 비트를 추출
+                        // 7    번째 비트(MSB)를 추출
                         EngineStart = (byte)stream.GetBits(1, 1, 7, 1),
                         // 6    번째 비트를 추출
                         EngineRestart = (byte)stream.GetBits(1, 1, 6, 1),
@@ -75,8 +77,27 @@ namespace Serial_COM.Models
                         AltitudeKnob = (byte)stream.GetBits(1, 1, 2, 1),
                         // 1    번째 비트를 추출
                         HeadingKnob = (byte)stream.GetBits(1, 1, 1, 1),
-                        // 0    번째 비트를 추출
+                        // 0    번째 비트(LSB)를 추출
                         SpeedKnob = (byte)stream.GetBits(1, 1, 0, 1),
+
+                        // [Byte #9.]
+                        // 7    번째 비트(MSB)를 추출
+                        Drop = (byte)stream.GetBits(9, 1, 7, 1),
+                        // 6    번째 비트를 추출
+                        Option1 = (byte)stream.GetBits(9, 1, 6, 1),
+                        // 5    번째 비트를 추출
+                        Capture = (byte)stream.GetBits(9, 1, 5, 1),
+                        // 4    번째 비트를 추출
+                        EOandIR = (byte)stream.GetBits(9, 1, 4, 1),
+                        // 3    번째 비트를 추출
+                        Option2 = (byte)stream.GetBits(9, 1, 3, 1),
+                        // 2    번째 비트를 추출
+                        GimbalStick = (byte)stream.GetBits(9, 1, 2, 1),
+                        // 1    번째 비트를 추출
+                        ZoomKnob = (byte)stream.GetBits(9, 1, 1, 1),
+                        // 0    번째 비트(LSB)를 추출
+                        FocusKnob = (byte)stream.GetBits(9, 1, 0, 1),
+
                     };
                     // [Byte #0.]
                     Console.Write(field.PowerSwitch + " ");
@@ -90,6 +111,18 @@ namespace Serial_COM.Models
                     Console.Write(field.AltitudeKnob + " ");
                     Console.Write(field.HeadingKnob + " ");
                     Console.WriteLine(field.SpeedKnob + " ");
+
+                    // ...
+
+                    // [Byte #9.]
+                    Console.Write(field.Drop + " ");
+                    Console.Write(field.Option1 + " ");
+                    Console.Write(field.Capture + " ");
+                    Console.Write(field.EOandIR + " ");
+                    Console.Write(field.Option2 + " ");
+                    Console.Write(field.GimbalStick + " ");
+                    Console.Write(field.ZoomKnob + " ");
+                    Console.WriteLine(field.FocusKnob + " ");
 
                     return field;
                 }
@@ -243,6 +276,62 @@ namespace Serial_COM.Models
             /// [Byte #1.] 0번째(LSB) 비트
             /// </summary>
             public byte SpeedKnob { get; set; }
+
+            /// <summary>
+            /// [임무조종장치 스위치]
+            /// [Drop]
+            /// [Byte #9.] 7번째(MSB) 비트
+            /// </summary>
+            public byte Drop { get; set; }
+
+            /// <summary>
+            /// [임무조종장치 스위치]
+            /// [Option1]
+            /// [Byte #9.] 6번째 비트
+            /// </summary>
+            public byte Option1 { get; set; }
+
+            /// <summary>
+            /// [임무조종장치 스위치]
+            /// [Capture]
+            /// [Byte #9.] 5번째 비트
+            /// </summary>
+            public byte Capture { get; set; }
+
+            /// <summary>
+            /// [임무조종장치 스위치]
+            /// [EOandIR]
+            /// [Byte #9.] 4번째 비트
+            /// </summary>
+            public byte EOandIR { get; set; }
+
+            /// <summary>
+            /// [임무조종장치 스위치]
+            /// [Option2]
+            /// [Byte #9.] 3번째 비트
+            /// </summary>
+            public byte Option2 { get; set; }
+
+            /// <summary>
+            /// [임무조종장치 스위치]
+            /// [Gimbal Stick]
+            /// [Byte #9.] 2번째 비트
+            /// </summary>
+            public byte GimbalStick { get; set; }
+
+            /// <summary>
+            /// [임무조종장치 스위치]
+            /// [ZoomKnob]
+            /// [Byte #9.] 1번째 비트
+            /// </summary>
+            public byte ZoomKnob { get; set; }
+
+            /// <summary>
+            /// [임무조종장치 스위치]
+            /// [FocusKnob]
+            /// [Byte #9.] 0번째(LSB) 비트
+            /// </summary>
+            public byte FocusKnob { get; set; }
         }
 
     }

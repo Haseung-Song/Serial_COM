@@ -2,6 +2,7 @@
 using Serial_COM.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -15,19 +16,33 @@ namespace Serial_COM.ViewModels
         #region [프로퍼티]
 
         private EnvironmentSet _environmentSet;
+        private ObservableCollection<string> _lstBoxItem;
         private bool _isPortConnected;
 
         private List<string> _portNames;
         private List<int> _baudRates;
+
         private string _selectingPort;
         private int _selectedBaudRate;
 
-        private bool _isEngineStarted;
-        private bool _isEngineRestarted;
-        private bool _isEngineKilled;
-        private bool _isPowerSwitchOn;
-        private bool _isTakeOffOrNot;
+        private bool _isPowerSwitch;
+        private bool _isEngineStart;
+        private bool _isEngineRestart;
+        private bool _isEngineKill;
+        private bool _isTakeOff;
         private bool _isReturnToBase;
+        private bool _isAltitudeKnob;
+        private bool _isHeadingKnob;
+        private bool _isSpeedKnob;
+
+        private bool _isDrop;
+        private bool _isOption1;
+        private bool _isCapture;
+        private bool _isEOandIR;
+        private bool _isOption2;
+        private bool _isGimbalStick;
+        private bool _isZoomKnob;
+        private bool _isFocusKnob;
 
         #endregion
 
@@ -43,6 +58,24 @@ namespace Serial_COM.ViewModels
                 if (_environmentSet != value)
                 {
                     _environmentSet = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [LstBoxItem]
+        /// </summary>
+        public ObservableCollection<string> LstBoxItem
+        {
+            get => _lstBoxItem;
+            set
+            {
+                if (_lstBoxItem != value)
+                {
+                    _lstBoxItem = value;
                     OnPropertyChanged();
                 }
 
@@ -110,6 +143,9 @@ namespace Serial_COM.ViewModels
 
         }
 
+        /// <summary>
+        /// [SelectedPort]
+        /// </summary>
         public string SelectedPort
         {
             get => _selectingPort;
@@ -125,6 +161,9 @@ namespace Serial_COM.ViewModels
 
         }
 
+        /// <summary>
+        /// [SelectedBaudRate]
+        /// </summary>
         public int SelectedBaudRate
         {
             get => _selectedBaudRate;
@@ -141,16 +180,17 @@ namespace Serial_COM.ViewModels
         }
 
         /// <summary>
-        /// [IsPowerSwitchOn]
+        /// [IsPowerSwitch]
+        /// [Byte #0.] 7번째 비트
         /// </summary>
-        public bool IsPowerSwitchOn
+        public bool IsPowerSwitch
         {
-            get => _isPowerSwitchOn;
+            get => _isPowerSwitch;
             set
             {
-                if (_isPowerSwitchOn != value)
+                if (_isPowerSwitch != value)
                 {
-                    _isPowerSwitchOn = value;
+                    _isPowerSwitch = value;
                     OnPropertyChanged();
                 }
 
@@ -159,16 +199,17 @@ namespace Serial_COM.ViewModels
         }
 
         /// <summary>
-        /// [IsEngineStarted]
+        /// [IsEngineStart]
+        /// [Byte #1.] 7번째 비트
         /// </summary>
-        public bool IsEngineStarted
+        public bool IsEngineStart
         {
-            get => _isEngineStarted;
+            get => _isEngineStart;
             set
             {
-                if (_isEngineStarted != value)
+                if (_isEngineStart != value)
                 {
-                    _isEngineStarted = value;
+                    _isEngineStart = value;
                     OnPropertyChanged();
                 }
 
@@ -177,16 +218,17 @@ namespace Serial_COM.ViewModels
         }
 
         /// <summary>
-        /// [IsEngineRestarted]
+        /// [IsEngineRestart]
+        /// [Byte #1.] 6번째 비트
         /// </summary>
-        public bool IsEngineRestarted
+        public bool IsEngineRestart
         {
-            get => _isEngineRestarted;
+            get => _isEngineRestart;
             set
             {
-                if (_isEngineRestarted != value)
+                if (_isEngineRestart != value)
                 {
-                    _isEngineRestarted = value;
+                    _isEngineRestart = value;
                     OnPropertyChanged();
                 }
 
@@ -195,16 +237,17 @@ namespace Serial_COM.ViewModels
         }
 
         /// <summary>
-        /// [IsEngineKilled]
+        /// [IsEngineKill]
+        /// [Byte #1.] 5번째 비트
         /// </summary>
-        public bool IsEngineKilled
+        public bool IsEngineKill
         {
-            get => _isEngineKilled;
+            get => _isEngineKill;
             set
             {
-                if (_isEngineKilled != value)
+                if (_isEngineKill != value)
                 {
-                    _isEngineKilled = value;
+                    _isEngineKill = value;
                     OnPropertyChanged();
                 }
 
@@ -214,15 +257,16 @@ namespace Serial_COM.ViewModels
 
         /// <summary>
         /// [IsTakeOffOrNot]
+        /// [Byte #1.] 4번째 비트
         /// </summary>
-        public bool IsTakeOffOrNot
+        public bool IsTakeOff
         {
-            get => _isTakeOffOrNot;
+            get => _isTakeOff;
             set
             {
-                if (_isTakeOffOrNot != value)
+                if (_isTakeOff != value)
                 {
-                    _isTakeOffOrNot = value;
+                    _isTakeOff = value;
                     OnPropertyChanged();
                 }
 
@@ -232,6 +276,7 @@ namespace Serial_COM.ViewModels
 
         /// <summary>
         /// [IsReturnToBase]
+        /// [Byte #1.] 3번째 비트
         /// </summary>
         public bool IsReturnToBase
         {
@@ -241,6 +286,215 @@ namespace Serial_COM.ViewModels
                 if (_isReturnToBase != value)
                 {
                     _isReturnToBase = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [IsAltitudeKnob]
+        /// [Byte #1.] 2번째 비트
+        /// </summary>
+        public bool IsAltitudeKnob
+        {
+            get => _isAltitudeKnob;
+            set
+            {
+                if (_isAltitudeKnob != value)
+                {
+                    _isAltitudeKnob = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [IsHeadingKnob]
+        /// [Byte #1.] 1번째 비트
+        /// </summary>
+        public bool IsHeadingKnob
+        {
+            get => _isHeadingKnob;
+            set
+            {
+                if (_isHeadingKnob != value)
+                {
+                    _isHeadingKnob = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [IsSpeedKnob]
+        /// [Byte #1.] 0번째 비트
+        /// </summary>
+        public bool IsSpeedKnob
+        {
+            get => _isSpeedKnob;
+            set
+            {
+                if (_isSpeedKnob != value)
+                {
+                    _isSpeedKnob = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [IsDrop]
+        /// [Byte #9.] 7번째(MSB) 비트
+        /// </summary>
+        public bool IsDrop
+        {
+            get => _isDrop;
+            set
+            {
+                if (_isDrop != value)
+                {
+                    _isDrop = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [IsOption1]
+        /// [Byte #9.] 6번째 비트
+        /// </summary>
+        public bool IsOption1
+        {
+            get => _isOption1;
+            set
+            {
+                if (_isOption1 != value)
+                {
+                    _isOption1 = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [IsCapture]
+        /// [Byte #9.] 5번째 비트
+        /// </summary>
+        public bool IsCapture
+        {
+            get => _isCapture;
+            set
+            {
+                if (_isCapture != value)
+                {
+                    _isCapture = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [IsEOandIR]
+        /// [Byte #9.] 4번째 비트
+        /// </summary>
+        public bool IsEOandIR
+        {
+            get => _isEOandIR;
+            set
+            {
+                if (_isEOandIR != value)
+                {
+                    _isEOandIR = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [IsOption2]
+        /// [Byte #9.] 3번째 비트
+        /// </summary>
+        public bool IsOption2
+        {
+            get => _isOption2;
+            set
+            {
+                if (_isOption2 != value)
+                {
+                    _isOption2 = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [IsGimbalStick]
+        /// [Byte #9.] 2번째 비트
+        /// </summary>
+        public bool IsGimbalStick
+        {
+            get => _isGimbalStick;
+            set
+            {
+                if (_isGimbalStick != value)
+                {
+                    _isGimbalStick = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [IsZoomKnob]
+        /// [Byte #9.] 1번째 비트
+        /// </summary>
+        public bool IsZoomKnob
+        {
+            get => _isZoomKnob;
+            set
+            {
+                if (_isZoomKnob != value)
+                {
+                    _isZoomKnob = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [IsFocusKnob]
+        /// [Byte #9.] 0번째(LSB) 비트
+        /// </summary>
+        public bool IsFocusKnob
+        {
+            get => _isFocusKnob;
+            set
+            {
+                if (_isFocusKnob != value)
+                {
+                    _isFocusKnob = value;
                     OnPropertyChanged();
                 }
 
@@ -267,10 +521,15 @@ namespace Serial_COM.ViewModels
         {
             StartSerialCommand = new RelayCommand(StartSerial);
             EnvironmentSet = new EnvironmentSet();
+            LstBoxItem = new ObservableCollection<string>();
             IsPortConnected = false;
             LstPortNames = EnvironmentSet.GetPortNames();
             LstBaudRates = EnvironmentSet.GetBaudRates();
         }
+
+        #endregion
+
+        #region [버튼 및 기능]
 
         private void StartSerial()
         {
@@ -280,14 +539,16 @@ namespace Serial_COM.ViewModels
                 if (IsPortConnected)
                 {
                     EnvironmentSet.MessageReceived += OnMessageReceived;
+                    AddLogMessage($"Connected to {SelectedPort}");
+                }
+                else
+                {
+                    AddLogMessage($"Disconnected");
                 }
 
             }
 
         }
-
-        #endregion
-
 
         private void OnMessageReceived(byte[] messageListen, DateTime currentTime)
         {
@@ -298,12 +559,23 @@ namespace Serial_COM.ViewModels
                 CCUtoCPCField parserData = parser.Parse(messageListen);
                 if (parserData != null)
                 {
-                    IsPowerSwitchOn = parserData.PowerSwitch == 1;
-                    IsEngineStarted = parserData.EngineStart == 1;
-                    IsEngineRestarted = parserData.EngineRestart == 1;
-                    IsEngineKilled = parserData.EngineKill == 1;
-                    IsTakeOffOrNot = parserData.TakeOff == 1;
+                    IsPowerSwitch = parserData.PowerSwitch == 1;
+                    IsEngineStart = parserData.EngineStart == 1;
+                    IsEngineRestart = parserData.EngineRestart == 1;
+                    IsEngineKill = parserData.EngineKill == 1;
+                    IsTakeOff = parserData.TakeOff == 1;
                     IsReturnToBase = parserData.ReturnToBase == 1;
+                    IsAltitudeKnob = parserData.AltitudeKnob == 1;
+                    IsHeadingKnob = parserData.HeadingKnob == 1;
+                    IsSpeedKnob = parserData.SpeedKnob == 1;
+                    IsDrop = parserData.Drop == 1;
+                    IsOption1 = parserData.Option1 == 1;
+                    IsCapture = parserData.Capture == 1;
+                    IsEOandIR = parserData.EOandIR == 1;
+                    IsOption2 = parserData.Option2 == 1;
+                    IsGimbalStick = parserData.GimbalStick == 1;
+                    IsZoomKnob = parserData.ZoomKnob == 1;
+                    IsFocusKnob = parserData.FocusKnob == 1;
                 }
 
             }
@@ -311,9 +583,20 @@ namespace Serial_COM.ViewModels
             {
                 Debug.WriteLine(ex.ToString());
             }
+            finally
+            {
+                Debug.WriteLine("Message parsing completed at " + "[" + currentTime + "]");
+                Debug.WriteLine("");
+            }
 
         }
 
+        private void AddLogMessage(string msg)
+        {
+            string timestamp = DateTime.Now.ToString("HH:mm:ss-ffff");
+            LstBoxItem.Add($"[{timestamp}] {msg}");
+        }
+        #endregion
     }
 
 }

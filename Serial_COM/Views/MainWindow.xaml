@@ -3,14 +3,19 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:BoolToBrushConverter"
+        xmlns:local1="clr-namespace:BoolToBrushConverter1"
+        xmlns:local2="clr-namespace:BoolToBrushConverter2"
         xmlns:viewmodels="clr-namespace:Serial_COM.ViewModels"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainVM}"
         mc:Ignorable="d"
-        Title="CPC 시뮬레이터 v0.0.0.1(Nov. 05 2024)"
+        Title="CPC 시뮬레이터 v0.0.0.1(Nov. 08 2024)"
         Height="665"
         Width="730">
     <Window.Resources>
+        <!-- [BoolToBrushConverter1] local 지정-->
+        <local1:BoolToBrushConverter1 x:Key="BoolToBrushConverter1"/>
+        <!-- [BoolToBrushConverter2] local 지정-->
+        <local2:BoolToBrushConverter2 x:Key="BoolToBrushConverter2"/>
         <!-- 둥근 모서리를 위한 Button 스타일 -->
         <Style TargetType="Button" x:Key="RoundedButtonStyle">
             <Setter Property="Template">
@@ -26,8 +31,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <!-- [BoolToBrushConverter] local 지정-->
-        <local:BoolToBrushConverter x:Key="BoolToBrushConverter"/>
     </Window.Resources>
 
     <Grid Margin="5,12,5,2">
@@ -35,6 +38,7 @@
             <RowDefinition Height="2.8*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        
         <Border Grid.Row="0"
                 BorderBrush="LightGray"
                 BorderThickness="1"
@@ -63,7 +67,7 @@
                         Height="50"
                         BorderBrush="LightGray"
                         BorderThickness="1"
-                        Background="{Binding IsEngineStarted, Converter={StaticResource BoolToBrushConverter}}"
+                        Background="{Binding IsEngineStart, Converter={StaticResource BoolToBrushConverter1}}"
                         HorizontalAlignment="Left"       
                         Margin="7,3,0,10">
                     <TextBlock Margin="1"
@@ -86,7 +90,7 @@
                         Height="50"
                         BorderBrush="LightGray"
                         BorderThickness="1"
-                        Background="{Binding IsEngineRestarted, Converter={StaticResource BoolToBrushConverter}}"
+                        Background="{Binding IsEngineRestart, Converter={StaticResource BoolToBrushConverter1}}"
                         HorizontalAlignment="Left"
                         Margin="67,3,0,10">
                     <TextBlock Margin="1"
@@ -109,7 +113,7 @@
                         Height="50"
                         BorderBrush="LightGray"
                         BorderThickness="1"
-                        Background="{Binding IsEngineKilled, Converter={StaticResource BoolToBrushConverter}}"
+                        Background="{Binding IsEngineKill, Converter={StaticResource BoolToBrushConverter1}}"
                         HorizontalAlignment="Left"
                         Margin="127,3,0,10">
                     <TextBlock Margin="1"
@@ -132,7 +136,7 @@
                         Height="50"
                         BorderBrush="LightGray"
                         BorderThickness="1"
-                        Background="{Binding IsPowerSwitchOn, Converter={StaticResource BoolToBrushConverter}}"
+                        Background="{Binding IsPowerSwitch, Converter={StaticResource BoolToBrushConverter1}}"
                         HorizontalAlignment="Right"       
                         Margin="7,3,0,10">
                     <TextBlock Margin="1"
@@ -165,7 +169,7 @@
                             BorderThickness="1"
                             Height="24"
                             Width="35"
-                            Background="LightGray"
+                            Background="{Binding IsAltitudeKnob, Converter={StaticResource BoolToBrushConverter1}}"
                             Margin="10,0,0,0">
                         <TextBlock Margin="3"
                                    Text="SW"
@@ -194,7 +198,7 @@
                             BorderThickness="1"
                             Height="24"
                             Width="35"
-                            Background="LightGray"
+                            Background="{Binding IsHeadingKnob, Converter={StaticResource BoolToBrushConverter1}}"
                             Margin="10,0,0,0">
                         <TextBlock Margin="3"
                                    Text="SW"
@@ -223,7 +227,7 @@
                             BorderThickness="1"
                             Height="24"
                             Width="35"
-                            Background="LightGray"
+                            Background="{Binding IsSpeedKnob, Converter={StaticResource BoolToBrushConverter1}}"
                             Margin="10,0,0,0">
                         <TextBlock Margin="3"
                                    Text="SW"
@@ -240,7 +244,7 @@
                         Height="50"
                         BorderBrush="LightGray"
                         BorderThickness="1"
-                        Background="{Binding IsTakeOffOrNot, Converter={StaticResource BoolToBrushConverter}}"
+                        Background="{Binding IsTakeOff, Converter={StaticResource BoolToBrushConverter1}}"
                         HorizontalAlignment="Left"       
                         Margin="7,3,0,0">
                     <TextBlock Margin="1,0,0,0"
@@ -263,7 +267,7 @@
                         Height="50"
                         BorderBrush="LightGray"
                         BorderThickness="1"
-                        Background="{Binding IsReturnToBase, Converter={StaticResource BoolToBrushConverter}}"
+                        Background="{Binding IsReturnToBase, Converter={StaticResource BoolToBrushConverter1}}"
                         HorizontalAlignment="Left"       
                         Margin="77,3,0,0">
                     <TextBlock Margin="3,0,0,0"
@@ -286,7 +290,7 @@
                         Height="50"
                         BorderBrush="LightGray"
                         BorderThickness="1"
-                        Background="LightGray"
+                        Background="{Binding IsDrop, Converter={StaticResource BoolToBrushConverter2}}"
                         HorizontalAlignment="Right"       
                         Margin="7,3,60,0">
                     <TextBlock Margin="1"
@@ -307,7 +311,7 @@
                         Height="50"
                         BorderBrush="LightGray"
                         BorderThickness="1"
-                        Background="LightGray"
+                        Background="{Binding IsOption1, Converter={StaticResource BoolToBrushConverter2}}"
                         HorizontalAlignment="Right"       
                         Margin="7,3,0,0">
                     <TextBlock Margin="1"
@@ -332,6 +336,26 @@
                         VerticalAlignment="Top"
                         Margin="7,20,0,0">
                     <Canvas Height="120" Width="120">
+                        <!--<Canvas.Background>
+                            <VisualBrush TileMode="Tile"
+                                         Viewport="0,0,60,60"
+                                         ViewportUnits="Absolute"
+                                         Viewbox="0,0,50,50"
+                                         ViewboxUnits="Absolute">
+                                <VisualBrush.Visual>
+                                    <Rectangle Height="60" Width="60"
+                                               Stroke="SlateGray"
+                                               StrokeThickness="0.2"/>
+                                </VisualBrush.Visual>
+                            </VisualBrush>
+                        </Canvas.Background>-->
+
+                        <!-- X축 (왼쪽, Canvas 경계 내에 배치) -->
+                        <Line X1="0" Y1="60" X2="120" Y2="60" Stroke="SlateGray" StrokeThickness="0.4"/>
+
+                        <!-- Y축 (위쪽, Canvas 경계 내에 배치) -->
+                        <Line X1="60" Y1="0" X2="60" Y2="120" Stroke="SlateGray" StrokeThickness="0.4"/>
+
                         <Ellipse Height="10"
                                  Width="10"
                                  Canvas.Left="55"
@@ -339,17 +363,6 @@
                                  Fill="White"
                                  Stroke="Black"
                                  StrokeThickness="2"/>
-                        <!-- X축 (왼쪽   절반, Canvas 경계 내에 배치) -->
-                        <Line X1="1" Y1="60" X2="55" Y2="60" Stroke="SlateGray" StrokeThickness="0.4"/>
-
-                        <!-- X축 (오른쪽 절반, Canvas 경계 내에 배치) -->
-                        <Line X1="65" Y1="60" X2="119" Y2="60" Stroke="SlateGray" StrokeThickness="0.4"/>
-
-                        <!-- Y축 (위쪽   절반, Canvas 경계 내에 배치) -->
-                        <Line X1="60" Y1="1" X2="60" Y2="55" Stroke="SlateGray" StrokeThickness="0.4"/>
-
-                        <!-- Y축 (아래쪽 절반, Canvas 경계 내에 배치) -->
-                        <Line X1="60" Y1="65" X2="60" Y2="119" Stroke="SlateGray" StrokeThickness="0.4"/>
                     </Canvas>
                 </Border>
 
@@ -364,6 +377,26 @@
                         VerticalAlignment="Top"
                         Margin="140,20,0,0">
                     <Canvas Height="120" Width="120">
+                        <!--<Canvas.Background>
+                            <VisualBrush TileMode="Tile"
+                                         Viewport="0,0,60,60"
+                                         ViewportUnits="Absolute"
+                                         Viewbox="0,0,50,50"
+                                         ViewboxUnits="Absolute">
+                                <VisualBrush.Visual>
+                                    <Rectangle Height="60" Width="60"
+                                               Stroke="SlateGray"
+                                               StrokeThickness="0.2"/>
+                                </VisualBrush.Visual>
+                            </VisualBrush>
+                        </Canvas.Background>-->
+
+                        <!-- X축 (왼쪽, Canvas 경계 내에 배치) -->
+                        <Line X1="0" Y1="60" X2="120" Y2="60" Stroke="SlateGray" StrokeThickness="0.4"/>
+
+                        <!-- Y축 (위쪽, Canvas 경계 내에 배치) -->
+                        <Line X1="60" Y1="0" X2="60" Y2="120" Stroke="SlateGray" StrokeThickness="0.4"/>
+
                         <Ellipse Height="10"
                                  Width="10"
                                  Canvas.Left="55"
@@ -371,17 +404,6 @@
                                  Fill="White"
                                  Stroke="Black"
                                  StrokeThickness="2"/>
-                        <!-- X축 (왼쪽   절반, Canvas 경계 내에 배치) -->
-                        <Line X1="1" Y1="60" X2="55" Y2="60" Stroke="SlateGray" StrokeThickness="0.4"/>
-
-                        <!-- X축 (오른쪽 절반, Canvas 경계 내에 배치) -->
-                        <Line X1="65" Y1="60" X2="119" Y2="60" Stroke="SlateGray" StrokeThickness="0.4"/>
-
-                        <!-- Y축 (위쪽   절반, Canvas 경계 내에 배치) -->
-                        <Line X1="60" Y1="1" X2="60" Y2="55" Stroke="SlateGray" StrokeThickness="0.4"/>
-
-                        <!-- Y축 (아래쪽 절반, Canvas 경계 내에 배치) -->
-                        <Line X1="60" Y1="65" X2="60" Y2="119" Stroke="SlateGray" StrokeThickness="0.4"/>
                     </Canvas>
                 </Border>
 
@@ -396,6 +418,26 @@
                         VerticalAlignment="Top"
                         Margin="40,20,0,0">
                     <Canvas Height="120" Width="120">
+                        <!--<Canvas.Background>
+                            <VisualBrush TileMode="Tile"
+                                         Viewport="0,0,60,60"
+                                         ViewportUnits="Absolute"
+                                         Viewbox="0,0,50,50"
+                                         ViewboxUnits="Absolute">
+                                <VisualBrush.Visual>
+                                    <Rectangle Height="60" Width="60"
+                                               Stroke="SlateGray"
+                                               StrokeThickness="0.2"/>
+                                </VisualBrush.Visual>
+                            </VisualBrush>
+                        </Canvas.Background>-->
+
+                        <!-- X축 (왼쪽, Canvas 경계 내에 배치) -->
+                        <Line X1="0" Y1="60" X2="120" Y2="60" Stroke="SlateGray" StrokeThickness="0.4"/>
+
+                        <!-- Y축 (위쪽, Canvas 경계 내에 배치) -->
+                        <Line X1="60" Y1="0" X2="60" Y2="120" Stroke="SlateGray" StrokeThickness="0.4"/>
+
                         <Ellipse Height="10"
                                  Width="10"
                                  Canvas.Left="55"
@@ -403,17 +445,6 @@
                                  Fill="White"
                                  Stroke="Black"
                                  StrokeThickness="2"/>
-                        <!-- X축 (왼쪽   절반, Canvas 경계 내에 배치) -->
-                        <Line X1="1" Y1="60" X2="55" Y2="60" Stroke="SlateGray" StrokeThickness="0.4"/>
-
-                        <!-- X축 (오른쪽 절반, Canvas 경계 내에 배치) -->
-                        <Line X1="65" Y1="60" X2="119" Y2="60" Stroke="SlateGray" StrokeThickness="0.4"/>
-
-                        <!-- Y축 (위쪽   절반, Canvas 경계 내에 배치) -->
-                        <Line X1="60" Y1="1" X2="60" Y2="55" Stroke="SlateGray" StrokeThickness="0.4"/>
-
-                        <!-- Y축 (아래쪽 절반, Canvas 경계 내에 배치) -->
-                        <Line X1="60" Y1="65" X2="60" Y2="119" Stroke="SlateGray" StrokeThickness="0.4"/>
                     </Canvas>
                 </Border>
 
@@ -424,7 +455,7 @@
                         Height="50"
                         BorderBrush="LightGray"
                         BorderThickness="1"
-                        Background="LightGray"
+                        Background="{Binding IsCapture, Converter={StaticResource BoolToBrushConverter1}}"
                         VerticalAlignment="Top"
                         HorizontalAlignment="Right"       
                         Margin="0,20,120,0">
@@ -446,7 +477,7 @@
                         Height="50"
                         BorderBrush="LightGray"
                         BorderThickness="1"
-                        Background="LightGray"
+                        Background="{Binding IsEOandIR, Converter={StaticResource BoolToBrushConverter1}}"
                         VerticalAlignment="Top"
                         HorizontalAlignment="Right"       
                         Margin="0,20,60,0">
@@ -468,7 +499,7 @@
                         Height="50"
                         BorderBrush="LightGray"
                         BorderThickness="1"
-                        Background="LightGray"
+                        Background="{Binding IsOption2, Converter={StaticResource BoolToBrushConverter1}}"
                         VerticalAlignment="Top"
                         HorizontalAlignment="Right"       
                         Margin="0,20,0,0">
@@ -609,7 +640,7 @@
                         Height="55"
                         BorderBrush="LightGray"
                         BorderThickness="1"
-                        Background="LightGray"
+                        Background="{Binding IsGimbalStick, Converter={StaticResource BoolToBrushConverter1}}"
                         VerticalAlignment="Top"
                         HorizontalAlignment="Center"       
                         Margin="-10,-30,0,0">
@@ -644,9 +675,9 @@
                              Margin="10,0,0,0"/>
                     <Border BorderBrush="LightGray"
                             BorderThickness="1"
+                            Background="{Binding IsZoomKnob, Converter={StaticResource BoolToBrushConverter1}}"
                             Height="24"
                             Width="35"
-                            Background="LightGray"
                             Margin="10,0,0,0">
                         <TextBlock Margin="3,3,3,0"
                                    Text="SW"
@@ -678,9 +709,9 @@
                              Margin="10,0,0,0"/>
                     <Border BorderBrush="LightGray"
                             BorderThickness="1"
+                            Background="{Binding IsFocusKnob, Converter={StaticResource BoolToBrushConverter1}}"
                             Height="24"
                             Width="35"
-                            Background="LightGray"
                             Margin="10,0,0,0">
                         <TextBlock Margin="3,3,3,0"
                                    Text="SW"
@@ -703,17 +734,19 @@
                    HorizontalAlignment="Left"
                    Margin="12,-2,0,0"/>
 
-        <Grid Grid.Row="1" Margin="0,5,0,5">
+        <Grid Grid.Row="1"
+              Margin="0,5,0,5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1.45*"/>
                 <ColumnDefinition Width="1.55*"/>
                 <ColumnDefinition Width="0.5*"/>
             </Grid.ColumnDefinitions>
-
+            
             <Border Grid.Column="0"
                     BorderBrush="LightGray"
                     BorderThickness="1"
                     Margin="5">
+                
                 <Grid Margin="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="4*"/>
@@ -883,11 +916,12 @@
                        HorizontalAlignment="Left"
                        Margin="12,-2,0,0"/>
 
-            <!--  ListBox, ListBoxItem-->
+            <!--  [ListBox] & [ListBoxItem]-->
             <Border Grid.Column="1"
                     Margin="5">
                 <ListBox ScrollViewer.HorizontalScrollBarVisibility="Auto"
                          ScrollViewer.VerticalScrollBarVisibility="Auto"
+                         ItemsSource="{Binding LstBoxItem}"
                          BorderThickness="1"
                          Background="White"
                          HorizontalContentAlignment="Left"
@@ -895,18 +929,19 @@
                     <!-- 아이템 스타일 설정으로 촘촘하게 -->
                     <ListBox.ItemContainerStyle>
                         <Style TargetType="ListBoxItem">
+                            <Setter Property="FontWeight" Value="Regular"/>
+                            <Setter Property="FontSize" Value="10.8"/>
+                            <Setter Property="Margin" Value="1,-3,0,0"/>
                             <Setter Property="Padding" Value="1,0,1,0"/>
-                            <Setter Property="FontSize" Value="11"/>
-                            <Setter Property="Margin" Value="1,-2,0,0"/>
                         </Style>
                     </ListBox.ItemContainerStyle>
-                    <ListBoxItem>[15:26:20-0039] Connected to COM11</ListBoxItem>
+                    <!--<ListBoxItem>[15:26:20-0039] Connected to COM11</ListBoxItem>
                     <ListBoxItem>[15:26:37-0641] Disconnected</ListBoxItem>
                     <ListBoxItem>[15:26:38-0396] Connected to COM11</ListBoxItem>
                     <ListBoxItem>[15:27:03-0960] Disconnected</ListBoxItem>
                     <ListBoxItem>[15:27:04-0891] Connected to COM11</ListBoxItem>
                     <ListBoxItem>[15:27:10-0861] Disconnected</ListBoxItem>
-                    <ListBoxItem>[15:27:18-0648] Connected to COM11</ListBoxItem>
+                    <ListBoxItem>[15:27:18-0648] Connected to COM11</ListBoxItem>-->
                 </ListBox>
             </Border>
 
