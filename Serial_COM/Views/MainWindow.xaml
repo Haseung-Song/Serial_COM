@@ -240,7 +240,7 @@
                         Height="50"
                         BorderBrush="LightGray"
                         BorderThickness="1"
-                        Background="LightGray"
+                        Background="{Binding IsTakeOffOrNot, Converter={StaticResource BoolToBrushConverter}}"
                         HorizontalAlignment="Left"       
                         Margin="7,3,0,0">
                     <TextBlock Margin="1,0,0,0"
@@ -263,7 +263,7 @@
                         Height="50"
                         BorderBrush="LightGray"
                         BorderThickness="1"
-                        Background="LightGray"
+                        Background="{Binding IsReturnToBase, Converter={StaticResource BoolToBrushConverter}}"
                         HorizontalAlignment="Left"       
                         Margin="77,3,0,0">
                     <TextBlock Margin="3,0,0,0"
@@ -976,7 +976,7 @@
                     <!--  Disconnect, Connect-->
                     <Button Grid.Row="4"
                             Margin="20,0,0,0"
-                            Content="Disconnect"
+                            Content="{Binding Connection_BtnText}"
                             Command="{Binding StartSerialCommand}"
                             FontSize="11"
                             FontFamily="Montserrat"

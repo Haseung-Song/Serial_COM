@@ -1,6 +1,7 @@
 ﻿using Serial_COM.Common;
 using Serial_COM.Models;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -14,16 +15,18 @@ namespace Serial_COM.ViewModels
     {
         #region [프로퍼티]
 
-        private readonly EnvironmentSet _environmentSet;
-        private ObservableCollection<string> _portNames;
-        private ObservableCollection<int> _baudRates;
-
+        private EnvironmentSet _environmentSet;
+        private bool _isPortConnected;
+        private List<string> _portNames;
+        private List<int> _baudRates;
         private string _selectingPort;
         private int _selectedBaudRate;
         private bool _isEngineStarted;
         private bool _isEngineRestarted;
         private bool _isEngineKilled;
         private bool _isPowerSwitchOn;
+        private bool _isTakeOffOrNot;
+        private bool _isReturnToBase;
 
         #endregion
 
@@ -31,10 +34,49 @@ namespace Serial_COM.ViewModels
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public EnvironmentSet EnvironmentSet
+        {
+            get => _environmentSet;
+            private set
+            {
+                if (_environmentSet != value)
+                {
+                    _environmentSet = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [Connection_BtnText]
+        /// </summary>
+        public string Connection_BtnText => !IsPortConnected ? "Disconnect" : "Connect";
+
+        /// <summary>
+        /// [IsPortConnected]
+        /// </summary>
+        public bool IsPortConnected
+        {
+            get => _isPortConnected;
+            set
+            {
+                if (_isPortConnected != value)
+                {
+                    _isPortConnected = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(Connection_BtnText));
+                }
+
+            }
+
+        }
+
         /// <summary>
         /// [LstPortNames]
         /// </summary>
-        public ObservableCollection<string> LstPortNames
+        public List<string> LstPortNames
         {
             get => _portNames;
             set
@@ -52,7 +94,7 @@ namespace Serial_COM.ViewModels
         /// <summary>
         /// [LstBaudRates]
         /// </summary>
-        public ObservableCollection<int> LstBaudRates
+        public List<int> LstBaudRates
         {
             get => _baudRates;
             set
@@ -169,6 +211,42 @@ namespace Serial_COM.ViewModels
 
         }
 
+        /// <summary>
+        /// [IsTakeOffOrNot]
+        /// </summary>
+        public bool IsTakeOffOrNot
+        {
+            get => _isTakeOffOrNot;
+            set
+            {
+                if (_isTakeOffOrNot != value)
+                {
+                    _isTakeOffOrNot = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [IsReturnToBase]
+        /// </summary>
+        public bool IsReturnToBase
+        {
+            get => _isReturnToBase;
+            set
+            {
+                if (_isReturnToBase != value)
+                {
+                    _isReturnToBase = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -187,17 +265,19 @@ namespace Serial_COM.ViewModels
         public MainVM()
         {
             StartSerialCommand = new RelayCommand(StartSerial);
-            _environmentSet = new EnvironmentSet();
-            LstPortNames = _environmentSet.GetPortNames();
-            LstBaudRates = _environmentSet.GetBaudRates();
+            EnvironmentSet = new EnvironmentSet();
+            IsPortConnected = false;
+            LstPortNames = EnvironmentSet.GetPortNames();
+            LstBaudRates = EnvironmentSet.GetBaudRates();
         }
 
         private void StartSerial()
         {
-            if (_environmentSet != null)
+            if (EnvironmentSet != null)
             {
-                _environmentSet.MessageReceived += OnMessageReceived;
-                _environmentSet.Open(SelectedPort, SelectedBaudRate);
+                EnvironmentSet.OpenToClose(SelectedPort, SelectedBaudRate);
+                IsPortConnected = !IsPortConnected;
+                EnvironmentSet.MessageReceived += OnMessageReceived;
             }
 
         }
@@ -215,10 +295,11 @@ namespace Serial_COM.ViewModels
                 if (parserData != null)
                 {
                     IsPowerSwitchOn = parserData.PowerSwitch == 1;
-
                     IsEngineStarted = parserData.EngineStart == 1;
                     IsEngineRestarted = parserData.EngineRestart == 1;
                     IsEngineKilled = parserData.EngineKill == 1;
+                    IsTakeOffOrNot = parserData.TakeOff == 1;
+                    IsReturnToBase = parserData.ReturnToBase == 1;
                 }
 
             }
