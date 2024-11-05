@@ -2,7 +2,6 @@
 using Serial_COM.Models;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -52,7 +51,7 @@ namespace Serial_COM.ViewModels
         /// <summary>
         /// [Connection_BtnText]
         /// </summary>
-        public string Connection_BtnText => !IsPortConnected ? "Disconnect" : "Connect";
+        public string Connection_BtnText => IsPortConnected ? "Disconnect" : "Connect";
 
         /// <summary>
         /// [IsPortConnected]
@@ -275,9 +274,17 @@ namespace Serial_COM.ViewModels
         {
             if (EnvironmentSet != null)
             {
-                EnvironmentSet.OpenToClose(SelectedPort, SelectedBaudRate);
-                IsPortConnected = !IsPortConnected;
-                EnvironmentSet.MessageReceived += OnMessageReceived;
+                bool IsPortOpen = EnvironmentSet.OpenToClose(SelectedPort, SelectedBaudRate);
+                if (IsPortOpen)
+                {
+                    IsPortConnected = true;
+                    EnvironmentSet.MessageReceived += OnMessageReceived;
+                }
+                else
+                {
+                    IsPortConnected = false;
+                }
+
             }
 
         }

@@ -973,7 +973,7 @@
                         </ComboBox.ItemContainerStyle>
                     </ComboBox>
 
-                    <!--  Disconnect, Connect-->
+                    <!--  [Disconnect] Or [Connect]-->
                     <Button Grid.Row="4"
                             Margin="20,0,0,0"
                             Content="{Binding Connection_BtnText}"
