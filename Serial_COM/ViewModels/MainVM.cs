@@ -16,10 +16,12 @@ namespace Serial_COM.ViewModels
 
         private EnvironmentSet _environmentSet;
         private bool _isPortConnected;
+
         private List<string> _portNames;
         private List<int> _baudRates;
         private string _selectingPort;
         private int _selectedBaudRate;
+
         private bool _isEngineStarted;
         private bool _isEngineRestarted;
         private bool _isEngineKilled;
@@ -274,15 +276,10 @@ namespace Serial_COM.ViewModels
         {
             if (EnvironmentSet != null)
             {
-                bool IsPortOpen = EnvironmentSet.OpenToClose(SelectedPort, SelectedBaudRate);
-                if (IsPortOpen)
+                IsPortConnected = EnvironmentSet.OpenToClose(SelectedPort, SelectedBaudRate);
+                if (IsPortConnected)
                 {
-                    IsPortConnected = true;
                     EnvironmentSet.MessageReceived += OnMessageReceived;
-                }
-                else
-                {
-                    IsPortConnected = false;
                 }
 
             }
