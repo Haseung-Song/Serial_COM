@@ -11,6 +11,7 @@ namespace Serial_COM.Models
     {
         public SerialPort serialPort;
         public event Action<byte[], DateTime> MessageReceived;
+
         public EnvironmentSet()
         {
             serialPort = new SerialPort();
@@ -24,7 +25,7 @@ namespace Serial_COM.Models
             {
                 lstPortNames.Add(portName);
             }
-            // 숫자 부분으로 정렬 (COM3, COM4...)
+            // 숫자 부분으로 정렬  (COM3, COM4...)
             List<string> lstSortedPN = new List<string>(lstPortNames.OrderBy(item => int.Parse(item.Substring(3))));
             return lstSortedPN;
         }
