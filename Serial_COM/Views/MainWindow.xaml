@@ -38,7 +38,7 @@
             <RowDefinition Height="2.8*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        
+
         <Border Grid.Row="0"
                 BorderBrush="LightGray"
                 BorderThickness="1"
@@ -520,7 +520,7 @@
                             Orientation="Horizontal"
                             VerticalAlignment="Top"
                             HorizontalAlignment="Left"
-                            Margin="10,-10,0,0">
+                            Margin="11,-10,0,0">
                     <TextBlock Text="Yaw : "
                                TextWrapping="Wrap"
                                FontSize="12"
@@ -741,12 +741,12 @@
                 <ColumnDefinition Width="1.55*"/>
                 <ColumnDefinition Width="0.5*"/>
             </Grid.ColumnDefinitions>
-            
+
             <Border Grid.Column="0"
                     BorderBrush="LightGray"
                     BorderThickness="1"
                     Margin="5">
-                
+
                 <Grid Margin="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="4*"/>
