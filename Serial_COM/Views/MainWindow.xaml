@@ -520,7 +520,7 @@
                             Orientation="Horizontal"
                             VerticalAlignment="Top"
                             HorizontalAlignment="Left"
-                            Margin="11,-10,0,0">
+                            Margin="10,-10,0,0">
                     <TextBlock Text="Yaw : "
                                TextWrapping="Wrap"
                                FontSize="12"
