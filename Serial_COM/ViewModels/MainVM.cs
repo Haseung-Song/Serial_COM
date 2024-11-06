@@ -45,8 +45,14 @@ namespace Serial_COM.ViewModels
         private bool _isFocusKnob;
 
         private int _altitudeKnobChange;
+        private double _altitudeKnobSum;
+        private double _totalAltitudeChange;
         private int _headingKnobChange;
+        private double _headingKnobSum;
+        private double _totalHeadingChange;
         private int _speedKnobChange;
+        private double _speedKnobSum;
+        private double _totalSpeedChange;
         private int _yawChange;
         private uint _throttleChange;
         private int _rollChange;
@@ -383,6 +389,52 @@ namespace Serial_COM.ViewModels
         }
 
         /// <summary>
+        /// [AltitudeKnobSum]
+        /// </summary>
+        public double AltitudeKnobSum
+        {
+            get => _altitudeKnobSum;
+            set
+            {
+                if (_altitudeKnobSum != value)
+                {
+                    //if (value < 0)
+                    //    _altitudeKnobSum = 0;
+                    //else
+                    //    _altitudeKnobSum = value;
+                    _altitudeKnobSum = value < 0 ? 0 : value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        private const int MaxAltitudeChange = 60000;
+
+        /// <summary>
+        /// [TotalAltitudeChange]
+        /// </summary>
+        public double TotalAltitudeChange
+        {
+            get => _totalAltitudeChange;
+            set
+            {
+                if (_totalAltitudeChange != value)
+                {
+                    //if (value > MaxAltitudeChange)
+                    //    _totalAltitudeChange = MaxAltitudeChange;
+                    //else
+                    //    _totalAltitudeChange = value;
+                    _totalAltitudeChange = value > MaxAltitudeChange ? MaxAltitudeChange : value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
         /// [HeadingKnobChange]
         /// [Byte #3.]
         /// </summary>
@@ -402,6 +454,52 @@ namespace Serial_COM.ViewModels
         }
 
         /// <summary>
+        /// [HeadingKnobSum]
+        /// </summary>
+        public double HeadingKnobSum
+        {
+            get => _headingKnobSum;
+            set
+            {
+                if (_headingKnobSum != value)
+                {
+                    //if (value < 0)
+                    //    _headingKnobSum = 0;
+                    //else
+                    //    _headingKnobSum = value;
+                    _headingKnobSum = value < 0 ? 0 : value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        private const double MaxHeadingChange = 3599.0;
+
+        /// <summary>
+        /// [TotalHeadingChange]
+        /// </summary>
+        public double TotalHeadingChange
+        {
+            get => _totalHeadingChange;
+            set
+            {
+                if (_totalHeadingChange != value)
+                {
+                    //if (value > MaxHeadingChange)
+                    //    _totalHeadingChange = 359.9;
+                    //else
+                    //    _totalHeadingChange = value / 10;
+                    _totalHeadingChange = value > MaxHeadingChange ? MaxHeadingChange / 10 : value / 10;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
         /// [SpeedKnobChange]
         /// [Byte #4.]
         /// </summary>
@@ -413,6 +511,52 @@ namespace Serial_COM.ViewModels
                 if (_speedKnobChange != value)
                 {
                     _speedKnobChange = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [SpeedKnobSum]
+        /// </summary>
+        public double SpeedKnobSum
+        {
+            get => _speedKnobSum;
+            set
+            {
+                if (_speedKnobSum != value)
+                {
+                    //if (value < 0)
+                    //    _speedKnobSum = 0;
+                    //else
+                    //    _speedKnobSum = value;
+                    _speedKnobSum = value < 0 ? 0 : value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        private const double MaxSpeedChange = 1100.0;
+
+        /// <summary>
+        /// [TotalSpeedChange]
+        /// </summary>
+        public double TotalSpeedChange
+        {
+            get => _totalSpeedChange;
+            set
+            {
+                if (_totalSpeedChange != value)
+                {
+                    //if (value > MaxHeadingChange)
+                    //    _totalSpeedChange = 110.0;
+                    //else
+                    //    _totalSpeedChange = value / 10;
+                    _totalSpeedChange = value > MaxSpeedChange ? MaxSpeedChange / 10 : value / 10;
                     OnPropertyChanged();
                 }
 
@@ -790,8 +934,14 @@ namespace Serial_COM.ViewModels
                     IsHeadingKnob = parserData.HeadingKnob == 1;
                     IsSpeedKnob = parserData.SpeedKnob == 1;
                     AltitudeKnobChange = parserData.AltitudeKnobChange;
+                    AltitudeKnobSum += AltitudeKnobChange;
+                    TotalAltitudeChange = AltitudeKnobSum;
                     HeadingKnobChange = parserData.HeadingKnobChange;
+                    HeadingKnobSum += HeadingKnobChange;
+                    TotalHeadingChange = HeadingKnobSum;
                     SpeedKnobChange = parserData.SpeedKnobChange;
+                    SpeedKnobSum += SpeedKnobChange;
+                    TotalSpeedChange = SpeedKnobSum;
                     YawChange = parserData.YawChange;
                     ThrottleChange = parserData.ThrottleChange;
                     RollChange = parserData.RollChange;

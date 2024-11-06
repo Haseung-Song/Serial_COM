@@ -85,7 +85,7 @@ namespace Serial_COM.Models
                         SpeedKnob = (byte)stream.GetBits(1, 1, 0, 1),
 
                         // [Byte #2.]
-                        AltitudeKnobChange = (sbyte)stream.GetByte(2),
+                        AltitudeKnobChange = (sbyte)stream.Get(2, 1),
 
                         // [Byte #3.]
                         HeadingKnobChange = (sbyte)stream.GetByte(3),
@@ -136,51 +136,51 @@ namespace Serial_COM.Models
                         JoyStickYChange = (sbyte)stream.GetByte(13),
                     };
                     // [Byte #0.]
-                    Console.Write(field.PowerSwitch + " ");
+                    //Console.Write(field.PowerSwitch + " ");
 
-                    // [Byte #1.]
-                    Console.Write(field.EngineStart + " ");
-                    Console.Write(field.EngineRestart + " ");
-                    Console.Write(field.EngineKill + " ");
-                    Console.Write(field.TakeOff + " ");
-                    Console.Write(field.ReturnToBase + " ");
-                    Console.Write(field.AltitudeKnob + " ");
-                    Console.Write(field.HeadingKnob + " ");
-                    Console.Write(field.SpeedKnob + " ");
+                    //// [Byte #1.]
+                    //Console.Write(field.EngineStart + " ");
+                    //Console.Write(field.EngineRestart + " ");
+                    //Console.Write(field.EngineKill + " ");
+                    //Console.Write(field.TakeOff + " ");
+                    //Console.Write(field.ReturnToBase + " ");
+                    //Console.Write(field.AltitudeKnob + " ");
+                    //Console.Write(field.HeadingKnob + " ");
+                    //Console.Write(field.SpeedKnob + " ");
 
                     // [Byte #2.]
                     Console.Write(field.AltitudeKnobChange);
                     // [Byte #3.]
-                    Console.Write(field.HeadingKnobChange);
-                    // [Byte #4.]
-                    Console.Write(field.SpeedKnobChange);
-                    // [Byte #5.]
-                    Console.Write(field.YawChange);
-                    // [Byte #6.]
-                    Console.Write(field.ThrottleChange);
-                    // [Byte #7.]
-                    Console.Write(field.RollChange);
-                    // [Byte #8.]
-                    Console.WriteLine(field.PitchChange);
+                    //Console.Write(field.HeadingKnobChange);
+                    //// [Byte #4.]
+                    //Console.Write(field.SpeedKnobChange);
+                    //// [Byte #5.]
+                    //Console.Write(field.YawChange);
+                    //// [Byte #6.]
+                    //Console.Write(field.ThrottleChange);
+                    //// [Byte #7.]
+                    //Console.Write(field.RollChange);
+                    //// [Byte #8.]
+                    //Console.WriteLine(field.PitchChange);
 
-                    // [Byte #9.]
-                    Console.Write(field.Drop + " ");
-                    Console.Write(field.Option1 + " ");
-                    Console.Write(field.Capture + " ");
-                    Console.Write(field.EOandIR + " ");
-                    Console.Write(field.Option2 + " ");
-                    Console.Write(field.GimbalStick + " ");
-                    Console.Write(field.ZoomKnob + " ");
-                    Console.WriteLine(field.FocusKnob + " ");
+                    //// [Byte #9.]
+                    //Console.Write(field.Drop + " ");
+                    //Console.Write(field.Option1 + " ");
+                    //Console.Write(field.Capture + " ");
+                    //Console.Write(field.EOandIR + " ");
+                    //Console.Write(field.Option2 + " ");
+                    //Console.Write(field.GimbalStick + " ");
+                    //Console.Write(field.ZoomKnob + " ");
+                    //Console.WriteLine(field.FocusKnob + " ");
 
-                    // [Byte #10.]
-                    Console.Write(field.ZoomChange);
-                    // [Byte #11.]
-                    Console.Write(field.FocusChange);
-                    // [Byte #12.]
-                    Console.Write(field.JoyStickXChange);
-                    // [Byte #13.]
-                    Console.WriteLine(field.JoyStickYChange);
+                    //// [Byte #10.]
+                    //Console.Write(field.ZoomChange);
+                    //// [Byte #11.]
+                    //Console.Write(field.FocusChange);
+                    //// [Byte #12.]
+                    //Console.Write(field.JoyStickXChange);
+                    //// [Byte #13.]
+                    //Console.WriteLine(field.JoyStickYChange);
                     return field;
                 }
 
@@ -477,17 +477,17 @@ namespace Serial_COM.Models
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        //public static int ConvertAHSToSignedRange(this byte value)
-        //{
-        //    // 기존 [0 ~ 255] 범위
-        //    int cvtData = Convert.ToInt16(value);
-        //    // 기존 [128 ~ 255] => [-127 ~ 0] 범위 변환!
-        //    if (cvtData > 127)
-        //    {
-        //        cvtData -= 255;
-        //    }
-        //    return cvtData;
-        //}
+        public static int ConvertAHSToSignedRange(this byte value)
+        {
+            // 기존 [0 ~ 255] 범위
+            int cvtData = Convert.ToInt16(value);
+            // 기존 [128 ~ 255] => [-127 ~ 0] 범위 변환!
+            if (cvtData > 127)
+            {
+                cvtData -= 255;
+            }
+            return cvtData;
+        }
 
     }
 

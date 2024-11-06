@@ -9,13 +9,24 @@ namespace Serial_COM.Models
 {
     public class EnvironmentSet
     {
-        public SerialPort serialPort;
+        #region [프로퍼티]
+
         public event Action<byte[], DateTime> MessageReceived;
+
+        private SerialPort serialPort;
+
+        #endregion
+
+        #region 생성자 (Initialize)
 
         public EnvironmentSet()
         {
             serialPort = new SerialPort();
         }
+
+        #endregion
+
+        #region [함수 및 기능]
 
         public List<string> GetPortNames()
         {
@@ -51,45 +62,34 @@ namespace Serial_COM.Models
             {
                 try
                 {
-                    if (!serialPort.IsOpen) // [시리얼 포트] (열기)
+                    // [시리얼 포트] (열기)
+                    if (!serialPort.IsOpen)
                     {
-                        if (portName == "COM11")
+                        if (baudRate == 115200)
                         {
-                            if (baudRate == 115200)
+                            serialPort = new SerialPort(portName, baudRate)
                             {
-                                serialPort = new SerialPort(portName, baudRate)
-                                {
-                                    DataBits = 8, // Data bits: 8
-                                    Parity = Parity.None, // Parity: None
-                                    StopBits = StopBits.One,  // Stop bits: 1
-                                    Handshake = Handshake.None, // Flow Control: None
-                                    ReadTimeout = 500, // 데이터 읽기 타임아웃 설정 (0.5초)
-                                    WriteTimeout = 500 // 데이터 쓰기 타임아웃 설정 (0.5초)
-                                };
-                                serialPort.Open();
-                                _ = MessageBox.Show($"'{portName}' 포트가 열렸습니다.", "통신 성공", MessageBoxButton.OK, MessageBoxImage.Information);
-                                Console.WriteLine("Serial_COM opened successfully on " + portName + " port.");
-                                serialPort.DataReceived += OnDataReceived;
-                                return true;
-                            }
-                            else
-                            {
-                                _ = MessageBox.Show($"'{portName}' 포트가 닫혔습니다.", "통신 실패", MessageBoxButton.OK, MessageBoxImage.Error);
-                                throw new InvalidOperationException($"'{portName}' 포트가 닫혔습니다. 알맞은 'Baudrate:115200'으로 설정하세요.");
-                            }
-
+                                DataBits = 8, // Data bits: 8
+                                Parity = Parity.None, // Parity: None
+                                StopBits = StopBits.One,  // Stop bits: 1
+                                Handshake = Handshake.None, // Flow Control: None
+                                ReadTimeout = 500, // 데이터 읽기 타임아웃 설정 (0.5초)
+                                WriteTimeout = 500 // 데이터 쓰기 타임아웃 설정 (0.5초)
+                            };
+                            serialPort.Open();
+                            Console.WriteLine("Serial_COM opened successfully on " + portName + " port.");
+                            serialPort.DataReceived += OnDataReceived;
+                            return true;
                         }
                         else
                         {
-                            serialPort = new SerialPort(portName, baudRate);
-                            serialPort.Open();
-                            _ = MessageBox.Show($"'{portName}' 포트가 열렸습니다.", "통신 성공", MessageBoxButton.OK, MessageBoxImage.Information);
-                            Console.WriteLine("Serial_COM opened successfully on " + portName + " port.");
-                            return true;
+                            _ = MessageBox.Show($"'{portName}' 포트가 닫혔습니다.", "통신 실패", MessageBoxButton.OK, MessageBoxImage.Error);
+                            throw new InvalidOperationException($"'{portName}' 포트가 닫혔습니다. 알맞은 'Baudrate:115200'으로 설정하세요.");
                         }
 
                     }
-                    else // [시리얼 포트] (닫기)
+                    // [시리얼 포트] (닫기)
+                    else
                     {
                         serialPort.Close();
                         Console.WriteLine("Serial_COM closed successfully on " + portName + " port.");
@@ -145,7 +145,7 @@ namespace Serial_COM.Models
                 }
                 Debug.WriteLine($"Total [{bytesToSave} bytes] read from '{serialPort.PortName}' port.");
                 Console.WriteLine("");
-                MessageReceived?.Invoke(buffer, DateTime.Now); // [수신 데이터] + [수신 메시지] 전달 이벤트 호출
+                MessageReceived?.Invoke(buffer, DateTime.Now);
             }
             catch (Exception ex)
             {
@@ -153,7 +153,7 @@ namespace Serial_COM.Models
             }
 
         }
-
+        #endregion
     }
 
 }

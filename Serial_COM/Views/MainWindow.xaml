@@ -160,6 +160,8 @@
                                FontSize="11"
                                VerticalAlignment="Center"/>
                     <TextBox Text="{Binding AltitudeKnobChange}"
+                             TextAlignment="Center"
+                             IsReadOnly="True"
                              Height="24"
                              Width="60"
                              HorizontalAlignment="Center"
@@ -189,6 +191,8 @@
                                FontSize="11"
                                VerticalAlignment="Center"/>
                     <TextBox Text="{Binding HeadingKnobChange}"
+                             TextAlignment="Center"
+                             IsReadOnly="True"
                              Height="24"
                              Width="60"
                              HorizontalAlignment="Center"
@@ -218,6 +222,8 @@
                                FontSize="11"
                                VerticalAlignment="Center"/>
                     <TextBox Text="{Binding SpeedKnobChange, Mode=OneWay}"
+                             TextAlignment="Center"
+                             IsReadOnly="True"
                              Height="24"
                              Width="60"
                              HorizontalAlignment="Center"
@@ -535,6 +541,7 @@
                         </TextBlock.RenderTransform>
                     </TextBlock>
                     <TextBox Text="{Binding YawChange, Mode=OneWay}"
+                             IsReadOnly="True"
                              TextAlignment="Center"
                              Height="24"
                              Width="60"
@@ -556,6 +563,7 @@
                                Margin="10,0,0,0">
                     </TextBlock>
                     <TextBox Text="{Binding ThrottleChange, Mode=OneWay}"
+                             IsReadOnly="True"
                              TextAlignment="Center"
                              Height="24"
                              Width="60"
@@ -576,7 +584,9 @@
                                FontFamily="Montserrat">
                     </TextBlock>
                     <TextBox Text="{Binding RollChange, Mode=OneWay}"
+                             IsReadOnly="True"
                              TextAlignment="Center"
+                             MaxLength="5"
                              Height="24"
                              Width="60"
                              HorizontalAlignment="Center"
@@ -596,6 +606,7 @@
                                FontFamily="Montserrat">
                     </TextBlock>
                     <TextBox Text="{Binding PitchChange, Mode=OneWay}"
+                             IsReadOnly="True"
                              TextAlignment="Center"
                              Height="24"
                              Width="60"
@@ -618,11 +629,10 @@
                                FontFamily="Montserrat">
                     </TextBlock>
                     <TextBox Text="{Binding JoyStickXChange, Mode=OneWay}"
+                             IsReadOnly="True"
                              TextAlignment="Center"
-                             Height="24"
                              Width="60"
-                             HorizontalAlignment="Center"
-                             VerticalAlignment="Top"/>
+                             HorizontalAlignment="Center" Margin="0,0,0,16"/>
                 </StackPanel>
 
                 <!--  Gimbal Y :-->
@@ -639,6 +649,7 @@
                                FontFamily="Montserrat">
                     </TextBlock>
                     <TextBox Text="{Binding JoyStickYChange, Mode=OneWay}"
+                             IsReadOnly="True"
                              TextAlignment="Center"
                              Height="24"
                              Width="60"
@@ -686,6 +697,7 @@
                              Height="24"
                              Width="60"
                              VerticalAlignment="Center"
+                             IsReadOnly="True"
                              Margin="10,0,0,0"/>
                     <Border BorderBrush="LightGray"
                             BorderThickness="1"
@@ -721,6 +733,7 @@
                              Height="24"
                              Width="60"
                              VerticalAlignment="Center"
+                             IsReadOnly="True"
                              Margin="10,0,0,0"/>
                     <Border BorderBrush="LightGray"
                             BorderThickness="1"
@@ -748,7 +761,6 @@
                    VerticalAlignment="Top"
                    HorizontalAlignment="Left"
                    Margin="12,-2,0,0"/>
-
         <Grid Grid.Row="1"
               Margin="0,5,0,5">
             <Grid.ColumnDefinitions>
@@ -761,7 +773,6 @@
                     BorderBrush="LightGray"
                     BorderThickness="1"
                     Margin="5">
-
                 <Grid Margin="10">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="4*"/>
@@ -780,12 +791,32 @@
                             BorderThickness="2"
                             Background="PaleVioletRed"
                             Margin="2">
-                        <TextBlock Text="Altitude        615  ft"
-                                   FontWeight="Normal"
-                                   Foreground="White"
-                                   FontSize="18"
-                                   TextAlignment="Left"
-                                   Margin="10,2,0,0"/>
+                        <Grid VerticalAlignment="Center" Margin="3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="30"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0"
+                                       Text="Altitude"
+                                       FontWeight="Normal"
+                                       Foreground="White"
+                                       FontSize="18"
+                                       VerticalAlignment="Center"
+                                       TextAlignment="Center"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding TotalAltitudeChange, Mode=TwoWay}"
+                                       FontWeight="Normal"
+                                       Foreground="White"
+                                       FontSize="18"
+                                       TextAlignment="Center"/>
+                            <TextBlock Grid.Column="2"
+                                       Text="ft  "
+                                       FontWeight="Normal"
+                                       Foreground="White"
+                                       FontSize="18"
+                                       TextAlignment="Center"/>
+                        </Grid>
                     </Border>
 
                     <!--  Heading (deg)-->
@@ -795,12 +826,32 @@
                             BorderThickness="2"
                             Background="PaleVioletRed"
                             Margin="2">
-                        <TextBlock Text="Heading     359.9  deg"
-                                   FontWeight="Normal"
-                                   Foreground="White"
-                                   FontSize="18"
-                                   TextAlignment="Left"
-                                   Margin="10,2,0,0"/>
+                        <Grid VerticalAlignment="Center" Margin="3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="30"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0"
+                                       Text="Heading"
+                                       FontWeight="Normal"
+                                       Foreground="White"
+                                       FontSize="18"
+                                       VerticalAlignment="Center"
+                                       TextAlignment="Center"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding TotalHeadingChange, StringFormat='{}{0:F1}', Mode=TwoWay}"
+                                       FontWeight="Normal"
+                                       Foreground="White"
+                                       FontSize="18"
+                                       TextAlignment="Center"/>
+                            <TextBlock Grid.Column="2"
+                                       Text="deg"
+                                       FontWeight="Normal"
+                                       Foreground="White"
+                                       FontSize="18"
+                                       TextAlignment="Center"/>
+                        </Grid>
                     </Border>
 
                     <!--  Speed (kn)-->
@@ -810,12 +861,31 @@
                             BorderThickness="2"
                             Background="PaleVioletRed"
                             Margin="2">
-                        <TextBlock Text="Speed           0.0  kn"
-                                   FontWeight="Normal"
-                                   Foreground="White"
-                                   FontSize="18"
-                                   TextAlignment="Left"
-                                   Margin="10,2,0,0"/>
+                        <Grid VerticalAlignment="Center" Margin="3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition Width="30"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0"
+                                       Text="Speed"
+                                       FontWeight="Normal"
+                                       Foreground="White"
+                                       FontSize="18"
+                                       TextAlignment="Center"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding TotalSpeedChange, StringFormat='{}{0:F1}',Mode=TwoWay }"
+                                       FontWeight="Normal"
+                                       Foreground="White"
+                                       FontSize="18"
+                                       TextAlignment="Center"/>
+                            <TextBlock Grid.Column="2"
+                                       Text="kn "
+                                       FontWeight="Normal"
+                                       Foreground="White"
+                                       FontSize="18"
+                                       TextAlignment="Center"/>
+                        </Grid>
                     </Border>
 
                     <!--  ON/OFF (버튼 1)-->
