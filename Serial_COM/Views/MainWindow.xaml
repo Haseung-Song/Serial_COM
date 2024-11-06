@@ -55,8 +55,8 @@
                     <RowDefinition Height="0.25*"/>
                     <RowDefinition Height="0.25*"/>
                     <RowDefinition Height="0.45*"/>
-                    <RowDefinition Height="1.25*"/>
-                    <RowDefinition Height="0.15*"/>
+                    <RowDefinition Height="1.20*"/>
+                    <RowDefinition Height="0.25*"/>
                     <RowDefinition Height="0.2*"/>
                 </Grid.RowDefinitions>
 
@@ -159,7 +159,7 @@
                     <TextBlock Text="Altitude knob : "
                                FontSize="11"
                                VerticalAlignment="Center"/>
-                    <TextBox Text=""
+                    <TextBox Text="{Binding AltitudeKnobChange}"
                              Height="24"
                              Width="60"
                              HorizontalAlignment="Center"
@@ -188,7 +188,7 @@
                     <TextBlock Text="Heading knob : "
                                FontSize="11"
                                VerticalAlignment="Center"/>
-                    <TextBox Text=""
+                    <TextBox Text="{Binding HeadingKnobChange}"
                              Height="24"
                              Width="60"
                              HorizontalAlignment="Center"
@@ -217,7 +217,7 @@
                     <TextBlock Text="Speed Knob : "
                                FontSize="11"
                                VerticalAlignment="Center"/>
-                    <TextBox Text=""
+                    <TextBox Text="{Binding SpeedKnobChange, Mode=OneWay}"
                              Height="24"
                              Width="60"
                              HorizontalAlignment="Center"
@@ -520,13 +520,22 @@
                             Orientation="Horizontal"
                             VerticalAlignment="Top"
                             HorizontalAlignment="Left"
-                            Margin="10,-10,0,0">
+                            Margin="10,0,0,0">
                     <TextBlock Text="Yaw : "
                                TextWrapping="Wrap"
                                FontSize="12"
-                               FontFamily="Montserrat">
+                               FontFamily="Montserrat" RenderTransformOrigin="0.5,0.5">
+                        <TextBlock.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform/>
+                                <SkewTransform/>
+                                <RotateTransform Angle="1.386"/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </TextBlock.RenderTransform>
                     </TextBlock>
-                    <TextBox Text=""
+                    <TextBox Text="{Binding YawChange, Mode=OneWay}"
+                             TextAlignment="Center"
                              Height="24"
                              Width="60"
                              HorizontalAlignment="Center"
@@ -546,7 +555,8 @@
                                FontFamily="Montserrat"
                                Margin="10,0,0,0">
                     </TextBlock>
-                    <TextBox Text=""
+                    <TextBox Text="{Binding ThrottleChange, Mode=OneWay}"
+                             TextAlignment="Center"
                              Height="24"
                              Width="60"
                              HorizontalAlignment="Center"
@@ -559,19 +569,19 @@
                             Grid.Column="0"
                             Orientation="Horizontal"
                             VerticalAlignment="Top"
-                            HorizontalAlignment="Right"
-                            Margin="0,-10,4,0">
+                            HorizontalAlignment="Right">
                     <TextBlock Text="Roll : "
                                TextWrapping="Wrap"
                                FontSize="12"
                                FontFamily="Montserrat">
                     </TextBlock>
-                    <TextBox Text=""
+                    <TextBox Text="{Binding RollChange, Mode=OneWay}"
+                             TextAlignment="Center"
                              Height="24"
                              Width="60"
                              HorizontalAlignment="Center"
                              VerticalAlignment="Top"
-                             Margin="20,0,10,0"/>
+                             Margin="22,0,10,0"/>
                 </StackPanel>
 
                 <!--  Pitch :-->
@@ -585,12 +595,13 @@
                                FontSize="12"
                                FontFamily="Montserrat">
                     </TextBlock>
-                    <TextBox Text=""
+                    <TextBox Text="{Binding PitchChange, Mode=OneWay}"
+                             TextAlignment="Center"
                              Height="24"
                              Width="60"
                              HorizontalAlignment="Center"
                              VerticalAlignment="Top"
-                             Margin="17,0,14,0"/>
+                             Margin="20,0,10,0"/>
                 </StackPanel>
 
                 <!--  Gimbal X :-->
@@ -600,13 +611,14 @@
                             VerticalAlignment="Top"
                             HorizontalAlignment="Left"
                             Height="40"
-                            Margin="45,-10,0,0">
+                            Margin="45,0,0,0">
                     <TextBlock Text="Gimbal X : "
                                TextWrapping="Wrap"
                                FontSize="11"
                                FontFamily="Montserrat">
                     </TextBlock>
-                    <TextBox Text=""
+                    <TextBox Text="{Binding JoyStickXChange, Mode=OneWay}"
+                             TextAlignment="Center"
                              Height="24"
                              Width="60"
                              HorizontalAlignment="Center"
@@ -626,7 +638,8 @@
                                FontSize="11"
                                FontFamily="Montserrat">
                     </TextBlock>
-                    <TextBox Text=""
+                    <TextBox Text="{Binding JoyStickYChange, Mode=OneWay}"
+                             TextAlignment="Center"
                              Height="24"
                              Width="60"
                              HorizontalAlignment="Center"
@@ -655,27 +668,28 @@
                     </TextBlock>
                 </Border>
 
-                <!--  Knob Controls (Zoom knob)-->
+                <!--  Knob Controls (Focus knob)-->
                 <StackPanel Grid.Row="6"
                             Grid.Column="1"
                             Orientation="Horizontal"
                             VerticalAlignment="Top"
                             HorizontalAlignment="Right"
                             Height="40"
-                            Margin="0,-80,0,0">
-                    <TextBlock Text="Zoom knob : "
+                            Margin="0,-65,0,0">
+                    <TextBlock Text="Focus knob : "
                                TextWrapping="Wrap"
                                FontSize="11"
                                FontFamily="Montserrat"
                                VerticalAlignment="Center"/>
-                    <TextBox Text=""
+                    <TextBox Text="{Binding FocusChange, Mode=OneWay}"
+                             TextAlignment="Center"
                              Height="24"
                              Width="60"
                              VerticalAlignment="Center"
                              Margin="10,0,0,0"/>
                     <Border BorderBrush="LightGray"
                             BorderThickness="1"
-                            Background="{Binding IsZoomKnob, Converter={StaticResource BoolToBrushConverter1}}"
+                            Background="{Binding IsFocusKnob, Converter={StaticResource BoolToBrushConverter1}}"
                             Height="24"
                             Width="35"
                             Margin="10,0,0,0">
@@ -689,7 +703,7 @@
                     </Border>
                 </StackPanel>
 
-                <!--  Knob Controls (Focus knob)-->
+                <!--  Knob Controls (Zoom knob)-->
                 <StackPanel Grid.Row="7"
                             Grid.Column="1"
                             Orientation="Horizontal"
@@ -697,19 +711,20 @@
                             HorizontalAlignment="Right"
                             Height="40"
                             Margin="0,-65,0,0">
-                    <TextBlock Text="Focus knob : "
+                    <TextBlock Text="Zoom knob : "
                                TextWrapping="Wrap"
                                FontSize="11"
                                FontFamily="Montserrat"
                                VerticalAlignment="Center"/>
-                    <TextBox Text=""
+                    <TextBox Text="{Binding ZoomChange, Mode=OneWay}"
+                             TextAlignment="Center"
                              Height="24"
                              Width="60"
                              VerticalAlignment="Center"
                              Margin="10,0,0,0"/>
                     <Border BorderBrush="LightGray"
                             BorderThickness="1"
-                            Background="{Binding IsFocusKnob, Converter={StaticResource BoolToBrushConverter1}}"
+                            Background="{Binding IsZoomKnob, Converter={StaticResource BoolToBrushConverter1}}"
                             Height="24"
                             Width="35"
                             Margin="10,0,0,0">

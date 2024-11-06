@@ -51,12 +51,16 @@ namespace Serial_COM.Models
                 {
                     CCUtoCPCField field = new CCUtoCPCField
                     {
-                        // # [GetBits] 메서드 #
-                        // 바이트 스트림의 특정 위치에서 비트 추출 역할
+                        // 1) [GetBits] 메서드: [단일 바이트] 추출
+                        // 바이트 스트림의 특정 위치 => 비트 추출 목적
                         // 첫 번째 인자: 시작 위치. (0 바이트부터 시작)
                         // 두 번째 인자: 추출할 바이트 수.
                         // 세 번째 인자: 비트 시작 위치.
                         // 네 번째 인자: 추출할 비트 수.
+
+                        // 2) [GetByte] 메서드: [단일 바이트] 추출
+                        // 바이트 스트림 특정 위치 => 1 Byte 추출 목적
+                        // 첫 번째 인자: 시작 위치. (0 바이트부터 시작)
 
                         // [Byte #0.]
                         // 7    번째 비트(MSB)를 추출
@@ -80,6 +84,27 @@ namespace Serial_COM.Models
                         // 0    번째 비트(LSB)를 추출
                         SpeedKnob = (byte)stream.GetBits(1, 1, 0, 1),
 
+                        // [Byte #2.]
+                        AltitudeKnobChange = (sbyte)stream.GetByte(2),
+
+                        // [Byte #3.]
+                        HeadingKnobChange = (sbyte)stream.GetByte(3),
+
+                        // [Byte #4.]
+                        SpeedKnobChange = (sbyte)stream.GetByte(4),
+
+                        // [Byte #5.]
+                        YawChange = (sbyte)stream.GetByte(5),
+
+                        // [Byte #6.]
+                        ThrottleChange = (byte)stream.GetByte(6),
+
+                        // [Byte #7.]
+                        RollChange = (sbyte)stream.GetByte(7),
+
+                        // [Byte #8.]
+                        PitchChange = (sbyte)stream.GetByte(8),
+
                         // [Byte #9.]
                         // 7    번째 비트(MSB)를 추출
                         Drop = (byte)stream.GetBits(9, 1, 7, 1),
@@ -98,6 +123,17 @@ namespace Serial_COM.Models
                         // 0    번째 비트(LSB)를 추출
                         FocusKnob = (byte)stream.GetBits(9, 1, 0, 1),
 
+                        // [Byte #10.]
+                        ZoomChange = (sbyte)stream.GetByte(10),
+
+                        // [Byte #11.]
+                        FocusChange = (sbyte)stream.GetByte(11),
+
+                        // [Byte #12.]
+                        JoyStickXChange = (sbyte)stream.GetByte(12),
+
+                        // [Byte #13.]
+                        JoyStickYChange = (sbyte)stream.GetByte(13),
                     };
                     // [Byte #0.]
                     Console.Write(field.PowerSwitch + " ");
@@ -112,7 +148,20 @@ namespace Serial_COM.Models
                     Console.Write(field.HeadingKnob + " ");
                     Console.Write(field.SpeedKnob + " ");
 
-                    // ...
+                    // [Byte #2.]
+                    Console.Write(field.AltitudeKnobChange);
+                    // [Byte #3.]
+                    Console.Write(field.HeadingKnobChange);
+                    // [Byte #4.]
+                    Console.Write(field.SpeedKnobChange);
+                    // [Byte #5.]
+                    Console.Write(field.YawChange);
+                    // [Byte #6.]
+                    Console.Write(field.ThrottleChange);
+                    // [Byte #7.]
+                    Console.Write(field.RollChange);
+                    // [Byte #8.]
+                    Console.WriteLine(field.PitchChange);
 
                     // [Byte #9.]
                     Console.Write(field.Drop + " ");
@@ -124,6 +173,14 @@ namespace Serial_COM.Models
                     Console.Write(field.ZoomKnob + " ");
                     Console.WriteLine(field.FocusKnob + " ");
 
+                    // [Byte #10.]
+                    Console.Write(field.ZoomChange);
+                    // [Byte #11.]
+                    Console.Write(field.FocusChange);
+                    // [Byte #12.]
+                    Console.Write(field.JoyStickXChange);
+                    // [Byte #13.]
+                    Console.WriteLine(field.JoyStickYChange);
                     return field;
                 }
 
@@ -278,6 +335,55 @@ namespace Serial_COM.Models
             public byte SpeedKnob { get; set; }
 
             /// <summary>
+            /// [비행조종장치 고도(Altitude) 노브]
+            /// [Altitude Knob Change]
+            /// [Byte #2.]
+            /// </summary>
+            public sbyte AltitudeKnobChange { get; set; }
+
+            /// <summary>
+            /// [비행조종장치 헤딩(Heading) 노브]
+            /// [Heading Knob Change]
+            /// [Byte #3.]
+            /// </summary>
+            public sbyte HeadingKnobChange { get; set; }
+
+            /// <summary>
+            /// [비행조종장치 속도(Speed) 노브]
+            /// [Speed Knob Change]
+            /// [Byte #4.]
+            /// </summary>
+            public sbyte SpeedKnobChange { get; set; }
+
+            /// <summary>
+            /// [비행조종장치 조이스틱 Yaw]
+            /// [Speed Knob Change]
+            /// [Byte #5.]
+            /// </summary>
+            public sbyte YawChange { get; set; }
+
+            /// <summary>
+            /// [비행조종장치 조이스틱 Throttle]
+            /// [Speed Knob Change]
+            /// [Byte #6.]
+            /// </summary>
+            public byte ThrottleChange { get; set; }
+
+            /// <summary>
+            /// [비행조종장치 조이스틱 Roll]
+            /// [Speed Knob Change]
+            /// [Byte #7.]
+            /// </summary>
+            public sbyte RollChange { get; set; }
+
+            /// <summary>
+            /// [비행조종장치 조이스틱 Pitch]
+            /// [Speed Knob Change]
+            /// [Byte #8.]
+            /// </summary>
+            public sbyte PitchChange { get; set; }
+
+            /// <summary>
             /// [임무조종장치 스위치]
             /// [Drop]
             /// [Byte #9.] 7번째(MSB) 비트
@@ -332,7 +438,56 @@ namespace Serial_COM.Models
             /// [Byte #9.] 0번째(LSB) 비트
             /// </summary>
             public byte FocusKnob { get; set; }
+
+            /// <summary>
+            /// [임무조종장치 줌 노브]
+            /// [ZoomChange]
+            /// [Byte #10.]
+            /// </summary>
+            public sbyte ZoomChange { get; set; }
+
+            /// <summary>
+            /// [임무조종장치 포커스 노브]
+            /// [FocusChange]
+            /// [Byte #10.]
+            /// </summary>
+            public sbyte FocusChange { get; set; }
+
+            /// <summary>
+            /// [임무조종장치 조이스틱 X]
+            /// [JoyStickXChange]
+            /// [Byte #11.]
+            /// </summary>
+            public sbyte JoyStickXChange { get; set; }
+
+            /// <summary>
+            /// [임무조종장치 조이스틱 Y]
+            /// [JoyStickYChange]
+            /// [Byte #12.]
+            /// </summary>
+            public sbyte JoyStickYChange { get; set; }
         }
+
+    }
+
+    public static class FieldChangeExtension
+    {
+        /// <summary>
+        /// [0 ~ 255] 범위 => [-127 ~ 127] 범위 변환!
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        //public static int ConvertAHSToSignedRange(this byte value)
+        //{
+        //    // 기존 [0 ~ 255] 범위
+        //    int cvtData = Convert.ToInt16(value);
+        //    // 기존 [128 ~ 255] => [-127 ~ 0] 범위 변환!
+        //    if (cvtData > 127)
+        //    {
+        //        cvtData -= 255;
+        //    }
+        //    return cvtData;
+        //}
 
     }
 

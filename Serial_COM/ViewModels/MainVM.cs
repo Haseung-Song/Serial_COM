@@ -21,7 +21,6 @@ namespace Serial_COM.ViewModels
 
         private List<string> _portNames;
         private List<int> _baudRates;
-
         private string _selectingPort;
         private int _selectedBaudRate;
 
@@ -44,6 +43,19 @@ namespace Serial_COM.ViewModels
         private bool _isGimbalStick;
         private bool _isZoomKnob;
         private bool _isFocusKnob;
+
+        private int _altitudeKnobChange;
+        private int _headingKnobChange;
+        private int _speedKnobChange;
+        private int _yawChange;
+        private uint _throttleChange;
+        private int _rollChange;
+        private int _pitchChange;
+
+        private int _zoomChange;
+        private int _focusChange;
+        private int _joyStickXChange;
+        private int _joyStickYChange;
 
         #endregion
 
@@ -352,6 +364,139 @@ namespace Serial_COM.ViewModels
         }
 
         /// <summary>
+        /// [AltitudeKnobChange]
+        /// [Byte #2.]
+        /// </summary>
+        public int AltitudeKnobChange
+        {
+            get => _altitudeKnobChange;
+            set
+            {
+                if (_altitudeKnobChange != value)
+                {
+                    _altitudeKnobChange = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [HeadingKnobChange]
+        /// [Byte #3.]
+        /// </summary>
+        public int HeadingKnobChange
+        {
+            get => _headingKnobChange;
+            set
+            {
+                if (_headingKnobChange != value)
+                {
+                    _headingKnobChange = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [SpeedKnobChange]
+        /// [Byte #4.]
+        /// </summary>
+        public int SpeedKnobChange
+        {
+            get => _speedKnobChange;
+            set
+            {
+                if (_speedKnobChange != value)
+                {
+                    _speedKnobChange = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [YawChange]
+        /// [Byte #5.]
+        /// </summary>
+        public int YawChange
+        {
+            get => _yawChange;
+            set
+            {
+                if (_yawChange != value)
+                {
+                    _yawChange = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [ThrottleChange]
+        /// [Byte #6.]
+        /// </summary>
+        public uint ThrottleChange
+        {
+            get => _throttleChange;
+            set
+            {
+                if (_throttleChange != value)
+                {
+                    _throttleChange = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [RollChange]
+        /// [Byte #7.]
+        /// </summary>
+        public int RollChange
+        {
+            get => _rollChange;
+            set
+            {
+                if (_rollChange != value)
+                {
+                    _rollChange = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [PitchChange]
+        /// [Byte #8.]
+        /// </summary>
+        public int PitchChange
+        {
+            get => _pitchChange;
+            set
+            {
+                if (_pitchChange != value)
+                {
+                    _pitchChange = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
         /// [IsDrop]
         /// [Byte #9.] 7번째(MSB) 비트
         /// </summary>
@@ -503,6 +648,82 @@ namespace Serial_COM.ViewModels
 
         }
 
+        /// <summary>
+        /// [ZoomChange]
+        /// [Byte #10.]
+        /// </summary>
+        public int ZoomChange
+        {
+            get => _zoomChange;
+            set
+            {
+                if (_zoomChange != value)
+                {
+                    _zoomChange = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [FocusChange]
+        /// [Byte #10.]
+        /// </summary>
+        public int FocusChange
+        {
+            get => _focusChange;
+            set
+            {
+                if (_focusChange != value)
+                {
+                    _focusChange = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [ZoyStickXChange]
+        /// [Byte #11.]
+        /// </summary>
+        public int JoyStickXChange
+        {
+            get => _joyStickXChange;
+            set
+            {
+                if (_joyStickXChange != value)
+                {
+                    _joyStickXChange = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [JoyStickYChange]
+        /// [Byte #12.]
+        /// </summary>
+        public int JoyStickYChange
+        {
+            get => _joyStickYChange;
+            set
+            {
+                if (_joyStickYChange != value)
+                {
+                    _joyStickYChange = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -533,7 +754,10 @@ namespace Serial_COM.ViewModels
 
         private void StartSerial()
         {
-            if (EnvironmentSet == null || SelectedPort == null || SelectedBaudRate == 0) return;
+            if (EnvironmentSet == null || SelectedPort == null || SelectedBaudRate == 0)
+            {
+                return;
+            }
             IsPortConnected = EnvironmentSet.OpenToClose(SelectedPort, SelectedBaudRate);
             if (IsPortConnected)
             {
@@ -565,6 +789,13 @@ namespace Serial_COM.ViewModels
                     IsAltitudeKnob = parserData.AltitudeKnob == 1;
                     IsHeadingKnob = parserData.HeadingKnob == 1;
                     IsSpeedKnob = parserData.SpeedKnob == 1;
+                    AltitudeKnobChange = parserData.AltitudeKnobChange;
+                    HeadingKnobChange = parserData.HeadingKnobChange;
+                    SpeedKnobChange = parserData.SpeedKnobChange;
+                    YawChange = parserData.YawChange;
+                    ThrottleChange = parserData.ThrottleChange;
+                    RollChange = parserData.RollChange;
+                    PitchChange = parserData.PitchChange;
                     IsDrop = parserData.Drop == 1;
                     IsOption1 = parserData.Option1 == 1;
                     IsCapture = parserData.Capture == 1;
@@ -573,6 +804,10 @@ namespace Serial_COM.ViewModels
                     IsGimbalStick = parserData.GimbalStick == 1;
                     IsZoomKnob = parserData.ZoomKnob == 1;
                     IsFocusKnob = parserData.FocusKnob == 1;
+                    ZoomChange = parserData.ZoomChange;
+                    FocusChange = parserData.FocusChange;
+                    JoyStickXChange = parserData.JoyStickXChange;
+                    JoyStickYChange = parserData.JoyStickYChange;
                 }
 
             }
