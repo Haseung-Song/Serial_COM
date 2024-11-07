@@ -32,13 +32,12 @@
             </Setter>
         </Style>
     </Window.Resources>
-
+    
     <Grid Margin="5,12,5,2">
         <Grid.RowDefinitions>
             <RowDefinition Height="2.8*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
         <Border Grid.Row="0"
                 BorderBrush="LightGray"
                 BorderThickness="1"
@@ -59,7 +58,7 @@
                     <RowDefinition Height="0.25*"/>
                     <RowDefinition Height="0.2*"/>
                 </Grid.RowDefinitions>
-
+                
                 <!-- Engine Controls 1 (Engine Start SW)-->
                 <Border Grid.Row="0"
                         Grid.Column="0"
@@ -846,7 +845,8 @@
                                        FontWeight="Normal"
                                        Foreground="White"
                                        FontSize="18"
-                                       TextAlignment="Center"/>
+                                       TextAlignment="Center"
+                                       Margin="10,0,0,0"/>
                             <TextBlock Grid.Column="2"
                                        Text="deg"
                                        FontWeight="Normal"
@@ -882,7 +882,8 @@
                                        FontWeight="Normal"
                                        Foreground="White"
                                        FontSize="18"
-                                       TextAlignment="Center"/>
+                                       TextAlignment="Center"
+                                       Margin="10,0,0,0"/>
                             <TextBlock Grid.Column="2"
                                        Text="kn "
                                        FontWeight="Normal"
