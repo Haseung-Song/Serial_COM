@@ -702,7 +702,6 @@ namespace Serial_COM.ViewModels
 
         }
 
-
         /// <summary>
         /// [RollChange]
         /// [Byte #7.]
@@ -1142,8 +1141,8 @@ namespace Serial_COM.ViewModels
             }
             finally
             {
-                //Debug.WriteLine("Message parsing completed at " + "[" + currentTime + "]");
-                //Debug.WriteLine("");
+                Debug.WriteLine("Message parsing completed at " + "[" + currentTime + "]");
+                Debug.WriteLine("");
             }
 
         }

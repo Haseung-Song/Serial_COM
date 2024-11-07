@@ -241,6 +241,11 @@ namespace Serial_COM.Models
 
         }
 
+        public byte[] CheckDataCondition2(byte[] check)
+        {
+            return check;
+        }
+
         /// <summary>
         /// *. [프로토콜 샘플코드] .*
         /// #. [DecodingPacket] 함수: [DLE](Data Link Escape) 프로토콜을 사용하는 패킷을 디코딩 하는 방식
