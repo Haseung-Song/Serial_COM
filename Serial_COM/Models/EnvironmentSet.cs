@@ -13,8 +13,8 @@ namespace Serial_COM.Models
         #region [프로퍼티]
 
         public event Action<byte[], DateTime> MessageReceived;
-        public event Action<byte[], DateTime> MessageTransmit;
-        private SerialPort serialPort;
+        public event Action<CPCtoCCUField, DateTime> MessageTransmit;
+        public SerialPort serialPort;
 
         #endregion
 
@@ -79,7 +79,6 @@ namespace Serial_COM.Models
                             };
                             serialPort.Open();
                             Console.WriteLine("Serial_COM opened successfully on " + portName + " port.");
-                            //MessageTransmit += OnMessageTransmit;
                             serialPort.DataReceived += OnDataReceived;
                             return true;
                         }
@@ -132,35 +131,6 @@ namespace Serial_COM.Models
             return false;
         }
 
-        private void OnMessageTransmit(CPCtoCCUField field, DateTime currentTime)
-        {
-            try
-            {
-                Parser parser = new Parser();
-                byte[] data = parser.ParseSender(field);
-                if (data != null)
-                {
-                    if (serialPort.IsOpen)
-                    {
-
-                    }
-
-                }
-
-
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.ToString());
-            }
-            finally
-            {
-                Debug.WriteLine("Message parsing completed at " + "[" + currentTime + "]");
-                Debug.WriteLine("");
-            }
-
-        }
-
         private void OnDataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             try
@@ -170,12 +140,12 @@ namespace Serial_COM.Models
                 int bytesToSave = serialPort.Read(buffer, 0, bytesToRead);
                 Parser parser = new Parser();
                 byte[] filteredData = parser.CheckDataCondition(buffer);
-                foreach (byte fd in filteredData)
-                {
-                    Console.Write($"{fd:X2} ");
-                }
-                Debug.WriteLine($"Total [{bytesToSave} bytes] read from '{serialPort.PortName}' port.");
-                Console.WriteLine("");
+                //foreach (byte fd in filteredData)
+                //{
+                //    Console.Write($"{fd:X2} ");
+                //}
+                //Debug.WriteLine($"Total [{bytesToSave} bytes] read from '{serialPort.PortName}' port.");
+                //Console.WriteLine("");
                 MessageReceived?.Invoke(buffer, DateTime.Now);
             }
             catch (Exception ex)

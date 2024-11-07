@@ -38,11 +38,12 @@ namespace Serial_COM.Models
             // Filtered Data (with DLE Escaping): 02-08-22-33-00-01-02-03-04-05-10-11-19-03 (일치)
         }
 
-        public byte[] ParseSender(CPCtoCCUField field)
+        public byte[] ParseSender(CPCtoCCUField field, ref int len)
         {
             try
             {
-                byte[] data = new byte[5];
+                int nCnt = 0;
+                byte[] data = new byte[1];
                 if (field.IsAltitudeOn)
                 {
                     data[0] |= 1 << 7;
@@ -55,6 +56,16 @@ namespace Serial_COM.Models
                 {
                     data[0] |= 1 << 5;
                 }
+                nCnt++;
+
+                data[nCnt++] = 0x00;
+                data[nCnt++] = 0x00;
+                data[nCnt++] = 0x00;
+                data[nCnt++] = 0x00;
+                data[nCnt++] = 0x00;
+                data[nCnt++] = 0x00;
+
+                len = nCnt;
                 return data;
             }
             catch (ArgumentException ex)

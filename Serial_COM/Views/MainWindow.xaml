@@ -903,7 +903,9 @@
                                 Content="ON/OFF"
                                 FontSize="11"
                                 FontFamily="Montserrat"
-                                Cursor="Hand">
+                                Cursor="Hand"
+                                IsEnabled="{Binding aaa}"
+                                Command="{Binding AltitudeOnOffCommand}">
                             <Button.Style>
                                 <Style TargetType="Button">
                                     <Setter Property="Background" Value="LightBlue"/>

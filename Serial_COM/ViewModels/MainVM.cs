@@ -45,12 +45,15 @@ namespace Serial_COM.ViewModels
         private int _altitudeKnobChange;
         private double _altitudeKnobSum;
         private double _totalAltitudeChange;
+        private bool _isAltitudeOn;
         private int _headingKnobChange;
         private double _headingKnobSum;
         private double _totalHeadingChange;
+        private bool _isHeadingOn;
         private int _speedKnobChange;
         private double _speedKnobSum;
         private double _totalSpeedChange;
+        private bool _isSpeedOn;
         private int _yawChange;
         private double _elipseYawX;
         private uint _throttleChange;
@@ -438,6 +441,24 @@ namespace Serial_COM.ViewModels
         }
 
         /// <summary>
+        /// [IsAltitudeOn]
+        /// </summary>
+        public bool IsAltitudeOn
+        {
+            get => _isAltitudeOn;
+            set
+            {
+                if (_isAltitudeOn != value)
+                {
+                    _isAltitudeOn = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
         /// [HeadingKnobChange]
         /// [Byte #3.]
         /// </summary>
@@ -495,6 +516,24 @@ namespace Serial_COM.ViewModels
                     //else
                     //    _totalHeadingChange = value / 10;
                     _totalHeadingChange = value > MaxHeadingChange ? MaxHeadingChange / 10 : value / 10;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [IsHeadingOn]
+        /// </summary>
+        public bool IsHeadingOn
+        {
+            get => _isHeadingOn;
+            set
+            {
+                if (_isHeadingOn != value)
+                {
+                    _isHeadingOn = value;
                     OnPropertyChanged();
                 }
 
@@ -568,6 +607,24 @@ namespace Serial_COM.ViewModels
         }
 
         /// <summary>
+        /// [IsSpeedOn]
+        /// </summary>
+        public bool IsSpeedOn
+        {
+            get => _isSpeedOn;
+            set
+            {
+                if (_isSpeedOn != value)
+                {
+                    _isSpeedOn = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
         /// [YawChange]
         /// [Byte #5.]
         /// </summary>
@@ -619,7 +676,7 @@ namespace Serial_COM.ViewModels
                 {
                     _throttleChange = value;
                     uint elipseThrottleY = value > 105 ? 105 : value;
-                    ElipseThrottleY = (105 - elipseThrottleY) * 1.06;
+                    ElipseThrottleY = (105 - elipseThrottleY) * 1.05;
                     OnPropertyChanged();
                 }
 
@@ -637,7 +694,7 @@ namespace Serial_COM.ViewModels
             {
                 if (_elipseThrottleY != value)
                 {
-                    _elipseThrottleY = value - 5;
+                    _elipseThrottleY = value >= 5 ? value - 5 : value;
                     OnPropertyChanged();
                 }
 
@@ -1003,6 +1060,12 @@ namespace Serial_COM.ViewModels
 
         public ICommand StartSerialCommand { get; set; }
 
+        public ICommand AltitudeOnOffCommand { get; set; }
+
+        public ICommand HeadingOnOffCommand { get; set; }
+
+        public ICommand SpeedOnOffCommand { get; set; }
+
         #endregion
 
         #region 생성자 (Initialize)
@@ -1010,6 +1073,9 @@ namespace Serial_COM.ViewModels
         public MainVM()
         {
             StartSerialCommand = new RelayCommand(StartSerial);
+            AltitudeOnOffCommand = new RelayCommand(ToggleOnOff);
+            HeadingOnOffCommand = new RelayCommand(ToggleOnOff);
+            SpeedOnOffCommand = new RelayCommand(ToggleOnOff);
             EnvironmentSet = new EnvironmentSet();
             LstBoxItem = new ObservableCollection<string>();
             LstPortNames = EnvironmentSet.GetPortNames();
@@ -1020,6 +1086,17 @@ namespace Serial_COM.ViewModels
             ElipsePitchY = 60;
             ElipseJoyStickX = 60;
             ElipseJoyStickY = 60;
+        }
+
+        private void ToggleOnOff()
+        {
+            CPCtoCCUField field = new CPCtoCCUField
+            {
+                IsAltitudeOn = !IsAltitudeOn,
+                IsHeadingOn = !IsHeadingOn,
+                IsSpeedOn = !IsSpeedOn
+            };
+            OnMessageTransmit(field, DateTime.Now);
         }
 
         #endregion
@@ -1041,6 +1118,32 @@ namespace Serial_COM.ViewModels
             else
             {
                 AddLogMessage($"Disconnected");
+            }
+
+        }
+
+        private void OnMessageTransmit(CPCtoCCUField field, DateTime currentTime)
+        {
+            try
+            {
+                Parser parser = new Parser();
+                int msgLen = 0;
+                byte[] data = parser.ParseSender(field, ref msgLen);
+                if (data != null && EnvironmentSet.serialPort.IsOpen)
+                {
+                    EnvironmentSet.serialPort.Write(data, 0, data.Length);
+                    Console.WriteLine("Data transmitted: " + BitConverter.ToString(data));
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+            }
+            finally
+            {
+                //Debug.WriteLine("Message parsing completed at " + "[" + currentTime + "]");
+                //Debug.WriteLine("");
             }
 
         }
@@ -1097,8 +1200,8 @@ namespace Serial_COM.ViewModels
             }
             finally
             {
-                Debug.WriteLine("Message parsing completed at " + "[" + currentTime + "]");
-                Debug.WriteLine("");
+                //Debug.WriteLine("Message parsing completed at " + "[" + currentTime + "]");
+                //Debug.WriteLine("");
             }
 
         }
