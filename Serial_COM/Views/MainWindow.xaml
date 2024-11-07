@@ -791,10 +791,10 @@
                             BorderThickness="2"
                             Background="PaleVioletRed"
                             Margin="2">
-                        <Grid VerticalAlignment="Center" Margin="3">
+                        <Grid Margin="3">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
-                                <ColumnDefinition/>
+                                <ColumnDefinition Width="65"/>
                                 <ColumnDefinition Width="30"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0"
@@ -802,7 +802,8 @@
                                        FontWeight="Normal"
                                        Foreground="White"
                                        FontSize="18"
-                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Left"
+                                       Margin="10,0,0,0"
                                        TextAlignment="Center"/>
                             <TextBlock Grid.Column="1"
                                        Text="{Binding TotalAltitudeChange, Mode=TwoWay}"
@@ -826,10 +827,10 @@
                             BorderThickness="2"
                             Background="PaleVioletRed"
                             Margin="2">
-                        <Grid VerticalAlignment="Center" Margin="3">
+                        <Grid HorizontalAlignment="Stretch" Margin="3">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
-                                <ColumnDefinition/>
+                                <ColumnDefinition Width="70"/>
                                 <ColumnDefinition Width="30"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0"
@@ -837,7 +838,8 @@
                                        FontWeight="Normal"
                                        Foreground="White"
                                        FontSize="18"
-                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Left"
+                                       Margin="10,0,0,0"
                                        TextAlignment="Center"/>
                             <TextBlock Grid.Column="1"
                                        Text="{Binding TotalHeadingChange, StringFormat='{}{0:F1}', Mode=TwoWay}"
@@ -861,10 +863,10 @@
                             BorderThickness="2"
                             Background="PaleVioletRed"
                             Margin="2">
-                        <Grid VerticalAlignment="Center" Margin="3">
+                        <Grid HorizontalAlignment="Stretch" Margin="3">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
-                                <ColumnDefinition/>
+                                <ColumnDefinition Width="70"/>
                                 <ColumnDefinition Width="30"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0"
@@ -872,6 +874,8 @@
                                        FontWeight="Normal"
                                        Foreground="White"
                                        FontSize="18"
+                                       HorizontalAlignment="Left"
+                                       Margin="10,0,0,0"
                                        TextAlignment="Center"/>
                             <TextBlock Grid.Column="1"
                                        Text="{Binding TotalSpeedChange, StringFormat='{}{0:F1}',Mode=TwoWay }"
