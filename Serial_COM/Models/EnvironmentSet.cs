@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO.Ports;
 using System.Linq;
 using System.Windows;
+using static Serial_COM.Models.Parser;
 
 namespace Serial_COM.Models
 {
@@ -12,7 +13,7 @@ namespace Serial_COM.Models
         #region [프로퍼티]
 
         public event Action<byte[], DateTime> MessageReceived;
-
+        public event Action<byte[], DateTime> MessageTransmit;
         private SerialPort serialPort;
 
         #endregion
@@ -78,6 +79,7 @@ namespace Serial_COM.Models
                             };
                             serialPort.Open();
                             Console.WriteLine("Serial_COM opened successfully on " + portName + " port.");
+                            //MessageTransmit += OnMessageTransmit;
                             serialPort.DataReceived += OnDataReceived;
                             return true;
                         }
@@ -128,6 +130,35 @@ namespace Serial_COM.Models
 
             }
             return false;
+        }
+
+        private void OnMessageTransmit(CPCtoCCUField field, DateTime currentTime)
+        {
+            try
+            {
+                Parser parser = new Parser();
+                byte[] data = parser.ParseSender(field);
+                if (data != null)
+                {
+                    if (serialPort.IsOpen)
+                    {
+
+                    }
+
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.ToString());
+            }
+            finally
+            {
+                Debug.WriteLine("Message parsing completed at " + "[" + currentTime + "]");
+                Debug.WriteLine("");
+            }
+
         }
 
         private void OnDataReceived(object sender, SerialDataReceivedEventArgs e)

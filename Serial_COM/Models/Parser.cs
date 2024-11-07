@@ -38,7 +38,39 @@ namespace Serial_COM.Models
             // Filtered Data (with DLE Escaping): 02-08-22-33-00-01-02-03-04-05-10-11-19-03 (일치)
         }
 
-        public CCUtoCPCField Parse(byte[] data)
+        public byte[] ParseSender(CPCtoCCUField field)
+        {
+            try
+            {
+                byte[] data = new byte[5];
+                if (field.IsAltitudeOn)
+                {
+                    data[0] |= 1 << 7;
+                }
+                if (field.IsHeadingOn)
+                {
+                    data[0] |= 1 << 6;
+                }
+                if (field.IsSpeedOn)
+                {
+                    data[0] |= 1 << 5;
+                }
+                return data;
+            }
+            catch (ArgumentException ex)
+            {
+                Debug.WriteLine($"ArgumentException: {ex.Message}");
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"General Exception: {ex.Message}");
+                return null;
+            }
+
+        }
+
+        public CCUtoCPCField ParseReceiver(byte[] data)
         {
             // filteredData = [CheckDataCondition] 함수에서 [DLE]를 제외한 실제 메시지를 포함!
             // msgData = [filteredData]에서 [STX, Length, Destination, Source] 4바이트를 제외!
@@ -188,12 +220,14 @@ namespace Serial_COM.Models
             catch (ArgumentException ex)
             {
                 Debug.WriteLine($"ArgumentException: {ex.Message}");
+                return null;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"General Exception: {ex.Message}");
+                return null;
             }
-            return null;
+
         }
 
         /// <summary>
@@ -267,6 +301,15 @@ namespace Serial_COM.Models
                 checkSum ^= msg; // [RAW] 데이터만 XOR 연산
             }
             return checkSum;
+        }
+
+        public class CPCtoCCUField
+        {
+            public bool IsAltitudeOn { get; set; }
+
+            public bool IsHeadingOn { get; set; }
+
+            public bool IsSpeedOn { get; set; }
         }
 
         public class CCUtoCPCField

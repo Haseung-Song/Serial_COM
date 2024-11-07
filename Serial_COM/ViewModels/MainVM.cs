@@ -598,7 +598,7 @@ namespace Serial_COM.ViewModels
             {
                 if (_elipseYawX != value)
                 {
-                    _elipseYawX = value;
+                    _elipseYawX = value >= 5 && value < 80 ? value - 5 : value;
                     OnPropertyChanged();
                 }
 
@@ -618,8 +618,8 @@ namespace Serial_COM.ViewModels
                 if (_throttleChange != value)
                 {
                     _throttleChange = value;
-                    uint elipseThrottleY = value > 100 ? 100 : value;
-                    ElipseThrottleY = (100 - elipseThrottleY) * 1.06;
+                    uint elipseThrottleY = value > 105 ? 105 : value;
+                    ElipseThrottleY = (105 - elipseThrottleY) * 1.06;
                     OnPropertyChanged();
                 }
 
@@ -637,7 +637,7 @@ namespace Serial_COM.ViewModels
             {
                 if (_elipseThrottleY != value)
                 {
-                    _elipseThrottleY = value;
+                    _elipseThrottleY = value - 5;
                     OnPropertyChanged();
                 }
 
@@ -677,7 +677,7 @@ namespace Serial_COM.ViewModels
             {
                 if (_elipseRollX != value)
                 {
-                    _elipseRollX = value;
+                    _elipseRollX = value >= 5 && value < 80 ? value - 5 : value;
                     OnPropertyChanged();
                 }
 
@@ -716,7 +716,7 @@ namespace Serial_COM.ViewModels
             {
                 if (_elipsePitchY != value)
                 {
-                    _elipsePitchY = value;
+                    _elipsePitchY = value >= 5 && value < 80 ? value - 5 : value;
                     OnPropertyChanged();
                 }
 
@@ -945,7 +945,7 @@ namespace Serial_COM.ViewModels
             {
                 if (_elipseJoyStickX != value)
                 {
-                    _elipseJoyStickX = value;
+                    _elipseJoyStickX = value >= 5 && value < 80 ? value - 5 : value;
                     OnPropertyChanged();
                 }
 
@@ -984,7 +984,7 @@ namespace Serial_COM.ViewModels
             {
                 if (_elipseJoyStickY != value)
                 {
-                    _elipseJoyStickY = value;
+                    _elipseJoyStickY = value >= 5 && value < 80 ? value - 5 : value;
                     OnPropertyChanged();
                 }
 
@@ -1014,12 +1014,12 @@ namespace Serial_COM.ViewModels
             LstBoxItem = new ObservableCollection<string>();
             LstPortNames = EnvironmentSet.GetPortNames();
             LstBaudRates = EnvironmentSet.GetBaudRates();
-            ElipseYawX = 55;
-            ElipseThrottleY = 55;
-            ElipseRollX = 55;
-            ElipsePitchY = 55;
-            ElipseJoyStickX = 55;
-            ElipseJoyStickY = 55;
+            ElipseYawX = 60;
+            ElipseThrottleY = 60;
+            ElipseRollX = 60;
+            ElipsePitchY = 60;
+            ElipseJoyStickX = 60;
+            ElipseJoyStickY = 60;
         }
 
         #endregion
@@ -1051,7 +1051,7 @@ namespace Serial_COM.ViewModels
             {
                 Parser parser = new Parser();
                 parser.RunExample();
-                CCUtoCPCField parserData = parser.Parse(messageListen);
+                CCUtoCPCField parserData = parser.ParseReceiver(messageListen);
                 if (parserData != null)
                 {
                     IsPowerSwitch = parserData.PowerSwitch == 1;
