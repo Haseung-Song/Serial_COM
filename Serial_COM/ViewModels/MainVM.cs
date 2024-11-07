@@ -18,7 +18,6 @@ namespace Serial_COM.ViewModels
         private EnvironmentSet _environmentSet;
         private ObservableCollection<string> _lstBoxItem;
         private bool _isPortConnected;
-
         private List<string> _portNames;
         private List<int> _baudRates;
         private string _selectingPort;
@@ -34,7 +33,6 @@ namespace Serial_COM.ViewModels
         private bool _isAltitudeKnob;
         private bool _isHeadingKnob;
         private bool _isSpeedKnob;
-
         private bool _isDrop;
         private bool _isOption1;
         private bool _isCapture;
@@ -54,14 +52,19 @@ namespace Serial_COM.ViewModels
         private double _speedKnobSum;
         private double _totalSpeedChange;
         private int _yawChange;
+        private double _elipseYawX;
         private uint _throttleChange;
+        private double _elipseThrottleY;
         private int _rollChange;
+        private double _elipseRollX;
         private int _pitchChange;
-
+        private double _elipsePitchY;
         private int _zoomChange;
         private int _focusChange;
         private int _joyStickXChange;
+        private double _elipseJoyStickX;
         private int _joyStickYChange;
+        private double _elipseJoyStickY;
 
         #endregion
 
@@ -576,6 +579,26 @@ namespace Serial_COM.ViewModels
                 if (_yawChange != value)
                 {
                     _yawChange = value;
+                    int elipseYawX = value > 80 ? 80 : value;
+                    ElipseYawX = 60 + (elipseYawX * 0.6);
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [ElipseYawX]
+        /// </summary>
+        public double ElipseYawX
+        {
+            get => _elipseYawX;
+            set
+            {
+                if (_elipseYawX != value)
+                {
+                    _elipseYawX = value;
                     OnPropertyChanged();
                 }
 
@@ -595,12 +618,33 @@ namespace Serial_COM.ViewModels
                 if (_throttleChange != value)
                 {
                     _throttleChange = value;
+                    uint elipseThrottleY = value > 100 ? 100 : value;
+                    ElipseThrottleY = (100 - elipseThrottleY) * 1.06;
                     OnPropertyChanged();
                 }
 
             }
 
         }
+
+        /// <summary>
+        /// [ElipseThrottleY]
+        /// </summary>
+        public double ElipseThrottleY
+        {
+            get => _elipseThrottleY;
+            set
+            {
+                if (_elipseThrottleY != value)
+                {
+                    _elipseThrottleY = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
 
         /// <summary>
         /// [RollChange]
@@ -614,6 +658,26 @@ namespace Serial_COM.ViewModels
                 if (_rollChange != value)
                 {
                     _rollChange = value;
+                    int elipseRollX = value > 80 ? 80 : value;
+                    ElipseRollX = 60 + (elipseRollX * 0.6);
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [ElipseRollX]
+        /// </summary>
+        public double ElipseRollX
+        {
+            get => _elipseRollX;
+            set
+            {
+                if (_elipseRollX != value)
+                {
+                    _elipseRollX = value;
                     OnPropertyChanged();
                 }
 
@@ -633,6 +697,26 @@ namespace Serial_COM.ViewModels
                 if (_pitchChange != value)
                 {
                     _pitchChange = value;
+                    int elipsePitchY = value > 80 ? 80 : value;
+                    ElipsePitchY = 60 + (elipsePitchY * 0.6);
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [ElipsePitchY]
+        /// </summary>
+        public double ElipsePitchY
+        {
+            get => _elipsePitchY;
+            set
+            {
+                if (_elipsePitchY != value)
+                {
+                    _elipsePitchY = value;
                     OnPropertyChanged();
                 }
 
@@ -842,6 +926,26 @@ namespace Serial_COM.ViewModels
                 if (_joyStickXChange != value)
                 {
                     _joyStickXChange = value;
+                    int elipseJoyStickX = value > 80 ? 80 : value;
+                    ElipseJoyStickX = 60 + (elipseJoyStickX * 0.6);
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [ElipseJoyStickX]
+        /// </summary>
+        public double ElipseJoyStickX
+        {
+            get => _elipseJoyStickX;
+            set
+            {
+                if (_elipseJoyStickX != value)
+                {
+                    _elipseJoyStickX = value;
                     OnPropertyChanged();
                 }
 
@@ -861,6 +965,26 @@ namespace Serial_COM.ViewModels
                 if (_joyStickYChange != value)
                 {
                     _joyStickYChange = value;
+                    int elipseJoyStickY = value > 80 ? 80 : value;
+                    ElipseJoyStickY = 60 + (elipseJoyStickY * 0.6);
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [ElipseJoyStickY]
+        /// </summary>
+        public double ElipseJoyStickY
+        {
+            get => _elipseJoyStickY;
+            set
+            {
+                if (_elipseJoyStickY != value)
+                {
+                    _elipseJoyStickY = value;
                     OnPropertyChanged();
                 }
 
@@ -890,6 +1014,12 @@ namespace Serial_COM.ViewModels
             LstBoxItem = new ObservableCollection<string>();
             LstPortNames = EnvironmentSet.GetPortNames();
             LstBaudRates = EnvironmentSet.GetBaudRates();
+            ElipseYawX = 55;
+            ElipseThrottleY = 55;
+            ElipseRollX = 55;
+            ElipsePitchY = 55;
+            ElipseJoyStickX = 55;
+            ElipseJoyStickY = 55;
         }
 
         #endregion

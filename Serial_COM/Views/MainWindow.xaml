@@ -363,8 +363,8 @@
 
                         <Ellipse Height="10"
                                  Width="10"
-                                 Canvas.Left="55"
-                                 Canvas.Top="55"
+                                 Canvas.Left="{Binding ElipseYawX, Mode=OneWay}"
+                                 Canvas.Top="{Binding ElipseThrottleY, Mode=OneWay}"
                                  Fill="White"
                                  Stroke="Black"
                                  StrokeThickness="2"/>
@@ -404,8 +404,8 @@
 
                         <Ellipse Height="10"
                                  Width="10"
-                                 Canvas.Left="55"
-                                 Canvas.Top="55"
+                                 Canvas.Left="{Binding ElipseRollX, Mode=OneWay}"
+                                 Canvas.Top="{Binding ElipsePitchY, Mode=OneWay}"
                                  Fill="White"
                                  Stroke="Black"
                                  StrokeThickness="2"/>
@@ -445,8 +445,8 @@
 
                         <Ellipse Height="10"
                                  Width="10"
-                                 Canvas.Left="55"
-                                 Canvas.Top="55"
+                                 Canvas.Left="{Binding ElipseJoyStickX, Mode=OneWay}"
+                                 Canvas.Top="{Binding ElipseJoyStickY, Mode=OneWay}"
                                  Fill="White"
                                  Stroke="Black"
                                  StrokeThickness="2"/>
