@@ -173,7 +173,7 @@ namespace Serial_COM.ViewModels
         /// </summary>
         public string SelectedPort
         {
-            get => _selectingPort;
+            get => _selectingPort = "COM11";
             set
             {
                 if (_selectingPort != value)
@@ -191,7 +191,7 @@ namespace Serial_COM.ViewModels
         /// </summary>
         public int SelectedBaudRate
         {
-            get => _selectedBaudRate;
+            get => _selectedBaudRate = 115200;
             set
             {
                 if (_selectedBaudRate != value)
@@ -452,6 +452,7 @@ namespace Serial_COM.ViewModels
                 {
                     _isAltitudeOn = value;
                     OnPropertyChanged();
+                    TransmitMessage();
                 }
 
             }
@@ -535,6 +536,7 @@ namespace Serial_COM.ViewModels
                 {
                     _isHeadingOn = value;
                     OnPropertyChanged();
+                    TransmitMessage();
                 }
 
             }
@@ -618,6 +620,7 @@ namespace Serial_COM.ViewModels
                 {
                     _isSpeedOn = value;
                     OnPropertyChanged();
+                    TransmitMessage();
                 }
 
             }
@@ -1072,9 +1075,9 @@ namespace Serial_COM.ViewModels
         public MainVM()
         {
             StartSerialCommand = new RelayCommand(StartSerial);
-            AltitudeOnOffCommand = new RelayCommand(ToggleOnOff);
-            HeadingOnOffCommand = new RelayCommand(ToggleOnOff);
-            SpeedOnOffCommand = new RelayCommand(ToggleOnOff);
+            AltitudeOnOffCommand = new RelayCommand(AltitudeToggle);
+            HeadingOnOffCommand = new RelayCommand(HeadingToggle);
+            SpeedOnOffCommand = new RelayCommand(SpeedToggle);
             EnvironmentSet = new EnvironmentSet();
             LstBoxItem = new ObservableCollection<string>();
             LstPortNames = EnvironmentSet.GetPortNames();
@@ -1087,13 +1090,31 @@ namespace Serial_COM.ViewModels
             ElipseJoyStickY = 60;
         }
 
-        private void ToggleOnOff()
+        private void SpeedToggle()
+        {
+            IsSpeedOn = !IsSpeedOn;
+        }
+
+        private void HeadingToggle()
+        {
+            IsHeadingOn = !IsHeadingOn;
+        }
+
+        private void AltitudeToggle()
+        {
+            IsAltitudeOn = !IsAltitudeOn;
+        }
+
+        private void TransmitMessage()
         {
             CPCtoCCUField field = new CPCtoCCUField
             {
-                IsAltitudeOn = !IsAltitudeOn,
-                IsHeadingOn = !IsHeadingOn,
-                IsSpeedOn = !IsSpeedOn
+                IsAltitudeOn = IsAltitudeOn,
+                IsHeadingOn = IsHeadingOn,
+                IsSpeedOn = IsSpeedOn,
+                AltitudeTotalSum = TotalAltitudeChange,
+                HeadingTotalSum = TotalHeadingChange * 10,
+                SpeedTotalSum = TotalSpeedChange * 10
             };
             OnMessageTransmit(field, DateTime.Now);
         }
@@ -1128,10 +1149,11 @@ namespace Serial_COM.ViewModels
                 Parser parser = new Parser();
                 int msgLen = 0;
                 byte[] data = parser.ParseSender(field, ref msgLen);
-                if (data != null && EnvironmentSet.serialPort.IsOpen)
+                byte[] encodingData = parser.CheckDataCondition2(data);
+                if (encodingData != null)
                 {
-                    EnvironmentSet.serialPort.Write(data, 0, data.Length);
-                    Console.WriteLine("Data transmitted: " + BitConverter.ToString(data));
+                    EnvironmentSet.serialPort.Write(encodingData, 0, encodingData.Length);
+                    Console.WriteLine("Data transmitted: " + BitConverter.ToString(encodingData));
                 }
 
             }
@@ -1168,12 +1190,15 @@ namespace Serial_COM.ViewModels
                     AltitudeKnobChange = parserData.AltitudeKnobChange;
                     AltitudeKnobSum += AltitudeKnobChange;
                     TotalAltitudeChange = AltitudeKnobSum;
+                    TransmitMessage();
                     HeadingKnobChange = parserData.HeadingKnobChange;
                     HeadingKnobSum += HeadingKnobChange;
                     TotalHeadingChange = HeadingKnobSum;
+                    TransmitMessage();
                     SpeedKnobChange = parserData.SpeedKnobChange;
                     SpeedKnobSum += SpeedKnobChange;
                     TotalSpeedChange = SpeedKnobSum;
+                    TransmitMessage();
                     YawChange = parserData.YawChange;
                     ThrottleChange = parserData.ThrottleChange;
                     RollChange = parserData.RollChange;

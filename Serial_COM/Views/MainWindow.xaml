@@ -32,7 +32,7 @@
             </Setter>
         </Style>
     </Window.Resources>
-    
+
     <Grid Margin="5,12,5,2">
         <Grid.RowDefinitions>
             <RowDefinition Height="2.8*"/>
@@ -58,7 +58,7 @@
                     <RowDefinition Height="0.25*"/>
                     <RowDefinition Height="0.2*"/>
                 </Grid.RowDefinitions>
-                
+
                 <!-- Engine Controls 1 (Engine Start SW)-->
                 <Border Grid.Row="0"
                         Grid.Column="0"
@@ -899,25 +899,28 @@
                                 Orientation="Vertical"
                                 VerticalAlignment="Center"
                                 Margin="5,0,-5,0">
-                        <Button Height="35"
-                                Content="ON/OFF"
-                                FontSize="11"
-                                FontFamily="Montserrat"
-                                Cursor="Hand"
-                                IsEnabled="{Binding aaa}"
-                                Command="{Binding AltitudeOnOffCommand}">
-                            <Button.Style>
-                                <Style TargetType="Button">
+                        <ToggleButton Height="35"
+                                      FontSize="11"
+                                      FontFamily="Montserrat"
+                                      Cursor="Hand"
+                                      Command="{Binding AltitudeOnOffCommand}">
+                            <ToggleButton.Style>
+                                <Style TargetType="ToggleButton">
                                     <Setter Property="Background" Value="LightBlue"/>
+                                    <Setter Property="Content" Value="OFF"/>
                                     <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="true">
+                                        <Trigger Property="IsChecked" Value="True">
+                                            <Setter Property="Background" Value="AliceBlue"/>
+                                            <Setter Property="Content" Value="ON"/>
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="True">
                                             <Setter Property="Background" Value="AliceBlue"/>
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
-                            </Button.Style>
-                            <Button.Template>
-                                <ControlTemplate TargetType="Button">
+                            </ToggleButton.Style>
+                            <ToggleButton.Template>
+                                <ControlTemplate TargetType="ToggleButton">
                                     <Border BorderThickness="1"
                                             BorderBrush="DarkSlateBlue"
                                             CornerRadius="5"
@@ -925,9 +928,10 @@
                                         <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                     </Border>
                                 </ControlTemplate>
-                            </Button.Template>
-                        </Button>
+                            </ToggleButton.Template>
+                        </ToggleButton>
                     </StackPanel>
+
 
                     <!--  ON/OFF (버튼 2)-->
                     <StackPanel Grid.Column="1"
@@ -935,23 +939,28 @@
                                 Orientation="Vertical"
                                 VerticalAlignment="Center"
                                 Margin="5,0,-5,0">
-                        <Button Height="35"
-                                Content="ON/OFF"
-                                FontSize="11"
-                                FontFamily="Montserrat"
-                                Cursor="Hand">
-                            <Button.Style>
-                                <Style TargetType="Button">
+                        <ToggleButton Height="35"
+                                      FontSize="11"
+                                      FontFamily="Montserrat"
+                                      Cursor="Hand"
+                                      Command="{Binding HeadingOnOffCommand}">
+                            <ToggleButton.Style>
+                                <Style TargetType="ToggleButton">
                                     <Setter Property="Background" Value="LightBlue"/>
+                                    <Setter Property="Content" Value="OFF"/>
                                     <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="true">
+                                        <Trigger Property="IsChecked" Value="True">
+                                            <Setter Property="Background" Value="AliceBlue"/>
+                                            <Setter Property="Content" Value="ON"/>
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="True">
                                             <Setter Property="Background" Value="AliceBlue"/>
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
-                            </Button.Style>
-                            <Button.Template>
-                                <ControlTemplate TargetType="Button">
+                            </ToggleButton.Style>
+                            <ToggleButton.Template>
+                                <ControlTemplate TargetType="ToggleButton">
                                     <Border BorderThickness="1"
                                             BorderBrush="DarkSlateBlue"
                                             CornerRadius="5"
@@ -959,8 +968,8 @@
                                         <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                     </Border>
                                 </ControlTemplate>
-                            </Button.Template>
-                        </Button>
+                            </ToggleButton.Template>
+                        </ToggleButton>
                     </StackPanel>
 
                     <!--  ON/OFF (버튼 3)-->
@@ -969,23 +978,28 @@
                                 Orientation="Vertical"
                                 VerticalAlignment="Center"
                                 Margin="5,0,-5,0">
-                        <Button Height="35"
-                                Content="ON/OFF"
-                                FontSize="11"
-                                FontFamily="Montserrat"
-                                Cursor="Hand">
-                            <Button.Style>
-                                <Style TargetType="Button">
+                        <ToggleButton Height="35"
+                                      FontSize="11"
+                                      FontFamily="Montserrat"
+                                      Cursor="Hand"
+                                      Command="{Binding SpeedOnOffCommand}">
+                            <ToggleButton.Style>
+                                <Style TargetType="ToggleButton">
                                     <Setter Property="Background" Value="LightBlue"/>
+                                    <Setter Property="Content" Value="OFF"/>
                                     <Style.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="true">
+                                        <Trigger Property="IsChecked" Value="True">
+                                            <Setter Property="Background" Value="AliceBlue"/>
+                                            <Setter Property="Content" Value="ON"/>
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="True">
                                             <Setter Property="Background" Value="AliceBlue"/>
                                         </Trigger>
                                     </Style.Triggers>
                                 </Style>
-                            </Button.Style>
-                            <Button.Template>
-                                <ControlTemplate TargetType="Button">
+                            </ToggleButton.Style>
+                            <ToggleButton.Template>
+                                <ControlTemplate TargetType="ToggleButton">
                                     <Border BorderThickness="1"
                                             BorderBrush="DarkSlateBlue"
                                             CornerRadius="5"
@@ -993,8 +1007,8 @@
                                         <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
                                     </Border>
                                 </ControlTemplate>
-                            </Button.Template>
-                        </Button>
+                            </ToggleButton.Template>
+                        </ToggleButton>
                     </StackPanel>
                 </Grid>
             </Border>

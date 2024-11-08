@@ -43,29 +43,64 @@ namespace Serial_COM.Models
             try
             {
                 int nCnt = 0;
-                byte[] data = new byte[1];
+                byte[] data = new byte[8];
+
+                // 상태 플래그 설정
                 if (field.IsAltitudeOn)
                 {
-                    data[0] |= 1 << 7;
+                    data[nCnt] |= 1 << 7;
                 }
                 if (field.IsHeadingOn)
                 {
-                    data[0] |= 1 << 6;
+                    data[nCnt] |= 1 << 6;
                 }
                 if (field.IsSpeedOn)
                 {
-                    data[0] |= 1 << 5;
+                    data[nCnt] |= 1 << 5;
                 }
-                nCnt++;
 
+                nCnt++; // 다음 바이트로 진행
+
+                // 더미 데이터 추가 (필요한 경우 실제 데이터를 추가할 수 있음)
                 data[nCnt++] = 0x00;
-                data[nCnt++] = 0x00;
-                data[nCnt++] = 0x00;
-                data[nCnt++] = 0x00;
-                data[nCnt++] = 0x00;
-                data[nCnt++] = 0x00;
+                //data[nCnt++] = 0x00;
+                //data[nCnt++] = 0x00;
+                //data[nCnt++] = 0x00;
+                //data[nCnt++] = 0x00;
+                //data[nCnt++] = 0x00;
+                //data[nCnt++] = 0x00;
+
+                //byte altitude = field.Altitude;
+                //byte heading = field.Heading;
+                //byte speed = field.Speed;
+
+                //data[nCnt] |= (byte)(altitude << 7);
+                //data[nCnt] |= (byte)(heading << 5);
+                //data[nCnt] |= (byte)(speed << 3);
+
+                // 3. 고도(Altitude) 값
+                ushort altitudeValue = (ushort)field.AltitudeTotalSum;
+                // 상위 바이트
+                data[nCnt++] = (byte)((altitudeValue >> 8) & 0xFF);
+                // 하위 바이트
+                data[nCnt++] = (byte)(altitudeValue & 0xFF);
+
+                // 4. 헤딩(Heading)  값
+                ushort headingValue = (ushort)field.HeadingTotalSum;
+                // 상위 바이트
+                data[nCnt++] = (byte)((headingValue >> 8) & 0xFF);
+                // 하위 바이트
+                data[nCnt++] = (byte)(headingValue & 0xFF);
+
+                // 5. 속도(Speed)    값
+                ushort speedValue = (ushort)field.SpeedTotalSum;
+                // 상위 바이트
+                data[nCnt++] = (byte)((speedValue >> 8) & 0xFF);
+                // 하위 바이트
+                data[nCnt++] = (byte)(speedValue & 0xFF);
 
                 len = nCnt;
+
                 return data;
             }
             catch (ArgumentException ex)
@@ -128,7 +163,7 @@ namespace Serial_COM.Models
                         SpeedKnob = (byte)stream.GetBits(1, 1, 0, 1),
 
                         // [Byte #2.]
-                        AltitudeKnobChange = (sbyte)stream.Get(2, 1),
+                        AltitudeKnobChange = (sbyte)stream.GetByte(2),
 
                         // [Byte #3.]
                         HeadingKnobChange = (sbyte)stream.GetByte(3),
@@ -192,7 +227,7 @@ namespace Serial_COM.Models
                     //Console.Write(field.SpeedKnob + " ");
 
                     // [Byte #2.]
-                    Console.Write(field.AltitudeKnobChange);
+                    //Console.Write(field.AltitudeKnobChange);
                     // [Byte #3.]
                     //Console.Write(field.HeadingKnobChange);
                     //// [Byte #4.]
@@ -243,7 +278,69 @@ namespace Serial_COM.Models
 
         public byte[] CheckDataCondition2(byte[] check)
         {
-            return check;
+            List<byte> encodingData = new List<byte>();
+            bool isCtrlText;
+            byte checkSum = 0x00;
+            byte dstID = 0xC1;
+            byte srcID = 0xA5;
+            // 1. [STX](0x02) 추가
+            encodingData.Add(STX);
+            // 2. [STX](0x02) 이후
+            byte msgLen = (byte)check.Length;
+            isCtrlText = CheckCtrlText(msgLen);
+            if (isCtrlText)
+            {
+                encodingData.Add(DLE);
+            }
+            encodingData.Add(msgLen);
+            checkSum ^= msgLen;
+            // 3. [DstID] 추가 (DLE 처리 포함)
+            isCtrlText = CheckCtrlText(dstID);
+            if (isCtrlText)
+            {
+                encodingData.Add(DLE);
+            }
+            encodingData.Add(dstID);
+            checkSum ^= dstID;
+            // 4. [SrcID] 추가 (DLE 처리 포함)
+            isCtrlText = CheckCtrlText(srcID);
+            if (isCtrlText)
+            {
+                encodingData.Add(DLE);
+            }
+            encodingData.Add(srcID);
+            checkSum ^= srcID;
+            //5. [MsgData] 추가(DLE 처리 포함)
+            foreach (byte msgData in check)
+            {
+                isCtrlText = CheckCtrlText(msgData);
+                if (isCtrlText)
+                {
+                    encodingData.Add(DLE);
+                }
+                encodingData.Add(msgData);
+                checkSum ^= msgData;
+            }
+            // 6. [Checksum] 추가 (DLE 처리 포함)
+            isCtrlText = CheckCtrlText(checkSum);
+            if (isCtrlText)
+            {
+                encodingData.Add(DLE);
+            }
+            encodingData.Add(checkSum);
+            // 7. [ETX](0x03) 추가
+            encodingData.Add(ETX);
+            return encodingData.ToArray();
+        }
+
+        /// <summary>
+        /// [제어문자 여부 확인]
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        private bool CheckCtrlText(byte data)
+        {
+            return data == STX || data == ETX || data == DLE;
         }
 
         /// <summary>
@@ -263,10 +360,10 @@ namespace Serial_COM.Models
         /// <returns></returns>
         public byte[] CheckDataCondition(byte[] check)
         {
-            List<byte> filteredData = new List<byte>();
+            List<byte> decodingData = new List<byte>();
             bool isCtrlText = false; // [DLE] Flag 설정
             // 1. [STX](0x02) 추가
-            filteredData.Add(STX);
+            decodingData.Add(STX);
             // 2. [STX](0x02) 이후
             // [제어 문자] 및 [일반 메시지] 구분 코드!
             for (int i = 1; i < check.Length - 1; i++)
@@ -284,24 +381,24 @@ namespace Serial_COM.Models
                 // [일반 메시지] 추가 && [DLE] Flag 값 = false
                 if (isCtrlText)
                 {
-                    filteredData.Add(currentByte);
+                    decodingData.Add(currentByte);
                     isCtrlText = false;
                 }
                 // [DLE] Flag 설정을 하지 않을 시,
                 // [일반 메시지] 간주 && => [일반 메시지] 추가
                 else
                 {
-                    filteredData.Add(currentByte);
+                    decodingData.Add(currentByte);
                 }
 
             }
             // 3. [Length] ~ [Message] 이후, [Checksum 단계]: [XOR] 반복 계산!
-            byte checkSum = CalculateChecksum(filteredData.Skip(1).ToArray());
+            byte checkSum = CalculateChecksum(decodingData.Skip(1).ToArray());
             // 4. [Checksum]  추가
-            filteredData.Add(checkSum);
+            decodingData.Add(checkSum);
             // 5. [ETX](0x03) 추가
-            filteredData.Add(ETX);
-            return filteredData.ToArray();
+            decodingData.Add(ETX);
+            return decodingData.ToArray();
         }
 
         /// <summary>
@@ -326,6 +423,18 @@ namespace Serial_COM.Models
             public bool IsHeadingOn { get; set; }
 
             public bool IsSpeedOn { get; set; }
+
+            public byte Altitude { get; set; }
+
+            public byte Heading { get; set; }
+
+            public byte Speed { get; set; }
+
+            public double AltitudeTotalSum { get; set; }
+
+            public double HeadingTotalSum { get; set; }
+
+            public double SpeedTotalSum { get; set; }
         }
 
         public class CCUtoCPCField

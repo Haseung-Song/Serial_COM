@@ -139,8 +139,8 @@ namespace Serial_COM.Models
                 byte[] buffer = new byte[bytesToRead];
                 int bytesToSave = serialPort.Read(buffer, 0, bytesToRead);
                 Parser parser = new Parser();
-                byte[] filteredData = parser.CheckDataCondition(buffer);
-                //foreach (byte fd in filteredData)
+                byte[] decodingData = parser.CheckDataCondition(buffer);
+                //foreach (byte fd in decodingData)
                 //{
                 //    Console.Write($"{fd:X2} ");
                 //}
