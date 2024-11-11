@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO.Ports;
 using System.Linq;
 using System.Windows;
-using static Serial_COM.Models.Parser;
 
 namespace Serial_COM.Models
 {
@@ -13,7 +12,7 @@ namespace Serial_COM.Models
         #region [프로퍼티]
 
         public event Action<byte[], DateTime> MessageReceived;
-        public event Action<CPCtoCCUField, DateTime> MessageTransmit;
+
         public SerialPort serialPort;
 
         #endregion
@@ -138,13 +137,13 @@ namespace Serial_COM.Models
                 int bytesToRead = serialPort.BytesToRead;
                 byte[] buffer = new byte[bytesToRead];
                 int bytesToSave = serialPort.Read(buffer, 0, bytesToRead);
-                Parser parser = new Parser();
-                byte[] decodingData = parser.CheckDataCondition(buffer);
-                //foreach (byte fd in decodingData)
+                //Parser parser = new Parser();
+                //byte[] decodingData = parser.CheckDecodedDataCondition(buffer);
+                //foreach (byte dd in decodingData)
                 //{
-                //    Console.Write($"{fd:X2} ");
+                //    Console.Write($"{dd:x2} ");
                 //}
-                //Debug.WriteLine($"Total [{bytesToSave} bytes] read from '{serialPort.PortName}' port.");
+                //Debug.WriteLine($"total [{bytesToSave} bytes] read from '{serialPort.PortName}' port.");
                 //Console.WriteLine("");
                 MessageReceived?.Invoke(buffer, DateTime.Now);
             }

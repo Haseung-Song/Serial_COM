@@ -24,7 +24,6 @@ namespace Serial_COM.ViewModels
         private int _selectedBaudRate;
 
         private bool _isPowerSwitch;
-
         private bool _isEngineStart;
         private bool _isEngineRestart;
         private bool _isEngineKill;
@@ -404,10 +403,6 @@ namespace Serial_COM.ViewModels
             {
                 if (_altitudeKnobSum != value)
                 {
-                    //if (value < 0)
-                    //    _altitudeKnobSum = 0;
-                    //else
-                    //    _altitudeKnobSum = value;
                     _altitudeKnobSum = value < 0 ? 0 : value;
                     OnPropertyChanged();
                 }
@@ -428,10 +423,6 @@ namespace Serial_COM.ViewModels
             {
                 if (_totalAltitudeChange != value)
                 {
-                    //if (value > MaxAltitudeChange)
-                    //    _totalAltitudeChange = MaxAltitudeChange;
-                    //else
-                    //    _totalAltitudeChange = value;
                     _totalAltitudeChange = value > MaxAltitudeChange ? MaxAltitudeChange : value;
                     OnPropertyChanged();
                 }
@@ -488,10 +479,6 @@ namespace Serial_COM.ViewModels
             {
                 if (_headingKnobSum != value)
                 {
-                    //if (value < 0)
-                    //    _headingKnobSum = 0;
-                    //else
-                    //    _headingKnobSum = value;
                     _headingKnobSum = value < 0 ? 0 : value;
                     OnPropertyChanged();
                 }
@@ -512,10 +499,6 @@ namespace Serial_COM.ViewModels
             {
                 if (_totalHeadingChange != value)
                 {
-                    //if (value > MaxHeadingChange)
-                    //    _totalHeadingChange = 359.9;
-                    //else
-                    //    _totalHeadingChange = value / 10;
                     _totalHeadingChange = value > MaxHeadingChange ? MaxHeadingChange / 10 : value / 10;
                     OnPropertyChanged();
                 }
@@ -572,10 +555,6 @@ namespace Serial_COM.ViewModels
             {
                 if (_speedKnobSum != value)
                 {
-                    //if (value < 0)
-                    //    _speedKnobSum = 0;
-                    //else
-                    //    _speedKnobSum = value;
                     _speedKnobSum = value < 0 ? 0 : value;
                     OnPropertyChanged();
                 }
@@ -596,10 +575,6 @@ namespace Serial_COM.ViewModels
             {
                 if (_totalSpeedChange != value)
                 {
-                    //if (value > MaxHeadingChange)
-                    //    _totalSpeedChange = 110.0;
-                    //else
-                    //    _totalSpeedChange = value / 10;
                     _totalSpeedChange = value > MaxSpeedChange ? MaxSpeedChange / 10 : value / 10;
                     OnPropertyChanged();
                 }
@@ -1090,39 +1065,13 @@ namespace Serial_COM.ViewModels
             ElipseJoyStickY = 60;
         }
 
-        private void SpeedToggle()
-        {
-            IsSpeedOn = !IsSpeedOn;
-        }
-
-        private void HeadingToggle()
-        {
-            IsHeadingOn = !IsHeadingOn;
-        }
-
-        private void AltitudeToggle()
-        {
-            IsAltitudeOn = !IsAltitudeOn;
-        }
-
-        private void TransmitMessage()
-        {
-            CPCtoCCUField field = new CPCtoCCUField
-            {
-                IsAltitudeOn = IsAltitudeOn,
-                IsHeadingOn = IsHeadingOn,
-                IsSpeedOn = IsSpeedOn,
-                AltitudeTotalSum = TotalAltitudeChange,
-                HeadingTotalSum = TotalHeadingChange * 10,
-                SpeedTotalSum = TotalSpeedChange * 10
-            };
-            OnMessageTransmit(field, DateTime.Now);
-        }
-
         #endregion
 
         #region [버튼 및 기능]
 
+        /// <summary>
+        /// [(Connect/Disconnect) 버튼]
+        /// </summary>
         private void StartSerial()
         {
             if (EnvironmentSet == null || SelectedPort == null || SelectedBaudRate == 0)
@@ -1142,14 +1091,59 @@ namespace Serial_COM.ViewModels
 
         }
 
+        /// <summary>
+        /// [Altitude ON/OFF 버튼]
+        /// </summary>
+        private void AltitudeToggle()
+        {
+            IsAltitudeOn = !IsAltitudeOn;
+        }
+
+        /// <summary>
+        /// [Heading ON/OFF 버튼]
+        /// </summary>
+        private void HeadingToggle()
+        {
+            IsHeadingOn = !IsHeadingOn;
+        }
+
+        /// <summary>
+        /// [Speed ON/OFF 버튼]
+        /// </summary>
+        private void SpeedToggle()
+        {
+            IsSpeedOn = !IsSpeedOn;
+        }
+
+        /// <summary>
+        /// [메시지 송신 기능]
+        /// </summary>
+        private void TransmitMessage()
+        {
+            CPCtoCCUField field = new CPCtoCCUField
+            {
+                IsAltitudeOn = IsAltitudeOn,
+                IsHeadingOn = IsHeadingOn,
+                IsSpeedOn = IsSpeedOn,
+                TotalAltitudeChange = TotalAltitudeChange, // (res) * 1
+                TotalHeadingChange = TotalHeadingChange * 10, // (res) * 10
+                TotalSpeedChange = TotalSpeedChange * 10 // (res) * 10
+            };
+            OnMessageTransmit(field, DateTime.Now);
+        }
+
+        /// <summary>
+        /// [송신부(CPCtoCCU) 통신]
+        /// </summary>
+        /// <param name="field"></param>
+        /// <param name="currentTime"></param>
         private void OnMessageTransmit(CPCtoCCUField field, DateTime currentTime)
         {
             try
             {
-                Parser parser = new Parser();
                 int msgLen = 0;
-                byte[] data = parser.ParseSender(field, ref msgLen);
-                byte[] encodingData = parser.CheckDataCondition2(data);
+                Parser parser = new Parser();
+                byte[] encodingData = parser.GetEncodingData(field, ref msgLen);
                 if (encodingData != null)
                 {
                     EnvironmentSet.serialPort.Write(encodingData, 0, encodingData.Length);
@@ -1163,12 +1157,17 @@ namespace Serial_COM.ViewModels
             }
             finally
             {
-                Debug.WriteLine("Message parsing completed at " + "[" + currentTime + "]");
+                Debug.WriteLine("Message Transmitted at " + "[" + currentTime + "]");
                 Debug.WriteLine("");
             }
 
         }
 
+        /// <summary>
+        /// [수신부(CCUtoCPC) 통신]
+        /// </summary>
+        /// <param name="messageListen"></param>
+        /// <param name="currentTime"></param>
         private void OnMessageReceived(byte[] messageListen, DateTime currentTime)
         {
             try
@@ -1224,12 +1223,16 @@ namespace Serial_COM.ViewModels
             }
             finally
             {
-                //Debug.WriteLine("Message parsing completed at " + "[" + currentTime + "]");
-                //Debug.WriteLine("");
+                Debug.WriteLine("Message received at " + "[" + currentTime + "]");
+                Debug.WriteLine("");
             }
 
         }
 
+        /// <summary>
+        /// [로그 메시지]
+        /// </summary>
+        /// <param name="msg"></param>
         private void AddLogMessage(string msg)
         {
             string timestamp = DateTime.Now.ToString("HH:mm:ss-ffff");

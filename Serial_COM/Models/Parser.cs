@@ -19,7 +19,7 @@ namespace Serial_COM.Models
         {
             // 예시 데이터 [exampleData1] 설정: 목적지 0x10, 송신지 0x03, 메시지: 0x38, 0x39
             byte[] examplesData1 = { STX, DLE, 0x02, DLE, 0x10, DLE, 0x03, 0x38, 0x39, DLE, ETX };
-            byte[] filteredData1 = CheckDataCondition(examplesData1);
+            byte[] filteredData1 = CheckDecodingDataCondition(examplesData1);
 
             //Console.WriteLine("Original Data: " + BitConverter.ToString(examplesData1));
             //Console.WriteLine("Filtered Data (with DLE Escaping): " + BitConverter.ToString(filteredData1));
@@ -29,7 +29,7 @@ namespace Serial_COM.Models
 
             // 예시 데이터 [exampleData2] 설정: 목적지 0x22, 송신지 0x33, 메시지: 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x10, 0x11
             byte[] examplesData2 = { STX, 0x08, 0x22, 0x33, 0x00, 0x01, DLE, 0x02, DLE, 0x03, 0x04, 0x05, DLE, 0x10, 0x11, ETX };
-            byte[] filteredData2 = CheckDataCondition(examplesData2);
+            byte[] filteredData2 = CheckDecodingDataCondition(examplesData2);
 
             //Console.WriteLine("Original Data: " + BitConverter.ToString(examplesData2));
             //Console.WriteLine("Filtered Data (with DLE Escaping): " + BitConverter.ToString(filteredData2));
@@ -38,65 +38,60 @@ namespace Serial_COM.Models
             // Filtered Data (with DLE Escaping): 02-08-22-33-00-01-02-03-04-05-10-11-19-03 (일치)
         }
 
+        /// <summary>
+        /// [(Message Parsing) 송신부]
+        /// </summary>
+        /// <param name="field"></param>
+        /// <param name="len"></param>
+        /// <returns></returns>
         public byte[] ParseSender(CPCtoCCUField field, ref int len)
         {
             try
             {
                 int nCnt = 0;
                 byte[] data = new byte[8];
-
-                // 상태 플래그 설정
+                // 비행조종장치 LCD SET (Altitude)
+                // [Byte #0.]
+                // 7번째 비트(MSB)를 추출
                 if (field.IsAltitudeOn)
                 {
                     data[nCnt] |= 1 << 7;
                 }
+                // 비행조종장치 LCD SET (Heading)
+                // [Byte #0.]
+                // 6번째 비트를 추출
                 if (field.IsHeadingOn)
                 {
                     data[nCnt] |= 1 << 6;
                 }
+                // 비행조종장치 LCD SET (Speed)
+                // [Byte #0.]
+                // 5번째 비트를 추출
                 if (field.IsSpeedOn)
                 {
                     data[nCnt] |= 1 << 5;
                 }
+                nCnt++; // Next Byte 진행
 
-                nCnt++; // 다음 바이트로 진행
-
-                // 더미 데이터 추가 (필요한 경우 실제 데이터를 추가할 수 있음)
-                data[nCnt++] = 0x00;
-                //data[nCnt++] = 0x00;
-                //data[nCnt++] = 0x00;
-                //data[nCnt++] = 0x00;
-                //data[nCnt++] = 0x00;
-                //data[nCnt++] = 0x00;
-                //data[nCnt++] = 0x00;
-
-                //byte altitude = field.Altitude;
-                //byte heading = field.Heading;
-                //byte speed = field.Speed;
-
-                //data[nCnt] |= (byte)(altitude << 7);
-                //data[nCnt] |= (byte)(heading << 5);
-                //data[nCnt] |= (byte)(speed << 3);
-
-                // 3. 고도(Altitude) 값
-                ushort altitudeValue = (ushort)field.AltitudeTotalSum;
-                // 상위 바이트
+                // 비행조종장치 고도(Altitude) 표시 값
+                ushort altitudeValue = (ushort)field.TotalAltitudeChange;
+                // [Byte #2.] 상위 바이트(MSB)
                 data[nCnt++] = (byte)((altitudeValue >> 8) & 0xFF);
-                // 하위 바이트
+                // [Byte #3.] 하위 바이트(LSB)
                 data[nCnt++] = (byte)(altitudeValue & 0xFF);
 
-                // 4. 헤딩(Heading)  값
-                ushort headingValue = (ushort)field.HeadingTotalSum;
-                // 상위 바이트
+                // 비행조종장치 헤딩(Heading) 표시 값
+                ushort headingValue = (ushort)field.TotalHeadingChange;
+                // [Byte #4.] 상위 바이트(MSB)
                 data[nCnt++] = (byte)((headingValue >> 8) & 0xFF);
-                // 하위 바이트
+                // [Byte #5.] 하위 바이트(LSB)
                 data[nCnt++] = (byte)(headingValue & 0xFF);
 
-                // 5. 속도(Speed)    값
-                ushort speedValue = (ushort)field.SpeedTotalSum;
-                // 상위 바이트
+                // 비행조종장치 속도(Speed) 표시 값
+                ushort speedValue = (ushort)field.TotalSpeedChange;
+                // [Byte #6.] 상위 바이트(MSB)
                 data[nCnt++] = (byte)((speedValue >> 8) & 0xFF);
-                // 하위 바이트
+                // [Byte #7.] 하위 바이트(LSB)
                 data[nCnt++] = (byte)(speedValue & 0xFF);
 
                 len = nCnt;
@@ -116,6 +111,11 @@ namespace Serial_COM.Models
 
         }
 
+        /// <summary>
+        /// [(Message Parsing) 수신부]
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public CCUtoCPCField ParseReceiver(byte[] data)
         {
             // filteredData = [CheckDataCondition] 함수에서 [DLE]를 제외한 실제 메시지를 포함!
@@ -123,8 +123,8 @@ namespace Serial_COM.Models
             // 이후, [Checksum, ETX] 제외한 총 합 [6]을 빼준 값을 반환했을 때, 온전한 msgData! 
             try
             {
-                byte[] filteredData = CheckDataCondition(data);
-                byte[] msgData = filteredData.Skip(4).Take(filteredData.Length - 6).ToArray();
+                byte[] decodingData = CheckDecodingDataCondition(data);
+                byte[] msgData = decodingData.Skip(4).Take(decodingData.Length - 6).ToArray();
                 using (ByteStream stream = new ByteStream(msgData, 0, msgData.Length))
                 {
                     CCUtoCPCField field = new CCUtoCPCField
@@ -213,52 +213,6 @@ namespace Serial_COM.Models
                         // [Byte #13.]
                         JoyStickYChange = (sbyte)stream.GetByte(13),
                     };
-                    // [Byte #0.]
-                    //Console.Write(field.PowerSwitch + " ");
-
-                    //// [Byte #1.]
-                    //Console.Write(field.EngineStart + " ");
-                    //Console.Write(field.EngineRestart + " ");
-                    //Console.Write(field.EngineKill + " ");
-                    //Console.Write(field.TakeOff + " ");
-                    //Console.Write(field.ReturnToBase + " ");
-                    //Console.Write(field.AltitudeKnob + " ");
-                    //Console.Write(field.HeadingKnob + " ");
-                    //Console.Write(field.SpeedKnob + " ");
-
-                    // [Byte #2.]
-                    //Console.Write(field.AltitudeKnobChange);
-                    // [Byte #3.]
-                    //Console.Write(field.HeadingKnobChange);
-                    //// [Byte #4.]
-                    //Console.Write(field.SpeedKnobChange);
-                    //// [Byte #5.]
-                    //Console.Write(field.YawChange);
-                    //// [Byte #6.]
-                    //Console.Write(field.ThrottleChange);
-                    //// [Byte #7.]
-                    //Console.Write(field.RollChange);
-                    //// [Byte #8.]
-                    //Console.WriteLine(field.PitchChange);
-
-                    //// [Byte #9.]
-                    //Console.Write(field.Drop + " ");
-                    //Console.Write(field.Option1 + " ");
-                    //Console.Write(field.Capture + " ");
-                    //Console.Write(field.EOandIR + " ");
-                    //Console.Write(field.Option2 + " ");
-                    //Console.Write(field.GimbalStick + " ");
-                    //Console.Write(field.ZoomKnob + " ");
-                    //Console.WriteLine(field.FocusKnob + " ");
-
-                    //// [Byte #10.]
-                    //Console.Write(field.ZoomChange);
-                    //// [Byte #11.]
-                    //Console.Write(field.FocusChange);
-                    //// [Byte #12.]
-                    //Console.Write(field.JoyStickXChange);
-                    //// [Byte #13.]
-                    //Console.WriteLine(field.JoyStickYChange);
                     return field;
                 }
 
@@ -276,13 +230,30 @@ namespace Serial_COM.Models
 
         }
 
-        public byte[] CheckDataCondition2(byte[] check)
+        /// <summary>
+        /// [GetEncodingData]
+        /// </summary>
+        /// <param name="field"></param>
+        /// <param name="len"></param>
+        /// <returns></returns>
+        public byte[] GetEncodingData(CPCtoCCUField field, ref int len)
+        {
+            byte[] data = ParseSender(field, ref len);
+            return data == null ? null : CheckEncodingDataCondition(data);
+        }
+
+        /// <summary>
+        /// [CheckEncodingDataCondition]
+        /// </summary>
+        /// <param name="check"></param>
+        /// <returns></returns>
+        public byte[] CheckEncodingDataCondition(byte[] check)
         {
             List<byte> encodingData = new List<byte>();
             bool isCtrlText;
-            byte checkSum = 0x00;
-            byte dstID = 0xC1;
-            byte srcID = 0xA5;
+            byte checkSum = 0x00; // Checksum 초기화
+            byte dstID = 0xC1; // CPC (dstID) 식별자
+            byte srcID = 0xA5; // CCU (srcID) 식별자
             // 1. [STX](0x02) 추가
             encodingData.Add(STX);
             // 2. [STX](0x02) 이후
@@ -310,7 +281,7 @@ namespace Serial_COM.Models
             }
             encodingData.Add(srcID);
             checkSum ^= srcID;
-            //5. [MsgData] 추가(DLE 처리 포함)
+            // 5. [MsgData] 추가(DLE 처리 포함)
             foreach (byte msgData in check)
             {
                 isCtrlText = CheckCtrlText(msgData);
@@ -344,6 +315,7 @@ namespace Serial_COM.Models
         }
 
         /// <summary>
+        /// [CheckDecodingDataCondition]
         /// *. [프로토콜 샘플코드] .*
         /// #. [DecodingPacket] 함수: [DLE](Data Link Escape) 프로토콜을 사용하는 패킷을 디코딩 하는 방식
         /// 1. [패킷 시작] 부분 확인: STX 수신 시, [s_IsStartPacket] 변수를 1로 설정해 [패킷 시작]을 표시
@@ -358,10 +330,11 @@ namespace Serial_COM.Models
         /// </summary>
         /// <param name="check"></param>
         /// <returns></returns>
-        public byte[] CheckDataCondition(byte[] check)
+        public byte[] CheckDecodingDataCondition(byte[] check)
         {
             List<byte> decodingData = new List<byte>();
-            bool isCtrlText = false; // [DLE] Flag 설정
+            // [DLE] Flag 설정
+            bool isCtrlText = false;
             // 1. [STX](0x02) 추가
             decodingData.Add(STX);
             // 2. [STX](0x02) 이후
@@ -392,7 +365,7 @@ namespace Serial_COM.Models
                 }
 
             }
-            // 3. [Length] ~ [Message] 이후, [Checksum 단계]: [XOR] 반복 계산!
+            // 3. [Length] ~ [Message] 이후, [Checksum 단계]: [XOR] 반복 계산
             byte checkSum = CalculateChecksum(decodingData.Skip(1).ToArray());
             // 4. [Checksum]  추가
             decodingData.Add(checkSum);
@@ -416,6 +389,9 @@ namespace Serial_COM.Models
             return checkSum;
         }
 
+        /// <summary>
+        /// [메시지 정의(CPCtoCCU)]
+        /// </summary>
         public class CPCtoCCUField
         {
             public bool IsAltitudeOn { get; set; }
@@ -430,13 +406,16 @@ namespace Serial_COM.Models
 
             public byte Speed { get; set; }
 
-            public double AltitudeTotalSum { get; set; }
+            public double TotalAltitudeChange { get; set; }
 
-            public double HeadingTotalSum { get; set; }
+            public double TotalHeadingChange { get; set; }
 
-            public double SpeedTotalSum { get; set; }
+            public double TotalSpeedChange { get; set; }
         }
 
+        /// <summary>
+        /// [메시지 정의(CCUtoCPC)]
+        /// </summary>
         public class CCUtoCPCField
         {
             /// <summary>
@@ -638,6 +617,9 @@ namespace Serial_COM.Models
 
     }
 
+    /// <summary>
+    /// [FieldChangeExtension]
+    /// </summary>
     public static class FieldChangeExtension
     {
         /// <summary>

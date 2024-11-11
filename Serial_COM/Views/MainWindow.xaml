@@ -354,13 +354,10 @@
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </Canvas.Background>-->
-
                         <!-- X축 (왼쪽, Canvas 경계 내에 배치) -->
                         <Line X1="0" Y1="60" X2="120" Y2="60" Stroke="SlateGray" StrokeThickness="0.4"/>
-
                         <!-- Y축 (위쪽, Canvas 경계 내에 배치) -->
                         <Line X1="60" Y1="0" X2="60" Y2="120" Stroke="SlateGray" StrokeThickness="0.4"/>
-
                         <Ellipse Height="10"
                                  Width="10"
                                  Canvas.Left="{Binding ElipseYawX, Mode=OneWay}"
@@ -395,13 +392,10 @@
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </Canvas.Background>-->
-
                         <!-- X축 (왼쪽, Canvas 경계 내에 배치) -->
                         <Line X1="0" Y1="60" X2="120" Y2="60" Stroke="SlateGray" StrokeThickness="0.4"/>
-
                         <!-- Y축 (위쪽, Canvas 경계 내에 배치) -->
                         <Line X1="60" Y1="0" X2="60" Y2="120" Stroke="SlateGray" StrokeThickness="0.4"/>
-
                         <Ellipse Height="10"
                                  Width="10"
                                  Canvas.Left="{Binding ElipseRollX, Mode=OneWay}"
@@ -436,13 +430,10 @@
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </Canvas.Background>-->
-
                         <!-- X축 (왼쪽, Canvas 경계 내에 배치) -->
                         <Line X1="0" Y1="60" X2="120" Y2="60" Stroke="SlateGray" StrokeThickness="0.4"/>
-
                         <!-- Y축 (위쪽, Canvas 경계 내에 배치) -->
                         <Line X1="60" Y1="0" X2="60" Y2="120" Stroke="SlateGray" StrokeThickness="0.4"/>
-
                         <Ellipse Height="10"
                                  Width="10"
                                  Canvas.Left="{Binding ElipseJoyStickX, Mode=OneWay}"
@@ -760,8 +751,7 @@
                    VerticalAlignment="Top"
                    HorizontalAlignment="Left"
                    Margin="12,-2,0,0"/>
-        <Grid Grid.Row="1"
-              Margin="0,5,0,5">
+        <Grid Grid.Row="1" Margin="0,5,0,5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1.45*"/>
                 <ColumnDefinition Width="1.55*"/>
@@ -931,7 +921,6 @@
                             </ToggleButton.Template>
                         </ToggleButton>
                     </StackPanel>
-
 
                     <!--  ON/OFF (버튼 2)-->
                     <StackPanel Grid.Column="1"
