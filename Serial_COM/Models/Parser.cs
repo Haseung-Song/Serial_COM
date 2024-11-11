@@ -73,6 +73,8 @@ namespace Serial_COM.Models
                 }
                 nCnt++; // Next Byte 진행
 
+                data[nCnt++] = 0x00; // 비행조종장치 LCD 단위 SET (Dummy)
+
                 // 비행조종장치 고도(Altitude) 표시 값
                 ushort altitudeValue = (ushort)field.TotalAltitudeChange;
                 // [Byte #2.] 상위 바이트(MSB)
@@ -93,9 +95,7 @@ namespace Serial_COM.Models
                 data[nCnt++] = (byte)((speedValue >> 8) & 0xFF);
                 // [Byte #7.] 하위 바이트(LSB)
                 data[nCnt++] = (byte)(speedValue & 0xFF);
-
                 len = nCnt;
-
                 return data;
             }
             catch (ArgumentException ex)
