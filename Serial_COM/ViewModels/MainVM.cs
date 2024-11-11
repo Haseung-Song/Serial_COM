@@ -24,6 +24,7 @@ namespace Serial_COM.ViewModels
         private int _selectedBaudRate;
 
         private bool _isPowerSwitch;
+
         private bool _isEngineStart;
         private bool _isEngineRestart;
         private bool _isEngineKill;
@@ -45,14 +46,17 @@ namespace Serial_COM.ViewModels
         private double _altitudeKnobSum;
         private double _totalAltitudeChange;
         private bool _isAltitudeOn;
+
         private int _headingKnobChange;
         private double _headingKnobSum;
         private double _totalHeadingChange;
         private bool _isHeadingOn;
+
         private int _speedKnobChange;
         private double _speedKnobSum;
         private double _totalSpeedChange;
         private bool _isSpeedOn;
+
         private int _yawChange;
         private double _elipseYawX;
         private uint _throttleChange;
@@ -1081,11 +1085,17 @@ namespace Serial_COM.ViewModels
             IsPortConnected = EnvironmentSet.OpenToClose(SelectedPort, SelectedBaudRate);
             if (IsPortConnected)
             {
+                IsAltitudeOn = true;
+                IsHeadingOn = true;
+                IsSpeedOn = true;
                 EnvironmentSet.MessageReceived += OnMessageReceived;
                 AddLogMessage($"Connected to {SelectedPort}");
             }
             else
             {
+                IsAltitudeOn = false;
+                IsHeadingOn = false;
+                IsSpeedOn = false;
                 AddLogMessage($"Disconnected");
             }
 

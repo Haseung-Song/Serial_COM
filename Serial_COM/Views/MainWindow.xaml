@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local1="clr-namespace:BoolToBrushConverter1"
         xmlns:local2="clr-namespace:BoolToBrushConverter2"
+        xmlns:local3="clr-namespace:BoolToBrushConverter3"
+        xmlns:local4="clr-namespace:BoolToBrushConverter4"
         xmlns:viewmodels="clr-namespace:Serial_COM.ViewModels"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainVM}"
         mc:Ignorable="d"
@@ -16,6 +18,10 @@
         <local1:BoolToBrushConverter1 x:Key="BoolToBrushConverter1"/>
         <!-- [BoolToBrushConverter2] local 지정-->
         <local2:BoolToBrushConverter2 x:Key="BoolToBrushConverter2"/>
+        <!-- [BoolToBrushConverter3] local 지정-->
+        <local3:BoolToBrushConverter3 x:Key="BoolToBrushConverter3"/>
+        <!-- [BoolToBrushConverter4] local 지정-->
+        <local4:BoolToBrushConverter4 x:Key="BoolToBrushConverter4"/>
         <!-- 둥근 모서리를 위한 Button 스타일 -->
         <Style TargetType="Button" x:Key="RoundedButtonStyle">
             <Setter Property="Template">
@@ -778,7 +784,7 @@
                             Grid.Row="0"
                             BorderBrush="LightGray"
                             BorderThickness="2"
-                            Background="PaleVioletRed"
+                            Background="{Binding IsAltitudeOn, Converter={StaticResource BoolToBrushConverter3}}"
                             Margin="2">
                         <Grid Margin="3">
                             <Grid.ColumnDefinitions>
@@ -789,7 +795,7 @@
                             <TextBlock Grid.Column="0"
                                        Text="Altitude"
                                        FontWeight="Normal"
-                                       Foreground="White"
+                                       Foreground="{Binding IsAltitudeOn, Converter={StaticResource BoolToBrushConverter4}}"
                                        FontSize="18"
                                        HorizontalAlignment="Left"
                                        Margin="10,0,0,0"
@@ -797,13 +803,13 @@
                             <TextBlock Grid.Column="1"
                                        Text="{Binding TotalAltitudeChange, Mode=TwoWay}"
                                        FontWeight="Normal"
-                                       Foreground="White"
+                                       Foreground="{Binding IsAltitudeOn, Converter={StaticResource BoolToBrushConverter4}}"
                                        FontSize="18"
                                        TextAlignment="Center"/>
                             <TextBlock Grid.Column="2"
                                        Text="ft  "
                                        FontWeight="Normal"
-                                       Foreground="White"
+                                       Foreground="{Binding IsAltitudeOn, Converter={StaticResource BoolToBrushConverter4}}"
                                        FontSize="18"
                                        TextAlignment="Center"/>
                         </Grid>
@@ -814,7 +820,7 @@
                             Grid.Row="1"
                             BorderBrush="LightGray"
                             BorderThickness="2"
-                            Background="PaleVioletRed"
+                            Background="{Binding IsHeadingOn, Converter={StaticResource BoolToBrushConverter3}}"
                             Margin="2">
                         <Grid HorizontalAlignment="Stretch" Margin="3">
                             <Grid.ColumnDefinitions>
@@ -825,7 +831,7 @@
                             <TextBlock Grid.Column="0"
                                        Text="Heading"
                                        FontWeight="Normal"
-                                       Foreground="White"
+                                       Foreground="{Binding IsHeadingOn, Converter={StaticResource BoolToBrushConverter4}}"
                                        FontSize="18"
                                        HorizontalAlignment="Left"
                                        Margin="10,0,0,0"
@@ -833,14 +839,14 @@
                             <TextBlock Grid.Column="1"
                                        Text="{Binding TotalHeadingChange, StringFormat='{}{0:F1}', Mode=TwoWay}"
                                        FontWeight="Normal"
-                                       Foreground="White"
+                                       Foreground="{Binding IsHeadingOn, Converter={StaticResource BoolToBrushConverter4}}"
                                        FontSize="18"
                                        TextAlignment="Center"
                                        Margin="10,0,0,0"/>
                             <TextBlock Grid.Column="2"
                                        Text="deg"
                                        FontWeight="Normal"
-                                       Foreground="White"
+                                       Foreground="{Binding IsHeadingOn, Converter={StaticResource BoolToBrushConverter4}}"
                                        FontSize="18"
                                        TextAlignment="Center"/>
                         </Grid>
@@ -851,7 +857,7 @@
                             Grid.Row="2"
                             BorderBrush="LightGray"
                             BorderThickness="2"
-                            Background="PaleVioletRed"
+                            Background="{Binding IsSpeedOn, Converter={StaticResource BoolToBrushConverter3}}"
                             Margin="2">
                         <Grid HorizontalAlignment="Stretch" Margin="3">
                             <Grid.ColumnDefinitions>
@@ -862,7 +868,7 @@
                             <TextBlock Grid.Column="0"
                                        Text="Speed"
                                        FontWeight="Normal"
-                                       Foreground="White"
+                                       Foreground="{Binding IsSpeedOn, Converter={StaticResource BoolToBrushConverter4}}"
                                        FontSize="18"
                                        HorizontalAlignment="Left"
                                        Margin="10,0,0,0"
@@ -870,14 +876,14 @@
                             <TextBlock Grid.Column="1"
                                        Text="{Binding TotalSpeedChange, StringFormat='{}{0:F1}',Mode=TwoWay }"
                                        FontWeight="Normal"
-                                       Foreground="White"
+                                       Foreground="{Binding IsSpeedOn, Converter={StaticResource BoolToBrushConverter4}}"
                                        FontSize="18"
                                        TextAlignment="Center"
                                        Margin="10,0,0,0"/>
                             <TextBlock Grid.Column="2"
                                        Text="kn "
                                        FontWeight="Normal"
-                                       Foreground="White"
+                                       Foreground="{Binding IsSpeedOn, Converter={StaticResource BoolToBrushConverter4}}"
                                        FontSize="18"
                                        TextAlignment="Center"/>
                         </Grid>
