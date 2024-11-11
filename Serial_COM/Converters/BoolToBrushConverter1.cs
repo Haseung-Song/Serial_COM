@@ -9,12 +9,12 @@ namespace BoolToBrushConverter1
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            // if (boolean == 1) ? (색깔: LightGreen) : (boolean == 0) ? (색깔: LightGray)
+            // if (boolean == 1) ? (색상: LightGreen) : (boolean == 0) ? (색상: LightGray)
             if (value is bool boolValue)
             {
                 return boolValue ? new SolidColorBrush(Colors.LightGreen) : new SolidColorBrush(Colors.LightGray);
             }
-            return new SolidColorBrush(Colors.LightGray);     // 기본값: (색깔: LightGray)
+            return new SolidColorBrush(Colors.LightGray);     // 기본값: (색상: LightGray)
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

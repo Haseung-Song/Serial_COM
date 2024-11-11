@@ -18,6 +18,7 @@ namespace Serial_COM.ViewModels
         private EnvironmentSet _environmentSet;
         private ObservableCollection<string> _lstBoxItem;
         private bool _isPortConnected;
+
         private List<string> _portNames;
         private List<int> _baudRates;
         private string _selectingPort;
@@ -1041,12 +1042,6 @@ namespace Serial_COM.ViewModels
 
         public ICommand StartSerialCommand { get; set; }
 
-        public ICommand AltitudeOnOffCommand { get; set; }
-
-        public ICommand HeadingOnOffCommand { get; set; }
-
-        public ICommand SpeedOnOffCommand { get; set; }
-
         #endregion
 
         #region 생성자 (Initialize)
@@ -1054,9 +1049,6 @@ namespace Serial_COM.ViewModels
         public MainVM()
         {
             StartSerialCommand = new RelayCommand(StartSerial);
-            AltitudeOnOffCommand = new RelayCommand(AltitudeToggle);
-            HeadingOnOffCommand = new RelayCommand(HeadingToggle);
-            SpeedOnOffCommand = new RelayCommand(SpeedToggle);
             EnvironmentSet = new EnvironmentSet();
             LstBoxItem = new ObservableCollection<string>();
             LstPortNames = EnvironmentSet.GetPortNames();
@@ -1099,30 +1091,6 @@ namespace Serial_COM.ViewModels
                 AddLogMessage($"Disconnected");
             }
 
-        }
-
-        /// <summary>
-        /// [Altitude ON/OFF 버튼]
-        /// </summary>
-        private void AltitudeToggle()
-        {
-            IsAltitudeOn = !IsAltitudeOn;
-        }
-
-        /// <summary>
-        /// [Heading ON/OFF 버튼]
-        /// </summary>
-        private void HeadingToggle()
-        {
-            IsHeadingOn = !IsHeadingOn;
-        }
-
-        /// <summary>
-        /// [Speed ON/OFF 버튼]
-        /// </summary>
-        private void SpeedToggle()
-        {
-            IsSpeedOn = !IsSpeedOn;
         }
 
         /// <summary>
@@ -1188,6 +1156,7 @@ namespace Serial_COM.ViewModels
                 if (parserData != null)
                 {
                     IsPowerSwitch = parserData.PowerSwitch == 1;
+
                     IsEngineStart = parserData.EngineStart == 1;
                     IsEngineRestart = parserData.EngineRestart == 1;
                     IsEngineKill = parserData.EngineKill == 1;
@@ -1196,22 +1165,27 @@ namespace Serial_COM.ViewModels
                     IsAltitudeKnob = parserData.AltitudeKnob == 1;
                     IsHeadingKnob = parserData.HeadingKnob == 1;
                     IsSpeedKnob = parserData.SpeedKnob == 1;
+
                     AltitudeKnobChange = parserData.AltitudeKnobChange;
                     AltitudeKnobSum += AltitudeKnobChange;
                     TotalAltitudeChange = AltitudeKnobSum;
                     TransmitMessage();
+
                     HeadingKnobChange = parserData.HeadingKnobChange;
                     HeadingKnobSum += HeadingKnobChange;
                     TotalHeadingChange = HeadingKnobSum;
                     TransmitMessage();
+
                     SpeedKnobChange = parserData.SpeedKnobChange;
                     SpeedKnobSum += SpeedKnobChange;
                     TotalSpeedChange = SpeedKnobSum;
                     TransmitMessage();
+
                     YawChange = parserData.YawChange;
                     ThrottleChange = parserData.ThrottleChange;
                     RollChange = parserData.RollChange;
                     PitchChange = parserData.PitchChange;
+
                     IsDrop = parserData.Drop == 1;
                     IsOption1 = parserData.Option1 == 1;
                     IsCapture = parserData.Capture == 1;
@@ -1220,6 +1194,7 @@ namespace Serial_COM.ViewModels
                     IsGimbalStick = parserData.GimbalStick == 1;
                     IsZoomKnob = parserData.ZoomKnob == 1;
                     IsFocusKnob = parserData.FocusKnob == 1;
+
                     ZoomChange = parserData.ZoomChange;
                     FocusChange = parserData.FocusChange;
                     JoyStickXChange = parserData.JoyStickXChange;

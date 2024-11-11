@@ -11,11 +11,11 @@ namespace Serial_COM.Common
         private readonly Func<bool> canExecute;
 
         /**
-      * @brief  ParameterRelayCommand 생성자 함수.
-      * @param Action<object> execute : 실행 이벤트 가 들어왔을때 동작하기 위한 Action함수를 등록
-      * @return
-      * @exception
-      */
+        * @brief  ParameterRelayCommand 생성자 함수.
+        * @param Action<object> execute : 실행 이벤트 가 들어왔을때 동작하기 위한 Action함수를 등록
+        * @return
+        * @exception
+        */
         public RelayCommand(Action execute)
             : this(execute, null)
         {
