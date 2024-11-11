@@ -76,6 +76,8 @@
     <Compile Include="Converters\BoolToBrushConverter2.cs" />
     <Compile Include="Converters\BoolToBrushConverter3.cs" />
     <Compile Include="Converters\BoolToBrushConverter4.cs" />
+    <Compile Include="Converters\EnumToBoolConverter5.cs" />
+    <Compile Include="Converters\EnumToDescriptionConverter6.cs" />
     <Compile Include="ViewModels\MainVM.cs" />
     <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

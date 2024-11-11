@@ -23,6 +23,8 @@ namespace Serial_COM.ViewModels
         private List<int> _baudRates;
         private string _selectingPort;
         private int _selectedBaudRate;
+        private AltitudeUnitSet _selectedAltitudeUnit;
+        private SpeedUnitSet _selectedSpeedUnit;
 
         private bool _isPowerSwitch;
 
@@ -47,12 +49,10 @@ namespace Serial_COM.ViewModels
         private double _altitudeKnobSum;
         private double _totalAltitudeChange;
         private bool _isAltitudeOn;
-
         private int _headingKnobChange;
         private double _headingKnobSum;
         private double _totalHeadingChange;
         private bool _isHeadingOn;
-
         private int _speedKnobChange;
         private double _speedKnobSum;
         private double _totalSpeedChange;
@@ -72,6 +72,28 @@ namespace Serial_COM.ViewModels
         private double _elipseJoyStickX;
         private int _joyStickYChange;
         private double _elipseJoyStickY;
+
+        #endregion
+
+        #region [Enum]
+
+        public enum AltitudeUnitSet : byte
+        {
+            [Description("ft")]
+            Feet = 0b00,
+            [Description("m")]
+            Meters = 0b01
+        }
+
+        public enum SpeedUnitSet : byte
+        {
+            [Description("kn")]
+            knots = 0b00,
+            [Description("km/h")]
+            KilometersPerHour = 0b01,
+            [Description("m/s")]
+            MetersPerSecond = 0b10
+        }
 
         #endregion
 
@@ -201,6 +223,42 @@ namespace Serial_COM.ViewModels
                 if (_selectedBaudRate != value)
                 {
                     _selectedBaudRate = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [SelectedAltitudeUnit]
+        /// </summary>
+        public AltitudeUnitSet SelectedAltitudeUnit
+        {
+            get => _selectedAltitudeUnit;
+            set
+            {
+                if (_selectedAltitudeUnit != value)
+                {
+                    _selectedAltitudeUnit = value;
+                    OnPropertyChanged();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [SpeedUnit]
+        /// </summary>
+        public SpeedUnitSet SelectedSpeedUnit
+        {
+            get => _selectedSpeedUnit;
+            set
+            {
+                if (_selectedSpeedUnit != value)
+                {
+                    _selectedSpeedUnit = value;
                     OnPropertyChanged();
                 }
 
@@ -1103,6 +1161,8 @@ namespace Serial_COM.ViewModels
                 IsAltitudeOn = IsAltitudeOn,
                 IsHeadingOn = IsHeadingOn,
                 IsSpeedOn = IsSpeedOn,
+                Altitude = (byte)SelectedAltitudeUnit,
+                Speed = (byte)SelectedSpeedUnit,
                 TotalAltitudeChange = TotalAltitudeChange, // (res) * 1
                 TotalHeadingChange = TotalHeadingChange * 10, // (res) * 10
                 TotalSpeedChange = TotalSpeedChange * 10 // (res) * 10

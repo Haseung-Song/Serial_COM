@@ -50,6 +50,7 @@ namespace Serial_COM.Models
             {
                 int nCnt = 0;
                 byte[] data = new byte[8];
+
                 // 비행조종장치 LCD SET (Altitude)
                 // [Byte #0.]
                 // 7번째 비트(MSB)를 추출
@@ -57,6 +58,7 @@ namespace Serial_COM.Models
                 {
                     data[nCnt] |= 1 << 7;
                 }
+
                 // 비행조종장치 LCD SET (Heading)
                 // [Byte #0.]
                 // 6번째 비트를 추출
@@ -64,6 +66,7 @@ namespace Serial_COM.Models
                 {
                     data[nCnt] |= 1 << 6;
                 }
+
                 // 비행조종장치 LCD SET (Speed)
                 // [Byte #0.]
                 // 5번째 비트를 추출
@@ -71,10 +74,53 @@ namespace Serial_COM.Models
                 {
                     data[nCnt] |= 1 << 5;
                 }
-                nCnt++; // Next Byte 진행
 
-                data[nCnt++] = 0x00; // 비행조종장치 LCD 단위 SET (Dummy)
+                nCnt++; // [Byte #0.] 파싱 후, 증가 ++
+                switch (field.Altitude)
+                {
+                    // 비행조종장치 LCD 단위 SET (Altitude)
+                    // [Byte #1.]
+                    // 7(MSB), 6번째 비트를 추출
+                    case 0b00:
+                        data[nCnt] |= 0b00 << 6;
+                        break;
+                    // 비행조종장치 LCD 단위 SET (Altitude)
+                    // [Byte #1.]
+                    // 7(MSB), 6번째 비트를 추출
+                    case 0b01:
+                        data[nCnt] |= 0b01 << 6;
+                        break;
 
+                    default:
+                        break;
+                }
+
+                switch (field.Speed)
+                {
+                    // 비행조종장치 LCD 단위 SET (Altitude)
+                    // [Byte #1.]
+                    // 3, 2번째 비트를 추출
+                    case 0b00:
+                        data[nCnt] |= 0b00 << 2;
+                        break;
+                    // 비행조종장치 LCD 단위 SET (Altitude)
+                    // [Byte #1.]
+                    // 3, 2번째 비트를 추출
+                    case 0b01:
+                        data[nCnt] |= 0b01 << 2;
+                        break;
+                    // 비행조종장치 LCD 단위 SET (Altitude)
+                    // [Byte #1.]
+                    // 3, 2번째 비트를 추출
+                    case 0b10:
+                        data[nCnt] |= 0b10 << 2;
+                        break;
+
+                    default:
+                        break;
+                }
+
+                nCnt++; // [Byte #1.] 파싱 후, 증가 ++
                 // 비행조종장치 고도(Altitude) 표시 값
                 ushort altitudeValue = (ushort)field.TotalAltitudeChange;
                 // [Byte #2.] 상위 바이트(MSB)
@@ -95,6 +141,7 @@ namespace Serial_COM.Models
                 data[nCnt++] = (byte)((speedValue >> 8) & 0xFF);
                 // [Byte #7.] 하위 바이트(LSB)
                 data[nCnt++] = (byte)(speedValue & 0xFF);
+
                 len = nCnt;
                 return data;
             }
@@ -401,8 +448,6 @@ namespace Serial_COM.Models
             public bool IsSpeedOn { get; set; }
 
             public byte Altitude { get; set; }
-
-            public byte Heading { get; set; }
 
             public byte Speed { get; set; }
 

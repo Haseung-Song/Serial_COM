@@ -7,21 +7,27 @@
         xmlns:local2="clr-namespace:BoolToBrushConverter2"
         xmlns:local3="clr-namespace:BoolToBrushConverter3"
         xmlns:local4="clr-namespace:BoolToBrushConverter4"
+        xmlns:local5="clr-namespace:EnumToBoolConverter5"
+        xmlns:local6="clr-namespace:EnumToDescriptionConverter6"
         xmlns:viewmodels="clr-namespace:Serial_COM.ViewModels"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainVM}"
         mc:Ignorable="d"
-        Title="CPC 시뮬레이터 v0.0.0.1(Nov. 08 2024)"
-        Height="665"
+        Title="CPC 시뮬레이터 v0.0.0.1(Nov. 12 2024)"
+        Height="680"
         Width="730">
     <Window.Resources>
-        <!-- [BoolToBrushConverter1] local 지정-->
+        <!-- [BoolToBrushConverter1] local1 지정-->
         <local1:BoolToBrushConverter1 x:Key="BoolToBrushConverter1"/>
-        <!-- [BoolToBrushConverter2] local 지정-->
+        <!-- [BoolToBrushConverter2] local2 지정-->
         <local2:BoolToBrushConverter2 x:Key="BoolToBrushConverter2"/>
-        <!-- [BoolToBrushConverter3] local 지정-->
+        <!-- [BoolToBrushConverter3] local3 지정-->
         <local3:BoolToBrushConverter3 x:Key="BoolToBrushConverter3"/>
-        <!-- [BoolToBrushConverter4] local 지정-->
+        <!-- [BoolToBrushConverter4] local4 지정-->
         <local4:BoolToBrushConverter4 x:Key="BoolToBrushConverter4"/>
+        <!-- [EnumToBoolConverter5] local5 지정-->
+        <local5:EnumToBoolConverter5 x:Key="EnumToBoolConverter5"/>
+        <!-- [EnumToDescriptionConverter6] local6 지정-->
+        <local6:EnumToDescriptionConverter6 x:Key="EnumToDescriptionConverter6"/>
         <!-- 둥근 모서리를 위한 Button 스타일 -->
         <Style TargetType="Button" x:Key="RoundedButtonStyle">
             <Setter Property="Template">
@@ -360,6 +366,7 @@
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </Canvas.Background>-->
+                        
                         <!-- X축 (왼쪽, Canvas 경계 내에 배치) -->
                         <Line X1="0" Y1="60" X2="120" Y2="60" Stroke="SlateGray" StrokeThickness="0.4"/>
                         <!-- Y축 (위쪽, Canvas 경계 내에 배치) -->
@@ -398,6 +405,7 @@
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </Canvas.Background>-->
+                        
                         <!-- X축 (왼쪽, Canvas 경계 내에 배치) -->
                         <Line X1="0" Y1="60" X2="120" Y2="60" Stroke="SlateGray" StrokeThickness="0.4"/>
                         <!-- Y축 (위쪽, Canvas 경계 내에 배치) -->
@@ -436,6 +444,7 @@
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </Canvas.Background>-->
+                        
                         <!-- X축 (왼쪽, Canvas 경계 내에 배치) -->
                         <Line X1="0" Y1="60" X2="120" Y2="60" Stroke="SlateGray" StrokeThickness="0.4"/>
                         <!-- Y축 (위쪽, Canvas 경계 내에 배치) -->
@@ -774,9 +783,11 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="1.4*"/>
+                        <RowDefinition Height="1.4*"/>
+                        <RowDefinition Height="1.4*"/>
+                        <RowDefinition Height="0.7*"/>
+                        <RowDefinition Height="0.7*"/>
                     </Grid.RowDefinitions>
 
                     <!--  Altitude (ft)-->
@@ -796,22 +807,26 @@
                                        Text="Altitude"
                                        FontWeight="Normal"
                                        Foreground="{Binding IsAltitudeOn, Converter={StaticResource BoolToBrushConverter4}}"
-                                       FontSize="18"
+                                       FontSize="13"
                                        HorizontalAlignment="Left"
+                                       VerticalAlignment="Center"
                                        Margin="10,0,0,0"
                                        TextAlignment="Center"/>
                             <TextBlock Grid.Column="1"
                                        Text="{Binding TotalAltitudeChange, Mode=TwoWay}"
                                        FontWeight="Normal"
                                        Foreground="{Binding IsAltitudeOn, Converter={StaticResource BoolToBrushConverter4}}"
-                                       FontSize="18"
-                                       TextAlignment="Center"/>
+                                       FontSize="15"
+                                       VerticalAlignment="Center"
+                                       TextAlignment="Left"/>
                             <TextBlock Grid.Column="2"
-                                       Text="ft  "
+                                       Text="{Binding SelectedAltitudeUnit, Converter={StaticResource EnumToDescriptionConverter6}}"
                                        FontWeight="Normal"
                                        Foreground="{Binding IsAltitudeOn, Converter={StaticResource BoolToBrushConverter4}}"
-                                       FontSize="18"
-                                       TextAlignment="Center"/>
+                                       FontSize="13"
+                                       VerticalAlignment="Center"
+                                       TextAlignment="Left"
+                                       Margin="-3,0"/>
                         </Grid>
                     </Border>
 
@@ -832,23 +847,27 @@
                                        Text="Heading"
                                        FontWeight="Normal"
                                        Foreground="{Binding IsHeadingOn, Converter={StaticResource BoolToBrushConverter4}}"
-                                       FontSize="18"
+                                       FontSize="13"
                                        HorizontalAlignment="Left"
+                                       VerticalAlignment="Center"
                                        Margin="10,0,0,0"
                                        TextAlignment="Center"/>
                             <TextBlock Grid.Column="1"
                                        Text="{Binding TotalHeadingChange, StringFormat='{}{0:F1}', Mode=TwoWay}"
                                        FontWeight="Normal"
                                        Foreground="{Binding IsHeadingOn, Converter={StaticResource BoolToBrushConverter4}}"
-                                       FontSize="18"
-                                       TextAlignment="Center"
-                                       Margin="10,0,0,0"/>
+                                       FontSize="15"
+                                       VerticalAlignment="Center"
+                                       TextAlignment="Left"
+                                       Margin="5,0,0,0"/>
                             <TextBlock Grid.Column="2"
                                        Text="deg"
                                        FontWeight="Normal"
                                        Foreground="{Binding IsHeadingOn, Converter={StaticResource BoolToBrushConverter4}}"
-                                       FontSize="18"
-                                       TextAlignment="Center"/>
+                                       FontSize="13"
+                                       VerticalAlignment="Center"
+                                       TextAlignment="Left"
+                                       Margin="-5,0"/>
                         </Grid>
                     </Border>
 
@@ -869,25 +888,81 @@
                                        Text="Speed"
                                        FontWeight="Normal"
                                        Foreground="{Binding IsSpeedOn, Converter={StaticResource BoolToBrushConverter4}}"
-                                       FontSize="18"
+                                       FontSize="13"
                                        HorizontalAlignment="Left"
+                                       VerticalAlignment="Center"
                                        Margin="10,0,0,0"
                                        TextAlignment="Center"/>
                             <TextBlock Grid.Column="1"
                                        Text="{Binding TotalSpeedChange, StringFormat='{}{0:F1}',Mode=TwoWay }"
                                        FontWeight="Normal"
                                        Foreground="{Binding IsSpeedOn, Converter={StaticResource BoolToBrushConverter4}}"
-                                       FontSize="18"
-                                       TextAlignment="Center"
-                                       Margin="10,0,0,0"/>
+                                       FontSize="15"
+                                       VerticalAlignment="Center"
+                                       TextAlignment="Left"
+                                       Margin="5,0,0,0"/>
                             <TextBlock Grid.Column="2"
-                                       Text="kn "
+                                       Text="{Binding SelectedSpeedUnit, Converter={StaticResource EnumToDescriptionConverter6}}"
                                        FontWeight="Normal"
                                        Foreground="{Binding IsSpeedOn, Converter={StaticResource BoolToBrushConverter4}}"
-                                       FontSize="18"
-                                       TextAlignment="Center"/>
+                                       FontSize="13"
+                                       VerticalAlignment="Center"
+                                       TextAlignment="Left"
+                                       Margin="-3,0"/>
                         </Grid>
                     </Border>
+
+                    <!--  Altitude (Radio Button)-->
+                    <StackPanel Grid.Row="3"
+                                Grid.Column="0"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Top">
+                        <TextBlock Text="Altitude " 
+                                   VerticalAlignment="Center"
+                                   FontSize="11" 
+                                   Margin="5,0"/>
+                        <!--  Altitude  (Feet)-->
+                        <RadioButton Content="ft"
+                                     GroupName="AltitudeRBtnGroup"
+                                     IsChecked="{Binding SelectedAltitudeUnit, Converter={StaticResource EnumToBoolConverter5}, ConverterParameter={x:Static viewmodels:MainVM+AltitudeUnitSet.Feet}}"
+                                     VerticalAlignment="Center" 
+                                     Margin="5,0"/>
+                        <!--  Altitude (Meters)-->
+                        <RadioButton Content="m"
+                                     GroupName="AltitudeRBtnGroup"
+                                     IsChecked="{Binding SelectedAltitudeUnit, Converter={StaticResource EnumToBoolConverter5}, ConverterParameter={x:Static viewmodels:MainVM+AltitudeUnitSet.Meters}}"
+                                     VerticalAlignment="Center" 
+                                     Margin="15,0"/>
+                    </StackPanel>
+
+                    <!--  Speed    (Radio Button)-->
+                    <StackPanel Grid.Row="4"
+                                Grid.Column="0"
+                                Orientation="Horizontal"
+                                VerticalAlignment="Top">
+                        <TextBlock Text="Speed " 
+                                   VerticalAlignment="Center" 
+                                   FontSize="11" 
+                                   Margin="5,0"/>
+                        <!--  Altitude             (knots)-->
+                        <RadioButton Content="kn"
+                                     GroupName="SpeedRBtnGroup"
+                                     IsChecked="{Binding SelectedSpeedUnit, Converter={StaticResource EnumToBoolConverter5}, ConverterParameter={x:Static viewmodels:MainVM+SpeedUnitSet.knots}}"
+                                     VerticalAlignment="Center" 
+                                     Margin="13,0"/>
+                        <!--  Altitude (KilometersPerHour)-->
+                        <RadioButton Content="km/h"
+                                     GroupName="SpeedRBtnGroup"
+                                     IsChecked="{Binding SelectedSpeedUnit, Converter={StaticResource EnumToBoolConverter5}, ConverterParameter={x:Static viewmodels:MainVM+SpeedUnitSet.KilometersPerHour}}"
+                                     VerticalAlignment="Center" 
+                                     Margin="2,0"/>
+                        <!--  Altitude   (MetersPerSecond)-->
+                        <RadioButton Content="m/s"
+                                     GroupName="SpeedRBtnGroup"
+                                     IsChecked="{Binding SelectedSpeedUnit, Converter={StaticResource EnumToBoolConverter5}, ConverterParameter={x:Static viewmodels:MainVM+SpeedUnitSet.MetersPerSecond}}"
+                                     VerticalAlignment="Center" 
+                                     Margin="12,0"/>
+                    </StackPanel>
 
                     <!--  ON/OFF (버튼 1)-->
                     <StackPanel Grid.Column="1"
@@ -896,7 +971,7 @@
                                 VerticalAlignment="Center"
                                 Margin="5,0,-5,0">
                         <ToggleButton Name="AltitudeToggle"
-                                      Height="35"
+                                      Height="26"
                                       FontSize="11"
                                       FontFamily="Montserrat"
                                       Cursor="Hand"
@@ -938,7 +1013,7 @@
                                 VerticalAlignment="Center"
                                 Margin="5,0,-5,0">
                         <ToggleButton Name="HeadingToggle"
-                                      Height="35"
+                                      Height="26"
                                       FontSize="11"
                                       FontFamily="Montserrat"
                                       Cursor="Hand"
@@ -980,7 +1055,7 @@
                                 VerticalAlignment="Center"
                                 Margin="5,0,-5,0">
                         <ToggleButton Name="SpeedToggle"
-                                      Height="35"
+                                      Height="26"
                                       FontSize="11"
                                       FontFamily="Montserrat"
                                       Cursor="Hand"
