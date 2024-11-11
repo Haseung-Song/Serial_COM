@@ -654,7 +654,7 @@ namespace Serial_COM.ViewModels
                 {
                     _throttleChange = value;
                     uint elipseThrottleY = value > 105 ? 105 : value;
-                    ElipseThrottleY = (105 - elipseThrottleY) * 1.05;
+                    ElipseThrottleY = (107 - elipseThrottleY) * 1.07;
                     OnPropertyChanged();
                 }
 
