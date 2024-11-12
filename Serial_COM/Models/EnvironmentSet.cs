@@ -11,9 +11,9 @@ namespace Serial_COM.Models
     {
         #region [프로퍼티]
 
-        public event Action<byte[], DateTime> MessageReceived;
-
         public SerialPort serialPort;
+
+        public event Action<byte[], DateTime> MessageReceived;
 
         #endregion
 
@@ -134,18 +134,26 @@ namespace Serial_COM.Models
         {
             try
             {
-                int bytesToRead = serialPort.BytesToRead;
-                byte[] buffer = new byte[bytesToRead];
-                int bytesToSave = serialPort.Read(buffer, 0, bytesToRead);
-                //Parser parser = new Parser();
-                //byte[] decodingData = parser.CheckDecodedDataCondition(buffer);
-                //foreach (byte dd in decodingData)
-                //{
-                //    Console.Write($"{dd:x2} ");
-                //}
-                //Debug.WriteLine($"total [{bytesToSave} bytes] read from '{serialPort.PortName}' port.");
-                //Console.WriteLine("");
-                MessageReceived?.Invoke(buffer, DateTime.Now);
+                // 1) [BytesToRead] 함수 : [수신 버퍼]에 있는 바이트를 통으로 수신
+                //int bytesToRead = serialPort.BytesToRead;
+                //byte[] buffer = new byte[bytesToRead];
+                //int bytesToSave = serialPort.Read(buffer, 0, bytesToRead);
+                //MessageReceived?.Invoke(buffer, DateTime.Now);
+
+                Parser parser = new Parser();
+                // 2) [ReadByte()] 함수 : 바이트를 한 번에 각각 [한 바이트씩] 수신
+                while (serialPort.BytesToRead > 0)
+                {
+                    int currentByte = serialPort.ReadByte();
+                    byte byteData = (byte)currentByte;
+                    byte[] decodingData = parser.CheckDecodingDataCondition2(byteData);
+                    if (decodingData != null)
+                    {
+                        MessageReceived?.Invoke(decodingData, DateTime.Now);
+                    }
+
+                }
+
             }
             catch (Exception ex)
             {

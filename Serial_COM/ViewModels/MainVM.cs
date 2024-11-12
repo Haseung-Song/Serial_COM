@@ -18,16 +18,15 @@ namespace Serial_COM.ViewModels
         private EnvironmentSet _environmentSet;
         private ObservableCollection<string> _lstBoxItem;
         private bool _isPortConnected;
-
         private List<string> _portNames;
         private List<int> _baudRates;
         private string _selectingPort;
         private int _selectedBaudRate;
+
         private AltitudeUnitSet _selectedAltitudeUnit;
         private SpeedUnitSet _selectedSpeedUnit;
 
         private bool _isPowerSwitch;
-
         private bool _isEngineStart;
         private bool _isEngineRestart;
         private bool _isEngineKill;
@@ -45,18 +44,20 @@ namespace Serial_COM.ViewModels
         private bool _isZoomKnob;
         private bool _isFocusKnob;
 
+        private bool _isAltitudeOn;
         private int _altitudeKnobChange;
         private double _altitudeKnobSum;
         private double _totalAltitudeChange;
-        private bool _isAltitudeOn;
+
+        private bool _isHeadingOn;
         private int _headingKnobChange;
         private double _headingKnobSum;
         private double _totalHeadingChange;
-        private bool _isHeadingOn;
+
+        private bool _isSpeedOn;
         private int _speedKnobChange;
         private double _speedKnobSum;
         private double _totalSpeedChange;
-        private bool _isSpeedOn;
 
         private int _yawChange;
         private double _elipseYawX;
@@ -77,22 +78,22 @@ namespace Serial_COM.ViewModels
 
         #region [Enum]
 
-        public enum AltitudeUnitSet : byte
+        public enum AltitudeUnitSet
         {
             [Description("ft")]
-            Feet = 0b00,
+            Feet = 0,
             [Description("m")]
-            Meters = 0b01
+            Meters
         }
 
-        public enum SpeedUnitSet : byte
+        public enum SpeedUnitSet
         {
             [Description("kn")]
-            knots = 0b00,
+            knots = 0,
             [Description("km/h")]
-            KilometersPerHour = 0b01,
+            KilometersPerHour,
             [Description("m/s")]
-            MetersPerSecond = 0b10
+            MetersPerSecond
         }
 
         #endregion
@@ -199,7 +200,7 @@ namespace Serial_COM.ViewModels
         /// </summary>
         public string SelectedPort
         {
-            get => _selectingPort = "COM11";
+            get => _selectingPort;
             set
             {
                 if (_selectingPort != value)
@@ -217,7 +218,7 @@ namespace Serial_COM.ViewModels
         /// </summary>
         public int SelectedBaudRate
         {
-            get => _selectedBaudRate = 115200;
+            get => _selectedBaudRate;
             set
             {
                 if (_selectedBaudRate != value)
@@ -437,6 +438,11 @@ namespace Serial_COM.ViewModels
 
         }
 
+        private double Clamp(double value, double max, double min)
+        {
+            return value > max ? max : value < min ? min : value;
+        }
+
         /// <summary>
         /// [AltitudeKnobChange]
         /// [Byte #2.]
@@ -456,6 +462,9 @@ namespace Serial_COM.ViewModels
 
         }
 
+        private const int MaxAltitudeChange = 60000;
+        private const int MinAltitudeChange = 0;
+
         /// <summary>
         /// [AltitudeKnobSum]
         /// </summary>
@@ -466,15 +475,13 @@ namespace Serial_COM.ViewModels
             {
                 if (_altitudeKnobSum != value)
                 {
-                    _altitudeKnobSum = value < 0 ? 0 : value;
+                    _altitudeKnobSum = Clamp(value, MaxAltitudeChange, MinAltitudeChange);
                     OnPropertyChanged();
                 }
 
             }
 
         }
-
-        private const int MaxAltitudeChange = 60000;
 
         /// <summary>
         /// [TotalAltitudeChange]
@@ -486,7 +493,7 @@ namespace Serial_COM.ViewModels
             {
                 if (_totalAltitudeChange != value)
                 {
-                    _totalAltitudeChange = value > MaxAltitudeChange ? MaxAltitudeChange : value;
+                    _totalAltitudeChange = value;
                     OnPropertyChanged();
                 }
 
@@ -532,6 +539,9 @@ namespace Serial_COM.ViewModels
 
         }
 
+        private const double MaxHeadingChange = 3599.0;
+        private const double MinHeadingChange = 0.0;
+
         /// <summary>
         /// [HeadingKnobSum]
         /// </summary>
@@ -542,15 +552,13 @@ namespace Serial_COM.ViewModels
             {
                 if (_headingKnobSum != value)
                 {
-                    _headingKnobSum = value < 0 ? 0 : value;
+                    _headingKnobSum = Clamp(value, MaxHeadingChange, MinHeadingChange);
                     OnPropertyChanged();
                 }
 
             }
 
         }
-
-        private const double MaxHeadingChange = 3599.0;
 
         /// <summary>
         /// [TotalHeadingChange]
@@ -562,7 +570,7 @@ namespace Serial_COM.ViewModels
             {
                 if (_totalHeadingChange != value)
                 {
-                    _totalHeadingChange = value > MaxHeadingChange ? MaxHeadingChange / 10 : value / 10;
+                    _totalHeadingChange = HeadingKnobSum / 10;
                     OnPropertyChanged();
                 }
 
@@ -608,6 +616,9 @@ namespace Serial_COM.ViewModels
 
         }
 
+        private const double MaxSpeedChange = 1100.0;
+        private const double MinSpeedChange = 0.0;
+
         /// <summary>
         /// [SpeedKnobSum]
         /// </summary>
@@ -618,15 +629,13 @@ namespace Serial_COM.ViewModels
             {
                 if (_speedKnobSum != value)
                 {
-                    _speedKnobSum = value < 0 ? 0 : value;
+                    _speedKnobSum = Clamp(value, MaxSpeedChange, MinSpeedChange);
                     OnPropertyChanged();
                 }
 
             }
 
         }
-
-        private const double MaxSpeedChange = 1100.0;
 
         /// <summary>
         /// [TotalSpeedChange]
@@ -638,7 +647,7 @@ namespace Serial_COM.ViewModels
             {
                 if (_totalSpeedChange != value)
                 {
-                    _totalSpeedChange = value > MaxSpeedChange ? MaxSpeedChange / 10 : value / 10;
+                    _totalSpeedChange = SpeedKnobSum / 10;
                     OnPropertyChanged();
                 }
 
@@ -717,7 +726,7 @@ namespace Serial_COM.ViewModels
                 {
                     _throttleChange = value;
                     uint elipseThrottleY = value > 105 ? 105 : value;
-                    ElipseThrottleY = (107 - elipseThrottleY) * 1.07;
+                    ElipseThrottleY = (105 - elipseThrottleY) * 1.05;
                     OnPropertyChanged();
                 }
 
@@ -1185,7 +1194,12 @@ namespace Serial_COM.ViewModels
                 if (encodingData != null)
                 {
                     EnvironmentSet.serialPort.Write(encodingData, 0, encodingData.Length);
-                    Console.WriteLine("Data transmitted: " + BitConverter.ToString(encodingData));
+                    Console.Write("Message: ");
+                    foreach (byte ed in encodingData)
+                    {
+                        Console.Write($"{ed:x2} ");
+                    }
+                    Console.WriteLine();
                 }
 
             }
@@ -1195,8 +1209,8 @@ namespace Serial_COM.ViewModels
             }
             finally
             {
-                Debug.WriteLine("Message Transmitted at " + "[" + currentTime + "]");
-                Debug.WriteLine("");
+                Console.WriteLine("Message transmitted at " + "[" + currentTime + "]");
+                Console.WriteLine();
             }
 
         }
@@ -1216,7 +1230,6 @@ namespace Serial_COM.ViewModels
                 if (parserData != null)
                 {
                     IsPowerSwitch = parserData.PowerSwitch == 1;
-
                     IsEngineStart = parserData.EngineStart == 1;
                     IsEngineRestart = parserData.EngineRestart == 1;
                     IsEngineKill = parserData.EngineKill == 1;
@@ -1260,7 +1273,13 @@ namespace Serial_COM.ViewModels
                     JoyStickXChange = parserData.JoyStickXChange;
                     JoyStickYChange = parserData.JoyStickYChange;
                 }
-
+                //byte[] decodingData = parser.CheckDecodingDataCondition(messageListen);
+                //Console.Write("Message: ");
+                //foreach (byte dd in decodingData)
+                //{
+                //    Console.Write($"{dd:x2} ");
+                //}
+                //Console.WriteLine();
             }
             catch (Exception ex)
             {
@@ -1268,8 +1287,8 @@ namespace Serial_COM.ViewModels
             }
             finally
             {
-                Debug.WriteLine("Message received at " + "[" + currentTime + "]");
-                Debug.WriteLine("");
+                Console.WriteLine("Message received at " + "[" + currentTime + "]");
+                Console.WriteLine();
             }
 
         }
@@ -1280,7 +1299,7 @@ namespace Serial_COM.ViewModels
         /// <param name="msg"></param>
         private void AddLogMessage(string msg)
         {
-            string timestamp = DateTime.Now.ToString("HH:mm:ss-ffff");
+            string timestamp = DateTime.Now.ToString("HH:mm:ss:ffff");
             LstBoxItem.Add($"[{timestamp}] {msg}");
         }
         #endregion

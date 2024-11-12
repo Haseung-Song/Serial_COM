@@ -11,7 +11,10 @@ namespace Serial_COM.Models
         private const byte STX = 0x02;
         private const byte DLE = 0x10;
         private const byte ETX = 0x03;
+        private readonly List<byte> byteList = new List<byte>();
 
+        // [DLE] Flag 설정
+        private bool isCtrlText = false;
         /// <summary>
         /// [예시 데이터 함수]
         /// </summary>
@@ -81,14 +84,14 @@ namespace Serial_COM.Models
                     // 비행조종장치 LCD 단위 SET (Altitude)
                     // [Byte #1.]
                     // 7(MSB), 6번째 비트를 추출
-                    case 0b00:
-                        data[nCnt] |= 0b00 << 6;
+                    case 0:
+                        data[nCnt] |= 0 << 6;
                         break;
                     // 비행조종장치 LCD 단위 SET (Altitude)
                     // [Byte #1.]
                     // 7(MSB), 6번째 비트를 추출
-                    case 0b01:
-                        data[nCnt] |= 0b01 << 6;
+                    case 1:
+                        data[nCnt] |= 1 << 6;
                         break;
 
                     default:
@@ -100,20 +103,20 @@ namespace Serial_COM.Models
                     // 비행조종장치 LCD 단위 SET (Altitude)
                     // [Byte #1.]
                     // 3, 2번째 비트를 추출
-                    case 0b00:
-                        data[nCnt] |= 0b00 << 2;
+                    case 0:
+                        data[nCnt] |= 0 << 2;
                         break;
                     // 비행조종장치 LCD 단위 SET (Altitude)
                     // [Byte #1.]
                     // 3, 2번째 비트를 추출
-                    case 0b01:
-                        data[nCnt] |= 0b01 << 2;
+                    case 1:
+                        data[nCnt] |= 1 << 2;
                         break;
                     // 비행조종장치 LCD 단위 SET (Altitude)
                     // [Byte #1.]
                     // 3, 2번째 비트를 추출
-                    case 0b10:
-                        data[nCnt] |= 0b10 << 2;
+                    case 2:
+                        data[nCnt] |= 2 << 2;
                         break;
 
                     default:
@@ -170,8 +173,9 @@ namespace Serial_COM.Models
             // 이후, [Checksum, ETX] 제외한 총 합 [6]을 빼준 값을 반환했을 때, 온전한 msgData! 
             try
             {
-                byte[] decodingData = CheckDecodingDataCondition(data);
-                byte[] msgData = decodingData.Skip(4).Take(decodingData.Length - 6).ToArray();
+                //byte[] decodingData = CheckDecodingDataCondition(data);
+                //byte[] msgData = decodingData.Skip(4).Take(decodingData.Length - 6).ToArray();
+                byte[] msgData = data.Skip(4).Take(data.Length - 6).ToArray();
                 using (ByteStream stream = new ByteStream(msgData, 0, msgData.Length))
                 {
                     CCUtoCPCField field = new CCUtoCPCField
@@ -419,6 +423,48 @@ namespace Serial_COM.Models
             // 5. [ETX](0x03) 추가
             decodingData.Add(ETX);
             return decodingData.ToArray();
+        }
+
+        public byte[] CheckDecodingDataCondition2(byte check)
+        {
+            // 1. [STX](0x02) 확인
+            if (check == STX && byteList.Count == 0)
+            {
+                byteList.Clear(); // 버퍼 초기화
+                byteList.Add(check);
+                return null;
+            }
+            // 2. [DLE](0x10) 확인
+            if (check == DLE && !isCtrlText)
+            {
+                isCtrlText = true;
+                return null;
+            }
+            // [DLE] Flag 설정 시, [제어 문자]로 간주 이후
+            // [일반 메시지] 추가 && [DLE] Flag 값 = false
+            if (isCtrlText)
+            {
+                byteList.Add(check);
+                isCtrlText = false;
+            }
+            // [DLE] Flag 설정을 하지 않을 시,
+            // [일반 메시지] 간주 && => [일반 메시지] 추가
+            else
+            {
+                byteList.Add(check);
+            }
+            // 5. [ETX](0x03) 확인
+            if (check == ETX)
+            {
+                // 3. [Length] ~ [Message] 이후, [Checksum 단계]: [XOR] 반복 계산
+                byte checkSum = CalculateChecksum(byteList.Skip(1).ToArray());
+                // 4. [Checksum]  추가 (ETX 전 Checksum 삽입)!
+                byteList.Insert(byteList.Count - 1, checkSum);
+                byte[] buffer = byteList.ToArray(); // 완성된 패킷 복사
+                byteList.Clear(); // 패킷 완료 후, 버퍼 초기화
+                return buffer;
+            }
+            return null; // 패킷이 완료되지 않으면 null 반환
         }
 
         /// <summary>
