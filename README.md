@@ -1,1 +1,1 @@
-# Serial_COM 구현 (완료: 100%)
+# Serial_COM 구현 (완료)
