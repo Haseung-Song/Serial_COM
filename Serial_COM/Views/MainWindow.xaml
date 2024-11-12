@@ -9,6 +9,7 @@
         xmlns:local4="clr-namespace:BoolToBrushConverter4"
         xmlns:local5="clr-namespace:EnumToBoolConverter5"
         xmlns:local6="clr-namespace:EnumToDescriptionConverter6"
+        xmlns:local7="clr-namespace:AutoScrollViewer"
         xmlns:viewmodels="clr-namespace:Serial_COM.ViewModels"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainVM}"
         mc:Ignorable="d"
@@ -772,7 +773,6 @@
                 <ColumnDefinition Width="1.55*"/>
                 <ColumnDefinition Width="0.5*"/>
             </Grid.ColumnDefinitions>
-
             <Border Grid.Column="0"
                     BorderBrush="LightGray"
                     BorderThickness="1"
@@ -1100,12 +1100,12 @@
                        VerticalAlignment="Top"
                        HorizontalAlignment="Left"
                        Margin="12,-2,0,0"/>
-
             <!--  [ListBox] & [ListBoxItem]-->
             <Border Grid.Column="1"
                     Margin="5">
                 <ListBox ScrollViewer.HorizontalScrollBarVisibility="Auto"
                          ScrollViewer.VerticalScrollBarVisibility="Auto"
+                         local7:AutoScrollViewer.AutoScroll="True"
                          ItemsSource="{Binding LstBoxItem}"
                          BorderThickness="1"
                          Background="White"

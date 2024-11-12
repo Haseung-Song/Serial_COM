@@ -1216,7 +1216,7 @@ namespace Serial_COM.ViewModels
             }
             finally
             {
-                Console.WriteLine("Message transmitted at " + "[" + currentTime + "]");
+                Console.WriteLine("Message sended at " + "[" + currentTime + "]");
                 Console.WriteLine();
             }
 
