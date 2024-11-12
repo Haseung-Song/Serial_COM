@@ -8,13 +8,15 @@ namespace Serial_COM.Models
 {
     public class Parser
     {
-        private const byte STX = 0x02;
-        private const byte DLE = 0x10;
-        private const byte ETX = 0x03;
+        private const byte STX = 0x02; // 시작 문자
+        private const byte DLE = 0x10; // 제어 문자
+        private const byte ETX = 0x03; // 종료 문자
+        private bool isCtrlText = false;
+        private const byte dstID = 0xC1; // CPC (dstID) 식별자
+        private const byte srcID = 0xA5; // CCU (srcID) 식별자
+        // 연속된 데이터 스트림 => 수신 데이터 누적용 버퍼 목적!
         private readonly List<byte> byteList = new List<byte>();
 
-        // [DLE] Flag 설정
-        private bool isCtrlText = false;
         /// <summary>
         /// [예시 데이터 함수]
         /// </summary>
@@ -22,7 +24,7 @@ namespace Serial_COM.Models
         {
             // 예시 데이터 [exampleData1] 설정: 목적지 0x10, 송신지 0x03, 메시지: 0x38, 0x39
             byte[] examplesData1 = { STX, DLE, 0x02, DLE, 0x10, DLE, 0x03, 0x38, 0x39, DLE, ETX };
-            byte[] filteredData1 = CheckDecodingDataCondition(examplesData1);
+            byte[] filteredData1 = CheckFullDecodingDataCondition(examplesData1);
 
             //Console.WriteLine("Original Data: " + BitConverter.ToString(examplesData1));
             //Console.WriteLine("Filtered Data (with DLE Escaping): " + BitConverter.ToString(filteredData1));
@@ -32,7 +34,7 @@ namespace Serial_COM.Models
 
             // 예시 데이터 [exampleData2] 설정: 목적지 0x22, 송신지 0x33, 메시지: 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x10, 0x11
             byte[] examplesData2 = { STX, 0x08, 0x22, 0x33, 0x00, 0x01, DLE, 0x02, DLE, 0x03, 0x04, 0x05, DLE, 0x10, 0x11, ETX };
-            byte[] filteredData2 = CheckDecodingDataCondition(examplesData2);
+            byte[] filteredData2 = CheckFullDecodingDataCondition(examplesData2);
 
             //Console.WriteLine("Original Data: " + BitConverter.ToString(examplesData2));
             //Console.WriteLine("Filtered Data (with DLE Escaping): " + BitConverter.ToString(filteredData2));
@@ -53,7 +55,6 @@ namespace Serial_COM.Models
             {
                 int nCnt = 0;
                 byte[] data = new byte[8];
-
                 // 비행조종장치 LCD SET (Altitude)
                 // [Byte #0.]
                 // 7번째 비트(MSB)를 추출
@@ -61,7 +62,6 @@ namespace Serial_COM.Models
                 {
                     data[nCnt] |= 1 << 7;
                 }
-
                 // 비행조종장치 LCD SET (Heading)
                 // [Byte #0.]
                 // 6번째 비트를 추출
@@ -69,7 +69,6 @@ namespace Serial_COM.Models
                 {
                     data[nCnt] |= 1 << 6;
                 }
-
                 // 비행조종장치 LCD SET (Speed)
                 // [Byte #0.]
                 // 5번째 비트를 추출
@@ -77,7 +76,6 @@ namespace Serial_COM.Models
                 {
                     data[nCnt] |= 1 << 5;
                 }
-
                 nCnt++; // [Byte #0.] 파싱 후, 증가 ++
                 switch (field.Altitude)
                 {
@@ -97,7 +95,6 @@ namespace Serial_COM.Models
                     default:
                         break;
                 }
-
                 switch (field.Speed)
                 {
                     // 비행조종장치 LCD 단위 SET (Altitude)
@@ -122,7 +119,6 @@ namespace Serial_COM.Models
                     default:
                         break;
                 }
-
                 nCnt++; // [Byte #1.] 파싱 후, 증가 ++
                 // 비행조종장치 고도(Altitude) 표시 값
                 ushort altitudeValue = (ushort)field.TotalAltitudeChange;
@@ -173,9 +169,12 @@ namespace Serial_COM.Models
             // 이후, [Checksum, ETX] 제외한 총 합 [6]을 빼준 값을 반환했을 때, 온전한 msgData! 
             try
             {
-                //byte[] decodingData = CheckDecodingDataCondition(data);
-                //byte[] msgData = decodingData.Skip(4).Take(decodingData.Length - 6).ToArray();
-                byte[] msgData = data.Skip(4).Take(data.Length - 6).ToArray();
+                // 1) [BytesToRead] 함수 : [수신 버퍼]에 있는 바이트 통으로 수신!
+                byte[] decodingData = CheckFullDecodingDataCondition(data);
+                byte[] msgData = decodingData.Skip(4).Take(decodingData.Length - 6).ToArray();
+
+                // 2) [ReadByte()] 함수 : 각 바이트를 한 번에 [한 바이트씩] 수신!
+                //byte[] msgData = data.Skip(4).Take(data.Length - 6).ToArray();
                 using (ByteStream stream = new ByteStream(msgData, 0, msgData.Length))
                 {
                     CCUtoCPCField field = new CCUtoCPCField
@@ -301,10 +300,7 @@ namespace Serial_COM.Models
         public byte[] CheckEncodingDataCondition(byte[] check)
         {
             List<byte> encodingData = new List<byte>();
-            bool isCtrlText;
-            byte checkSum = 0x00; // Checksum 초기화
-            byte dstID = 0xC1; // CPC (dstID) 식별자
-            byte srcID = 0xA5; // CCU (srcID) 식별자
+            byte checkSum = 0x00; // [Checksum] 초기화
             // 1. [STX](0x02) 추가
             encodingData.Add(STX);
             // 2. [STX](0x02) 이후
@@ -381,11 +377,9 @@ namespace Serial_COM.Models
         /// </summary>
         /// <param name="check"></param>
         /// <returns></returns>
-        public byte[] CheckDecodingDataCondition(byte[] check)
+        public byte[] CheckFullDecodingDataCondition(byte[] check)
         {
             List<byte> decodingData = new List<byte>();
-            // [DLE] Flag 설정
-            bool isCtrlText = false;
             // 1. [STX](0x02) 추가
             decodingData.Add(STX);
             // 2. [STX](0x02) 이후
@@ -425,7 +419,7 @@ namespace Serial_COM.Models
             return decodingData.ToArray();
         }
 
-        public byte[] CheckDecodingDataCondition2(byte check)
+        public byte[] CheckEachDecodingDataCondition(byte check)
         {
             // 1. [STX](0x02) 확인
             if (check == STX && byteList.Count == 0)

@@ -438,11 +438,6 @@ namespace Serial_COM.ViewModels
 
         }
 
-        private double Clamp(double value, double max, double min)
-        {
-            return value > max ? max : value < min ? min : value;
-        }
-
         /// <summary>
         /// [AltitudeKnobChange]
         /// [Byte #2.]
@@ -513,7 +508,7 @@ namespace Serial_COM.ViewModels
                 {
                     _isAltitudeOn = value;
                     OnPropertyChanged();
-                    TransmitMessage();
+                    SendupMessage();
                 }
 
             }
@@ -590,7 +585,7 @@ namespace Serial_COM.ViewModels
                 {
                     _isHeadingOn = value;
                     OnPropertyChanged();
-                    TransmitMessage();
+                    SendupMessage();
                 }
 
             }
@@ -667,7 +662,7 @@ namespace Serial_COM.ViewModels
                 {
                     _isSpeedOn = value;
                     OnPropertyChanged();
-                    TransmitMessage();
+                    SendupMessage();
                 }
 
             }
@@ -1161,9 +1156,21 @@ namespace Serial_COM.ViewModels
         }
 
         /// <summary>
+        /// [Clamp 함수: max & min 설정]
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="max"></param>
+        /// <param name="min"></param>
+        /// <returns></returns>
+        private double Clamp(double value, double max, double min)
+        {
+            return value > max ? max : value < min ? min : value;
+        }
+
+        /// <summary>
         /// [메시지 송신 기능]
         /// </summary>
-        private void TransmitMessage()
+        private void SendupMessage()
         {
             CPCtoCCUField field = new CPCtoCCUField
             {
@@ -1176,7 +1183,7 @@ namespace Serial_COM.ViewModels
                 TotalHeadingChange = TotalHeadingChange * 10, // (res) * 10
                 TotalSpeedChange = TotalSpeedChange * 10 // (res) * 10
             };
-            OnMessageTransmit(field, DateTime.Now);
+            OnMessageSendup(field, DateTime.Now);
         }
 
         /// <summary>
@@ -1184,7 +1191,7 @@ namespace Serial_COM.ViewModels
         /// </summary>
         /// <param name="field"></param>
         /// <param name="currentTime"></param>
-        private void OnMessageTransmit(CPCtoCCUField field, DateTime currentTime)
+        private void OnMessageSendup(CPCtoCCUField field, DateTime currentTime)
         {
             try
             {
@@ -1220,7 +1227,7 @@ namespace Serial_COM.ViewModels
         /// </summary>
         /// <param name="messageListen"></param>
         /// <param name="currentTime"></param>
-        private void OnMessageReceived(byte[] messageListen, DateTime currentTime)
+        private void OnMessageReceived(byte[] messageListen)
         {
             try
             {
@@ -1242,17 +1249,17 @@ namespace Serial_COM.ViewModels
                     AltitudeKnobChange = parserData.AltitudeKnobChange;
                     AltitudeKnobSum += AltitudeKnobChange;
                     TotalAltitudeChange = AltitudeKnobSum;
-                    TransmitMessage();
+                    SendupMessage();
 
                     HeadingKnobChange = parserData.HeadingKnobChange;
                     HeadingKnobSum += HeadingKnobChange;
                     TotalHeadingChange = HeadingKnobSum;
-                    TransmitMessage();
+                    SendupMessage();
 
                     SpeedKnobChange = parserData.SpeedKnobChange;
                     SpeedKnobSum += SpeedKnobChange;
                     TotalSpeedChange = SpeedKnobSum;
-                    TransmitMessage();
+                    SendupMessage();
 
                     YawChange = parserData.YawChange;
                     ThrottleChange = parserData.ThrottleChange;
@@ -1273,22 +1280,11 @@ namespace Serial_COM.ViewModels
                     JoyStickXChange = parserData.JoyStickXChange;
                     JoyStickYChange = parserData.JoyStickYChange;
                 }
-                //byte[] decodingData = parser.CheckDecodingDataCondition(messageListen);
-                //Console.Write("Message: ");
-                //foreach (byte dd in decodingData)
-                //{
-                //    Console.Write($"{dd:x2} ");
-                //}
-                //Console.WriteLine();
+
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.ToString());
-            }
-            finally
-            {
-                Console.WriteLine("Message received at " + "[" + currentTime + "]");
-                Console.WriteLine();
             }
 
         }
