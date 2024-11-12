@@ -134,37 +134,37 @@ namespace Serial_COM.Models
             Parser parser = new Parser();
             try
             {
-                // 1) [BytesToRead] 함수 : [수신 버퍼]에 있는 바이트 통으로 수신!
-                int bytesToRead = serialPort.BytesToRead;
-                byte[] buffer = new byte[bytesToRead];
-                int bytesToSave = serialPort.Read(buffer, 0, bytesToRead);
-                MessageReceived?.Invoke(buffer);
-                byte[] decodingData1 = parser.CheckFullDecodingDataCondition(buffer);
-                Console.Write("Message: ");
-                foreach (byte dd in decodingData1)
-                {
-                    Console.Write($"{dd:x2} ");
-                }
-                Console.WriteLine();
-
-                // 2) [ReadByte()] 함수 : 각 바이트를 한 번에 [한 바이트씩] 수신!
-                //while (serialPort.BytesToRead > 0)
+                // 1) [BytesToRead] 함수 : [수신 버퍼]에 있는 바이트를 통으로 수신!
+                //int bytesToRead = serialPort.BytesToRead;
+                //byte[] buffer = new byte[bytesToRead];
+                //int bytesToSave = serialPort.Read(buffer, 0, bytesToRead);
+                //byte[] decodingData1 = parser.CheckFullDecodingDataCondition(buffer);
+                //MessageReceived?.Invoke(decodingData1);
+                //Console.Write("Message: ");
+                //foreach (byte dd in decodingData1)
                 //{
-                //    int currentByte = serialPort.ReadByte();
-                //    byte byteData = (byte)currentByte;
-                //    byte[] decodingData2 = parser.CheckEachDecodingDataCondition(byteData);
-                //    if (decodingData2 != null)
-                //    {
-                //        MessageReceived?.Invoke(decodingData2);
-                //        Console.Write("Message: ");
-                //        foreach (byte dd in decodingData2)
-                //        {
-                //            Console.Write($"{dd:x2} ");
-                //        }
-                //        Console.WriteLine();
-                //    }
-
+                //    Console.Write($"{dd:x2} ");
                 //}
+                //Console.WriteLine();
+
+                // 2) [ReadByte()] 함수 : 바이트를 한 번에 각각 [한 바이트씩] 수신!
+                while (serialPort.BytesToRead > 0)
+                {
+                    int currentByte = serialPort.ReadByte();
+                    byte byteData = (byte)currentByte;
+                    byte[] decodingData2 = parser.CheckEachDecodingDataCondition(byteData);
+                    if (decodingData2 != null)
+                    {
+                        MessageReceived?.Invoke(decodingData2);
+                        Console.Write("Message: ");
+                        foreach (byte dd in decodingData2)
+                        {
+                            Console.Write($"{dd:x2} ");
+                        }
+                        Console.WriteLine();
+                    }
+
+                }
 
             }
             catch (Exception ex)

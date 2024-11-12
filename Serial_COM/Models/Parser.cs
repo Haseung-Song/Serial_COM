@@ -28,7 +28,6 @@ namespace Serial_COM.Models
 
             //Console.WriteLine("Original Data: " + BitConverter.ToString(examplesData1));
             //Console.WriteLine("Filtered Data (with DLE Escaping): " + BitConverter.ToString(filteredData1));
-
             // Original Data: 02-10-02-10-10-10-03-38-39-10-03 (일치)
             // Filtered Data (with DLE Escaping): 02-02-10-03-38-39-10-03 (일치)
 
@@ -38,7 +37,6 @@ namespace Serial_COM.Models
 
             //Console.WriteLine("Original Data: " + BitConverter.ToString(examplesData2));
             //Console.WriteLine("Filtered Data (with DLE Escaping): " + BitConverter.ToString(filteredData2));
-
             // Original Data: 02-08-22-33-00-01-10-02-10-03-04-05-10-10-11-03 (일치)
             // Filtered Data (with DLE Escaping): 02-08-22-33-00-01-02-03-04-05-10-11-19-03 (일치)
         }
@@ -55,6 +53,7 @@ namespace Serial_COM.Models
             {
                 int nCnt = 0;
                 byte[] data = new byte[8];
+
                 // 비행조종장치 LCD SET (Altitude)
                 // [Byte #0.]
                 // 7번째 비트(MSB)를 추출
@@ -62,6 +61,7 @@ namespace Serial_COM.Models
                 {
                     data[nCnt] |= 1 << 7;
                 }
+
                 // 비행조종장치 LCD SET (Heading)
                 // [Byte #0.]
                 // 6번째 비트를 추출
@@ -69,6 +69,7 @@ namespace Serial_COM.Models
                 {
                     data[nCnt] |= 1 << 6;
                 }
+
                 // 비행조종장치 LCD SET (Speed)
                 // [Byte #0.]
                 // 5번째 비트를 추출
@@ -76,6 +77,7 @@ namespace Serial_COM.Models
                 {
                     data[nCnt] |= 1 << 5;
                 }
+
                 nCnt++; // [Byte #0.] 파싱 후, 증가 ++
                 switch (field.Altitude)
                 {
@@ -95,6 +97,7 @@ namespace Serial_COM.Models
                     default:
                         break;
                 }
+
                 switch (field.Speed)
                 {
                     // 비행조종장치 LCD 단위 SET (Altitude)
@@ -120,6 +123,7 @@ namespace Serial_COM.Models
                         break;
                 }
                 nCnt++; // [Byte #1.] 파싱 후, 증가 ++
+
                 // 비행조종장치 고도(Altitude) 표시 값
                 ushort altitudeValue = (ushort)field.TotalAltitudeChange;
                 // [Byte #2.] 상위 바이트(MSB)
@@ -164,18 +168,14 @@ namespace Serial_COM.Models
         /// <returns></returns>
         public CCUtoCPCField ParseReceiver(byte[] data)
         {
-            // filteredData = [CheckDataCondition] 함수에서 [DLE]를 제외한 실제 메시지를 포함!
-            // msgData = [filteredData]에서 [STX, Length, Destination, Source] 4바이트를 제외!
-            // 이후, [Checksum, ETX] 제외한 총 합 [6]을 빼준 값을 반환했을 때, 온전한 msgData! 
+            // [CheckFullDecodingDataCondition] 함수 및 [CheckEachDecodingDataCondition] 함수
+            // filteredMsg = 위의 두 함수에서 각각 [DLE] 제어 문자를 제외 후 실제 메시지 반환 
+            // 1) [STX, Length, Destination, Source] 4바이트를 제외!
+            // 2) [Checksum 및 ETX] 제외한 총 합 [6]을 빼준 값을 반환했을 때, 온전한 msgData!
             try
             {
-                // 1) [BytesToRead] 함수 : [수신 버퍼]에 있는 바이트 통으로 수신!
-                byte[] decodingData = CheckFullDecodingDataCondition(data);
-                byte[] msgData = decodingData.Skip(4).Take(decodingData.Length - 6).ToArray();
-
-                // 2) [ReadByte()] 함수 : 각 바이트를 한 번에 [한 바이트씩] 수신!
-                //byte[] msgData = data.Skip(4).Take(data.Length - 6).ToArray();
-                using (ByteStream stream = new ByteStream(msgData, 0, msgData.Length))
+                byte[] filteredMsg = data.Skip(4).Take(data.Length - 6).ToArray();
+                using (ByteStream stream = new ByteStream(filteredMsg, 0, filteredMsg.Length))
                 {
                     CCUtoCPCField field = new CCUtoCPCField
                     {
@@ -301,8 +301,10 @@ namespace Serial_COM.Models
         {
             List<byte> encodingData = new List<byte>();
             byte checkSum = 0x00; // [Checksum] 초기화
+
             // 1. [STX](0x02) 추가
             encodingData.Add(STX);
+
             // 2. [STX](0x02) 이후
             byte msgLen = (byte)check.Length;
             isCtrlText = CheckCtrlText(msgLen);
@@ -312,6 +314,7 @@ namespace Serial_COM.Models
             }
             encodingData.Add(msgLen);
             checkSum ^= msgLen;
+
             // 3. [DstID] 추가 (DLE 처리 포함)
             isCtrlText = CheckCtrlText(dstID);
             if (isCtrlText)
@@ -320,6 +323,7 @@ namespace Serial_COM.Models
             }
             encodingData.Add(dstID);
             checkSum ^= dstID;
+
             // 4. [SrcID] 추가 (DLE 처리 포함)
             isCtrlText = CheckCtrlText(srcID);
             if (isCtrlText)
@@ -328,6 +332,7 @@ namespace Serial_COM.Models
             }
             encodingData.Add(srcID);
             checkSum ^= srcID;
+
             // 5. [MsgData] 추가(DLE 처리 포함)
             foreach (byte msgData in check)
             {
@@ -339,6 +344,7 @@ namespace Serial_COM.Models
                 encodingData.Add(msgData);
                 checkSum ^= msgData;
             }
+
             // 6. [Checksum] 추가 (DLE 처리 포함)
             isCtrlText = CheckCtrlText(checkSum);
             if (isCtrlText)
@@ -346,6 +352,7 @@ namespace Serial_COM.Models
                 encodingData.Add(DLE);
             }
             encodingData.Add(checkSum);
+
             // 7. [ETX](0x03) 추가
             encodingData.Add(ETX);
             return encodingData.ToArray();
@@ -382,6 +389,7 @@ namespace Serial_COM.Models
             List<byte> decodingData = new List<byte>();
             // 1. [STX](0x02) 추가
             decodingData.Add(STX);
+
             // 2. [STX](0x02) 이후
             // [제어 문자] 및 [일반 메시지] 구분 코드!
             for (int i = 1; i < check.Length - 1; i++)
@@ -410,10 +418,13 @@ namespace Serial_COM.Models
                 }
 
             }
+
             // 3. [Length] ~ [Message] 이후, [Checksum 단계]: [XOR] 반복 계산
             byte checkSum = CalculateChecksum(decodingData.Skip(1).ToArray());
+
             // 4. [Checksum]  추가
             decodingData.Add(checkSum);
+
             // 5. [ETX](0x03) 추가
             decodingData.Add(ETX);
             return decodingData.ToArray();
@@ -428,12 +439,14 @@ namespace Serial_COM.Models
                 byteList.Add(check);
                 return null;
             }
+
             // 2. [DLE](0x10) 확인
             if (check == DLE && !isCtrlText)
             {
                 isCtrlText = true;
                 return null;
             }
+
             // [DLE] Flag 설정 시, [제어 문자]로 간주 이후
             // [일반 메시지] 추가 && [DLE] Flag 값 = false
             if (isCtrlText)
@@ -447,18 +460,20 @@ namespace Serial_COM.Models
             {
                 byteList.Add(check);
             }
-            // 5. [ETX](0x03) 확인
+
+            // 3. [ETX](0x03) 확인
             if (check == ETX)
             {
-                // 3. [Length] ~ [Message] 이후, [Checksum 단계]: [XOR] 반복 계산
+                // 4. [Length] ~ [Message] 이후 [체크섬 단계]: [XOR] 반복 계산
                 byte checkSum = CalculateChecksum(byteList.Skip(1).ToArray());
-                // 4. [Checksum]  추가 (ETX 전 Checksum 삽입)!
+                // 5. [Checksum]  추가 (ETX 전 Checksum 삽입)!
                 byteList.Insert(byteList.Count - 1, checkSum);
-                byte[] buffer = byteList.ToArray(); // 완성된 패킷 복사
-                byteList.Clear(); // 패킷 완료 후, 버퍼 초기화
+                // 6. 완성된 패킷 복사
+                byte[] buffer = byteList.ToArray();
+                byteList.Clear(); // 복사 완료 후, 초기화 작업
                 return buffer;
             }
-            return null; // 패킷이 완료되지 않으면 null 반환
+            return null; // 패킷이 완성되지 않으면 [null] 반환
         }
 
         /// <summary>
