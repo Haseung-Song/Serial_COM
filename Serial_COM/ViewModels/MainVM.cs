@@ -18,6 +18,7 @@ namespace Serial_COM.ViewModels
         private EnvironmentSet _environmentSet;
         private ObservableCollection<string> _lstBoxItem;
         private bool _isPortConnected;
+
         private List<string> _portNames;
         private List<int> _baudRates;
         private string _selectingPort;
@@ -27,6 +28,7 @@ namespace Serial_COM.ViewModels
         private SpeedUnitSet _selectedSpeedUnit;
 
         private bool _isPowerSwitch;
+
         private bool _isEngineStart;
         private bool _isEngineRestart;
         private bool _isEngineKill;
@@ -46,16 +48,22 @@ namespace Serial_COM.ViewModels
 
         private bool _isAltitudeOn;
         private int _altitudeKnobChange;
+        private const int MaxAltitudeChange = 60000;
+        private const int MinAltitudeChange = 0;
         private double _altitudeKnobSum;
         private double _totalAltitudeChange;
 
         private bool _isHeadingOn;
         private int _headingKnobChange;
+        private const double MaxHeadingChange = 3599.0;
+        private const double MinHeadingChange = 0.0;
         private double _headingKnobSum;
         private double _totalHeadingChange;
 
         private bool _isSpeedOn;
         private int _speedKnobChange;
+        private const double MaxSpeedChange = 1100.0;
+        private const double MinSpeedChange = 0.0;
         private double _speedKnobSum;
         private double _totalSpeedChange;
 
@@ -439,6 +447,25 @@ namespace Serial_COM.ViewModels
         }
 
         /// <summary>
+        /// [IsAltitudeOn]
+        /// </summary>
+        public bool IsAltitudeOn
+        {
+            get => _isAltitudeOn;
+            set
+            {
+                if (_isAltitudeOn != value)
+                {
+                    _isAltitudeOn = value;
+                    OnPropertyChanged();
+                    SendupMessage();
+                }
+
+            }
+
+        }
+
+        /// <summary>
         /// [AltitudeKnobChange]
         /// [Byte #2.]
         /// </summary>
@@ -456,9 +483,6 @@ namespace Serial_COM.ViewModels
             }
 
         }
-
-        private const int MaxAltitudeChange = 60000;
-        private const int MinAltitudeChange = 0;
 
         /// <summary>
         /// [AltitudeKnobSum]
@@ -497,16 +521,16 @@ namespace Serial_COM.ViewModels
         }
 
         /// <summary>
-        /// [IsAltitudeOn]
+        /// [IsHeadingOn]
         /// </summary>
-        public bool IsAltitudeOn
+        public bool IsHeadingOn
         {
-            get => _isAltitudeOn;
+            get => _isHeadingOn;
             set
             {
-                if (_isAltitudeOn != value)
+                if (_isHeadingOn != value)
                 {
-                    _isAltitudeOn = value;
+                    _isHeadingOn = value;
                     OnPropertyChanged();
                     SendupMessage();
                 }
@@ -533,9 +557,6 @@ namespace Serial_COM.ViewModels
             }
 
         }
-
-        private const double MaxHeadingChange = 3599.0;
-        private const double MinHeadingChange = 0.0;
 
         /// <summary>
         /// [HeadingKnobSum]
@@ -565,7 +586,7 @@ namespace Serial_COM.ViewModels
             {
                 if (_totalHeadingChange != value)
                 {
-                    _totalHeadingChange = HeadingKnobSum / 10;
+                    _totalHeadingChange = value / 10;
                     OnPropertyChanged();
                 }
 
@@ -574,16 +595,16 @@ namespace Serial_COM.ViewModels
         }
 
         /// <summary>
-        /// [IsHeadingOn]
+        /// [IsSpeedOn]
         /// </summary>
-        public bool IsHeadingOn
+        public bool IsSpeedOn
         {
-            get => _isHeadingOn;
+            get => _isSpeedOn;
             set
             {
-                if (_isHeadingOn != value)
+                if (_isSpeedOn != value)
                 {
-                    _isHeadingOn = value;
+                    _isSpeedOn = value;
                     OnPropertyChanged();
                     SendupMessage();
                 }
@@ -610,9 +631,6 @@ namespace Serial_COM.ViewModels
             }
 
         }
-
-        private const double MaxSpeedChange = 1100.0;
-        private const double MinSpeedChange = 0.0;
 
         /// <summary>
         /// [SpeedKnobSum]
@@ -642,27 +660,8 @@ namespace Serial_COM.ViewModels
             {
                 if (_totalSpeedChange != value)
                 {
-                    _totalSpeedChange = SpeedKnobSum / 10;
+                    _totalSpeedChange = value / 10;
                     OnPropertyChanged();
-                }
-
-            }
-
-        }
-
-        /// <summary>
-        /// [IsSpeedOn]
-        /// </summary>
-        public bool IsSpeedOn
-        {
-            get => _isSpeedOn;
-            set
-            {
-                if (_isSpeedOn != value)
-                {
-                    _isSpeedOn = value;
-                    OnPropertyChanged();
-                    SendupMessage();
                 }
 
             }
@@ -1237,6 +1236,7 @@ namespace Serial_COM.ViewModels
                 if (parserData != null)
                 {
                     IsPowerSwitch = parserData.PowerSwitch == 1;
+
                     IsEngineStart = parserData.EngineStart == 1;
                     IsEngineRestart = parserData.EngineRestart == 1;
                     IsEngineKill = parserData.EngineKill == 1;
