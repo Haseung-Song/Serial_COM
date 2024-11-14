@@ -92,6 +92,7 @@ namespace Serial_COM.Models
                     {
                         serialPort.Close();
                         Console.WriteLine("Serial_COM closed successfully on " + portName + " port.");
+                        serialPort.DataReceived -= OnDataReceived;
                         serialPort.Dispose();
                         return false;
                     }
@@ -146,7 +147,6 @@ namespace Serial_COM.Models
                 //    Console.Write($"{dd:x2} ");
                 //}
                 //Console.WriteLine();
-
                 // 2) [ReadByte()] 함수 : 바이트를 한 번에 각각 [한 바이트씩] 수신!
                 while (serialPort.BytesToRead > 0)
                 {

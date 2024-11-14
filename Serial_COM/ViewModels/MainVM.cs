@@ -28,7 +28,6 @@ namespace Serial_COM.ViewModels
         private SpeedUnitSet _selectedSpeedUnit;
 
         private bool _isPowerSwitch;
-
         private bool _isEngineStart;
         private bool _isEngineRestart;
         private bool _isEngineKill;
@@ -1149,6 +1148,7 @@ namespace Serial_COM.ViewModels
                 IsAltitudeOn = false;
                 IsHeadingOn = false;
                 IsSpeedOn = false;
+                EnvironmentSet.MessageReceived -= OnMessageReceived;
                 AddLogMessage($"Disconnected");
             }
 
@@ -1228,6 +1228,7 @@ namespace Serial_COM.ViewModels
         /// <param name="currentTime"></param>
         private void OnMessageReceived(byte[] messageListen)
         {
+            Console.WriteLine();
             try
             {
                 Parser parser = new Parser();
@@ -1236,7 +1237,6 @@ namespace Serial_COM.ViewModels
                 if (parserData != null)
                 {
                     IsPowerSwitch = parserData.PowerSwitch == 1;
-
                     IsEngineStart = parserData.EngineStart == 1;
                     IsEngineRestart = parserData.EngineRestart == 1;
                     IsEngineKill = parserData.EngineKill == 1;

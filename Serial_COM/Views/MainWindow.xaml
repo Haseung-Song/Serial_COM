@@ -367,7 +367,7 @@
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </Canvas.Background>-->
-                        
+
                         <!-- X축 (왼쪽, Canvas 경계 내에 배치) -->
                         <Line X1="0" Y1="60" X2="120" Y2="60" Stroke="SlateGray" StrokeThickness="0.4"/>
                         <!-- Y축 (위쪽, Canvas 경계 내에 배치) -->
@@ -406,7 +406,7 @@
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </Canvas.Background>-->
-                        
+
                         <!-- X축 (왼쪽, Canvas 경계 내에 배치) -->
                         <Line X1="0" Y1="60" X2="120" Y2="60" Stroke="SlateGray" StrokeThickness="0.4"/>
                         <!-- Y축 (위쪽, Canvas 경계 내에 배치) -->
@@ -445,7 +445,7 @@
                                 </VisualBrush.Visual>
                             </VisualBrush>
                         </Canvas.Background>-->
-                        
+
                         <!-- X축 (왼쪽, Canvas 경계 내에 배치) -->
                         <Line X1="0" Y1="60" X2="120" Y2="60" Stroke="SlateGray" StrokeThickness="0.4"/>
                         <!-- Y축 (위쪽, Canvas 경계 내에 배치) -->

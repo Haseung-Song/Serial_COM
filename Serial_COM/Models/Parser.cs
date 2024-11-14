@@ -146,6 +146,7 @@ namespace Serial_COM.Models
                 data[nCnt++] = (byte)(speedValue & 0xFF);
 
                 len = nCnt;
+
                 return data;
             }
             catch (ArgumentException ex)
@@ -162,6 +163,32 @@ namespace Serial_COM.Models
         }
 
         /// <summary>
+        /// [GetBit 메서드]
+        /// [특정 바이트]의 한개 비트를 추출 가능!
+        /// </summary>
+        /// <param name="data">대상 바이트</param>
+        /// <param name="bitPosition">시작 비트 위치</param>
+        /// <returns></returns>
+        public byte GetBit(byte data, int bitPosition)
+        {
+            return (byte)((data >> bitPosition) & 1);
+        }
+
+        /// <summary>
+        /// [GetBits 메서드]
+        /// [특정 바이트]의 여러 비트를 추출 가능!
+        /// </summary>
+        /// <param name="data">대상 바이트</param>
+        /// <param name="bitPosition">시작 비트 위치</param>
+        /// <param name="bitCount">추출할 비트 개수</param>
+        /// <returns>추출된 비트 값</returns>
+        public byte GetBits(byte data, int bitPosition, int bitCount)
+        {
+            int mask = (1 << bitCount) - 1;
+            return (byte)((data >> bitPosition) & mask);
+        }
+
+        /// <summary>
         /// [(Message Parsing) 수신부]
         /// </summary>
         /// <param name="data"></param>
@@ -175,97 +202,181 @@ namespace Serial_COM.Models
             try
             {
                 byte[] filteredMsg = data.Skip(4).Take(data.Length - 6).ToArray();
-                using (ByteStream stream = new ByteStream(filteredMsg, 0, filteredMsg.Length))
+                if (filteredMsg.Length < 14)
                 {
-                    CCUtoCPCField field = new CCUtoCPCField
-                    {
-                        // 1) [GetBits] 메서드: [단일 바이트] 추출
-                        // 바이트 스트림의 특정 위치 => 비트 추출 목적
-                        // 첫 번째 인자: 시작 위치. (0 바이트부터 시작)
-                        // 두 번째 인자: 추출할 바이트 수.
-                        // 세 번째 인자: 비트 시작 위치.
-                        // 네 번째 인자: 추출할 비트 수.
-
-                        // 2) [GetByte] 메서드: [단일 바이트] 추출
-                        // 바이트 스트림 특정 위치 => 1 Byte 추출 목적
-                        // 첫 번째 인자: 시작 위치. (0 바이트부터 시작)
-
-                        // [Byte #0.]
-                        // 7    번째 비트(MSB)를 추출
-                        PowerSwitch = (byte)stream.GetBits(0, 1, 7, 1),
-
-                        // [Byte #1.]
-                        // 7    번째 비트(MSB)를 추출
-                        EngineStart = (byte)stream.GetBits(1, 1, 7, 1),
-                        // 6    번째 비트를 추출
-                        EngineRestart = (byte)stream.GetBits(1, 1, 6, 1),
-                        // 5    번째 비트를 추출
-                        EngineKill = (byte)stream.GetBits(1, 1, 5, 1),
-                        // 4    번째 비트를 추출
-                        TakeOff = (byte)stream.GetBits(1, 1, 4, 1),
-                        // 3    번째 비트를 추출
-                        ReturnToBase = (byte)stream.GetBits(1, 1, 3, 1),
-                        // 2    번째 비트를 추출
-                        AltitudeKnob = (byte)stream.GetBits(1, 1, 2, 1),
-                        // 1    번째 비트를 추출
-                        HeadingKnob = (byte)stream.GetBits(1, 1, 1, 1),
-                        // 0    번째 비트(LSB)를 추출
-                        SpeedKnob = (byte)stream.GetBits(1, 1, 0, 1),
-
-                        // [Byte #2.]
-                        AltitudeKnobChange = (sbyte)stream.GetByte(2),
-
-                        // [Byte #3.]
-                        HeadingKnobChange = (sbyte)stream.GetByte(3),
-
-                        // [Byte #4.]
-                        SpeedKnobChange = (sbyte)stream.GetByte(4),
-
-                        // [Byte #5.]
-                        YawChange = (sbyte)stream.GetByte(5),
-
-                        // [Byte #6.]
-                        ThrottleChange = (byte)stream.GetByte(6),
-
-                        // [Byte #7.]
-                        RollChange = (sbyte)stream.GetByte(7),
-
-                        // [Byte #8.]
-                        PitchChange = (sbyte)stream.GetByte(8),
-
-                        // [Byte #9.]
-                        // 7    번째 비트(MSB)를 추출
-                        Drop = (byte)stream.GetBits(9, 1, 7, 1),
-                        // 6    번째 비트를 추출
-                        Option1 = (byte)stream.GetBits(9, 1, 6, 1),
-                        // 5    번째 비트를 추출
-                        Capture = (byte)stream.GetBits(9, 1, 5, 1),
-                        // 4    번째 비트를 추출
-                        EOandIR = (byte)stream.GetBits(9, 1, 4, 1),
-                        // 3    번째 비트를 추출
-                        Option2 = (byte)stream.GetBits(9, 1, 3, 1),
-                        // 2    번째 비트를 추출
-                        GimbalStick = (byte)stream.GetBits(9, 1, 2, 1),
-                        // 1    번째 비트를 추출
-                        ZoomKnob = (byte)stream.GetBits(9, 1, 1, 1),
-                        // 0    번째 비트(LSB)를 추출
-                        FocusKnob = (byte)stream.GetBits(9, 1, 0, 1),
-
-                        // [Byte #10.]
-                        ZoomChange = (sbyte)stream.GetByte(10),
-
-                        // [Byte #11.]
-                        FocusChange = (sbyte)stream.GetByte(11),
-
-                        // [Byte #12.]
-                        JoyStickXChange = (sbyte)stream.GetByte(12),
-
-                        // [Byte #13.]
-                        JoyStickYChange = (sbyte)stream.GetByte(13),
-                    };
-                    return field;
+                    Console.WriteLine($"Error: Insufficient msg length: {filteredMsg.Length} after filtering.");
+                    return null;
                 }
 
+                // 1) 방법 1: [Soletop.IO] dll 참조, [GetBits], [GetByte] 메서드 사용 후, 추출
+                using (ByteStream stream = new ByteStream(filteredMsg, 0, filteredMsg.Length))
+                {
+                    //CCUtoCPCField field1 = new CCUtoCPCField
+                    //{
+                    //    // 1) [GetBits] 메서드: [단일 바이트] 추출
+                    //    // 바이트 스트림의 특정 위치 => 비트 추출 목적
+                    //    // 첫 번째 인자: 시작 위치. (0 바이트부터 시작)
+                    //    // 두 번째 인자: 추출할 바이트 수.
+                    //    // 세 번째 인자: 비트 시작 위치.
+                    //    // 네 번째 인자: 추출할 비트 수.
+
+                    //    // 2) [GetByte] 메서드: [단일 바이트] 추출
+                    //    // 바이트 스트림 특정 위치 => 1 Byte 추출 목적
+                    //    // 첫 번째 인자: 시작 위치. (0 바이트부터 시작)
+
+                    //    // [Byte #0.]
+                    //    // 7    번째 비트(MSB)를 추출
+                    //    PowerSwitch = (byte)stream.GetBits(0, 1, 7, 1),
+
+                    //    // [Byte #1.]
+                    //    // 7    번째 비트(MSB)를 추출
+                    //    EngineStart = (byte)stream.GetBits(1, 1, 7, 1),
+                    //    // 6    번째 비트를 추출
+                    //    EngineRestart = (byte)stream.GetBits(1, 1, 6, 1),
+                    //    // 5    번째 비트를 추출
+                    //    EngineKill = (byte)stream.GetBits(1, 1, 5, 1),
+                    //    // 4    번째 비트를 추출
+                    //    TakeOff = (byte)stream.GetBits(1, 1, 4, 1),
+                    //    // 3    번째 비트를 추출
+                    //    ReturnToBase = (byte)stream.GetBits(1, 1, 3, 1),
+                    //    // 2    번째 비트를 추출
+                    //    AltitudeKnob = (byte)stream.GetBits(1, 1, 2, 1),
+                    //    // 1    번째 비트를 추출
+                    //    HeadingKnob = (byte)stream.GetBits(1, 1, 1, 1),
+                    //    // 0    번째 비트(LSB)를 추출
+                    //    SpeedKnob = (byte)stream.GetBits(1, 1, 0, 1),
+
+                    //    // [Byte #2.]
+                    //    AltitudeKnobChange = (sbyte)stream.GetByte(2),
+
+                    //    // [Byte #3.]
+                    //    HeadingKnobChange = (sbyte)stream.GetByte(3),
+
+                    //    // [Byte #4.]
+                    //    SpeedKnobChange = (sbyte)stream.GetByte(4),
+
+                    //    // [Byte #5.]
+                    //    YawChange = (sbyte)stream.GetByte(5),
+
+                    //    // [Byte #6.]
+                    //    ThrottleChange = (byte)stream.GetByte(6),
+
+                    //    // [Byte #7.]
+                    //    RollChange = (sbyte)stream.GetByte(7),
+
+                    //    // [Byte #8.]
+                    //    PitchChange = (sbyte)stream.GetByte(8),
+
+                    //    // [Byte #9.]
+                    //    // 7    번째 비트(MSB)를 추출
+                    //    Drop = (byte)stream.GetBits(9, 1, 7, 1),
+                    //    // 6    번째 비트를 추출
+                    //    Option1 = (byte)stream.GetBits(9, 1, 6, 1),
+                    //    // 5    번째 비트를 추출
+                    //    Capture = (byte)stream.GetBits(9, 1, 5, 1),
+                    //    // 4    번째 비트를 추출
+                    //    EOandIR = (byte)stream.GetBits(9, 1, 4, 1),
+                    //    // 3    번째 비트를 추출
+                    //    Option2 = (byte)stream.GetBits(9, 1, 3, 1),
+                    //    // 2    번째 비트를 추출
+                    //    GimbalStick = (byte)stream.GetBits(9, 1, 2, 1),
+                    //    // 1    번째 비트를 추출
+                    //    ZoomKnob = (byte)stream.GetBits(9, 1, 1, 1),
+                    //    // 0    번째 비트(LSB)를 추출
+                    //    FocusKnob = (byte)stream.GetBits(9, 1, 0, 1),
+
+                    //    // [Byte #10.]
+                    //    ZoomChange = (sbyte)stream.GetByte(10),
+
+                    //    // [Byte #11.]
+                    //    FocusChange = (sbyte)stream.GetByte(11),
+
+                    //    // [Byte #12.]
+                    //    JoyStickXChange = (sbyte)stream.GetByte(12),
+
+                    //    // [Byte #13.]
+                    //    JoyStickYChange = (sbyte)stream.GetByte(13),
+                    //};
+                    //return field1;
+                }
+
+                // 2) 방법 2: [연산] 메서드 구현 후 추출
+                CCUtoCPCField field2 = new CCUtoCPCField
+                {
+                    // [Byte #0.]
+                    // 7    번째 비트(MSB)를 추출
+                    PowerSwitch = GetBit(filteredMsg[0], 7),
+
+                    // [Byte #1.]
+                    // 7    번째 비트(MSB)를 추출
+                    EngineStart = GetBit(filteredMsg[1], 7),
+                    // 6    번째 비트를 추출
+                    EngineRestart = GetBit(filteredMsg[1], 6),
+                    // 5    번째 비트를 추출
+                    EngineKill = GetBit(filteredMsg[1], 5),
+                    // 4    번째 비트를 추출
+                    TakeOff = GetBit(filteredMsg[1], 4),
+                    // 3    번째 비트를 추출
+                    ReturnToBase = GetBit(filteredMsg[1], 3),
+                    // 2    번째 비트를 추출
+                    AltitudeKnob = GetBit(filteredMsg[1], 2),
+                    // 1    번째 비트를 추출
+                    HeadingKnob = GetBit(filteredMsg[1], 1),
+                    // 0    번째 비트(LSB)를 추출
+                    SpeedKnob = GetBit(filteredMsg[1], 0),
+
+                    // [Byte #2.]
+                    AltitudeKnobChange = (sbyte)filteredMsg[2],
+
+                    // [Byte #3.]
+                    HeadingKnobChange = (sbyte)filteredMsg[3],
+
+                    // [Byte #4.]
+                    SpeedKnobChange = (sbyte)filteredMsg[4],
+
+                    // [Byte #5.]
+                    YawChange = (sbyte)filteredMsg[5],
+
+                    // [Byte #6.]
+                    ThrottleChange = filteredMsg[6],
+
+                    // [Byte #7.]
+                    RollChange = (sbyte)filteredMsg[7],
+
+                    // [Byte #8.]
+                    PitchChange = (sbyte)filteredMsg[8],
+
+                    // [Byte #9.]
+                    // 7    번째 비트(MSB)를 추출
+                    Drop = GetBit(filteredMsg[9], 7),
+                    // 6    번째 비트를 추출
+                    Option1 = GetBit(filteredMsg[9], 6),
+                    // 5    번째 비트를 추출
+                    Capture = GetBit(filteredMsg[9], 5),
+                    // 4    번째 비트를 추출
+                    EOandIR = GetBit(filteredMsg[9], 4),
+                    // 3    번째 비트를 추출
+                    Option2 = GetBit(filteredMsg[9], 3),
+                    // 2    번째 비트를 추출
+                    GimbalStick = GetBit(filteredMsg[9], 2),
+                    // 1    번째 비트를 추출
+                    ZoomKnob = GetBit(filteredMsg[9], 1),
+                    // 0    번째 비트(LSB)를 추출
+                    FocusKnob = GetBit(filteredMsg[9], 0),
+
+                    // [Byte #10.]
+                    ZoomChange = (sbyte)filteredMsg[10],
+
+                    // [Byte #11.]
+                    FocusChange = (sbyte)filteredMsg[11],
+
+                    // [Byte #12.]
+                    JoyStickXChange = (sbyte)filteredMsg[12],
+
+                    // [Byte #13.]
+                    JoyStickYChange = (sbyte)filteredMsg[13],
+                };
+                return field2;
             }
             catch (ArgumentException ex)
             {
@@ -389,7 +500,6 @@ namespace Serial_COM.Models
             List<byte> decodingData = new List<byte>();
             // 1. [STX](0x02) 추가
             decodingData.Add(STX);
-
             // 2. [STX](0x02) 이후
             // [제어 문자] 및 [일반 메시지] 구분 코드!
             for (int i = 1; i < check.Length - 1; i++)
@@ -418,13 +528,10 @@ namespace Serial_COM.Models
                 }
 
             }
-
             // 3. [Length] ~ [Message] 이후, [Checksum 단계]: [XOR] 반복 계산
             byte checkSum = CalculateChecksum(decodingData.Skip(1).ToArray());
-
             // 4. [Checksum]  추가
             decodingData.Add(checkSum);
-
             // 5. [ETX](0x03) 추가
             decodingData.Add(ETX);
             return decodingData.ToArray();
@@ -439,14 +546,12 @@ namespace Serial_COM.Models
                 byteList.Add(check);
                 return null;
             }
-
             // 2. [DLE](0x10) 확인
             if (check == DLE && !isCtrlText)
             {
                 isCtrlText = true;
                 return null;
             }
-
             // [DLE] Flag 설정 시, [제어 문자]로 간주 이후
             // [일반 메시지] 추가 && [DLE] Flag 값 = false
             if (isCtrlText)
@@ -455,23 +560,28 @@ namespace Serial_COM.Models
                 isCtrlText = false;
             }
             // [DLE] Flag 설정을 하지 않을 시,
-            // [일반 메시지] 간주 && => [일반 메시지] 추가
+            // [제어 문자]가 아니므로
             else
             {
-                byteList.Add(check);
-            }
+                // 3. [ETX](0x03) 확인
+                if (check == ETX)
+                {
+                    // 4-1. [Length] ~ [Message] 이후, [Checksum 단계]: [XOR] 반복 계산
+                    // # [Checksum 계산]: [STX, ETX, 기존 Checksum 제외]
+                    byte checkSum = CalculateChecksum(byteList.Skip(1).Take(byteList.Count - 3).ToArray());
+                    // 4-2. [Checksum] 추가 (ETX 전 Checksum 삽입)
+                    byteList.Insert(byteList.Count - 1, checkSum);
+                    // 5. 완성된 패킷 복사
+                    byte[] buffer = byteList.ToArray();
+                    byteList.Clear(); // 복사 완료 후, 초기화 작업
+                    return buffer;
+                }
+                // [일반 메시지] 간주 && => [일반 메시지] 추가
+                else
+                {
+                    byteList.Add(check);
+                }
 
-            // 3. [ETX](0x03) 확인
-            if (check == ETX)
-            {
-                // 4. [Length] ~ [Message] 이후 [체크섬 단계]: [XOR] 반복 계산
-                byte checkSum = CalculateChecksum(byteList.Skip(1).ToArray());
-                // 5. [Checksum]  추가 (ETX 전 Checksum 삽입)!
-                byteList.Insert(byteList.Count - 1, checkSum);
-                // 6. 완성된 패킷 복사
-                byte[] buffer = byteList.ToArray();
-                byteList.Clear(); // 복사 완료 후, 초기화 작업
-                return buffer;
             }
             return null; // 패킷이 완성되지 않으면 [null] 반환
         }
