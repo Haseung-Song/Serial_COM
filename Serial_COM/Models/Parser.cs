@@ -14,6 +14,7 @@ namespace Serial_COM.Models
         private bool isCtrlText = false;
         private const byte dstID = 0xC1; // CPC (dstID) 식별자
         private const byte srcID = 0xA5; // CCU (srcID) 식별자
+
         // 연속된 데이터 스트림 => 수신 데이터 누적용 버퍼 목적!
         private readonly List<byte> byteList = new List<byte>();
 
