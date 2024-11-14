@@ -1126,7 +1126,7 @@ namespace Serial_COM.ViewModels
         #region [버튼 및 기능]
 
         /// <summary>
-        /// [(Connect/Disconnect) 버튼]
+        /// (Connect/Disconnect) 버튼: OpenToClose(선택 포트, 선택 속도, 읽기 모드)
         /// </summary>
         private void StartSerial()
         {
@@ -1134,7 +1134,7 @@ namespace Serial_COM.ViewModels
             {
                 return;
             }
-            IsPortConnected = EnvironmentSet.OpenToClose(SelectedPort, SelectedBaudRate);
+            IsPortConnected = EnvironmentSet.OpenToClose(SelectedPort, SelectedBaudRate, true);
             if (IsPortConnected)
             {
                 IsAltitudeOn = true;

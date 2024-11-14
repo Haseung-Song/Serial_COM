@@ -13,6 +13,7 @@ namespace Serial_COM.Models
 
         public SerialPort serialPort;
         public event Action<byte[]> MessageReceived;
+        public bool isSingleRead;
 
         #endregion
 
@@ -55,7 +56,7 @@ namespace Serial_COM.Models
             return lstSortedBR;
         }
 
-        public bool OpenToClose(string portName, int baudRate)
+        public bool OpenToClose(string portName, int baudRate, bool singleReadMode)
         {
             if (serialPort != null)
             {
@@ -77,6 +78,7 @@ namespace Serial_COM.Models
                             };
                             serialPort.Open();
                             Console.WriteLine("Serial_COM opened successfully on " + portName + " port.");
+                            isSingleRead = singleReadMode;
                             serialPort.DataReceived += OnDataReceived;
                             return true;
                         }
@@ -135,29 +137,42 @@ namespace Serial_COM.Models
             Parser parser = new Parser();
             try
             {
-                // 1) [BytesToRead] 함수 : [수신 버퍼]에 있는 바이트를 통으로 수신!
-                //int bytesToRead = serialPort.BytesToRead;
-                //byte[] buffer = new byte[bytesToRead];
-                //int bytesToSave = serialPort.Read(buffer, 0, bytesToRead);
-                //byte[] decodingData1 = parser.CheckFullDecodingDataCondition(buffer);
-                //MessageReceived?.Invoke(decodingData1);
-                //Console.Write("Message: ");
-                //foreach (byte dd in decodingData1)
-                //{
-                //    Console.Write($"{dd:x2} ");
-                //}
-                //Console.WriteLine();
-                // 2) [ReadByte()] 함수 : 바이트를 한 번에 각각 [한 바이트씩] 수신!
-                while (serialPort.BytesToRead > 0)
+                // 1) [ReadByte()] 함수 : 바이트를 한 번에 각각 [한 바이트씩] 수신!
+                // ## [isSingleRead = SingleReadMode] ##
+                if (isSingleRead)
                 {
-                    int currentByte = serialPort.ReadByte();
-                    byte byteData = (byte)currentByte;
-                    byte[] decodingData2 = parser.CheckEachDecodingDataCondition(byteData);
-                    if (decodingData2 != null)
+                    while (serialPort.BytesToRead > 0)
                     {
-                        MessageReceived?.Invoke(decodingData2);
-                        Console.Write("Message: ");
-                        foreach (byte dd in decodingData2)
+                        int currentByte = serialPort.ReadByte();
+                        byte byteData = (byte)currentByte;
+                        byte[] decodingData2 = parser.CheckEachDecodingDataCondition(byteData);
+                        if (decodingData2 != null)
+                        {
+                            MessageReceived?.Invoke(decodingData2);
+                            Console.Write("Message (Single): ");
+                            foreach (byte dd in decodingData2)
+                            {
+                                Console.Write($"{dd:x2} ");
+                            }
+                            Console.WriteLine();
+                        }
+
+                    }
+
+                }
+                // 2) [BytesToRead] 함수 : [수신 버퍼]에 있는 바이트를 통으로 수신!
+                // ## [isSingleRead = !SingleReadMode] ##
+                else
+                {
+                    int bytesToRead = serialPort.BytesToRead;
+                    byte[] buffer = new byte[bytesToRead];
+                    int bytesToSave = serialPort.Read(buffer, 0, bytesToRead);
+                    byte[] decodingData1 = parser.CheckFullDecodingDataCondition(buffer);
+                    if (decodingData1 != null)
+                    {
+                        MessageReceived?.Invoke(decodingData1);
+                        Console.Write("Message (Buffer): ");
+                        foreach (byte dd in decodingData1)
                         {
                             Console.Write($"{dd:x2} ");
                         }
