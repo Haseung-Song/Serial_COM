@@ -12,6 +12,7 @@ namespace Serial_COM.Models
         #region [프로퍼티]
 
         public SerialPort serialPort;
+
         public event Action<byte[]> MessageReceived;
         public bool isSingleRead;
 
@@ -189,7 +190,6 @@ namespace Serial_COM.Models
             finally
             {
                 Console.WriteLine("Message received at " + "[" + DateTime.Now + "]");
-                Console.WriteLine();
             }
 
         }

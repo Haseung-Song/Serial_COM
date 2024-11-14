@@ -26,19 +26,23 @@ namespace Serial_COM.Models
             byte[] examplesData1 = { STX, DLE, 0x02, DLE, 0x10, DLE, 0x03, 0x38, 0x39, DLE, ETX };
             byte[] filteredData1 = CheckFullDecodingDataCondition(examplesData1);
 
-            //Console.WriteLine("Original Data: " + BitConverter.ToString(examplesData1));
-            //Console.WriteLine("Filtered Data (with DLE Escaping): " + BitConverter.ToString(filteredData1));
+            Console.WriteLine("Original Data: " + BitConverter.ToString(examplesData1));
+            Console.WriteLine("Filtered Data (with DLE Escaping): " + BitConverter.ToString(filteredData1));
             // Original Data: 02-10-02-10-10-10-03-38-39-10-03 (일치)
             // Filtered Data (with DLE Escaping): 02-02-10-03-38-39-10-03 (일치)
+
+            Console.WriteLine();
 
             // 예시 데이터 [exampleData2] 설정: 목적지 0x22, 송신지 0x33, 메시지: 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x10, 0x11
             byte[] examplesData2 = { STX, 0x08, 0x22, 0x33, 0x00, 0x01, DLE, 0x02, DLE, 0x03, 0x04, 0x05, DLE, 0x10, 0x11, ETX };
             byte[] filteredData2 = CheckFullDecodingDataCondition(examplesData2);
 
-            //Console.WriteLine("Original Data: " + BitConverter.ToString(examplesData2));
-            //Console.WriteLine("Filtered Data (with DLE Escaping): " + BitConverter.ToString(filteredData2));
+            Console.WriteLine("Original Data: " + BitConverter.ToString(examplesData2));
+            Console.WriteLine("Filtered Data (with DLE Escaping): " + BitConverter.ToString(filteredData2));
             // Original Data: 02-08-22-33-00-01-10-02-10-03-04-05-10-10-11-03 (일치)
             // Filtered Data (with DLE Escaping): 02-08-22-33-00-01-02-03-04-05-10-11-19-03 (일치)
+
+            Console.WriteLine();
         }
 
         /// <summary>
