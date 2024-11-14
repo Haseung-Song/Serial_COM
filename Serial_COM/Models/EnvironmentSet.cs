@@ -145,12 +145,12 @@ namespace Serial_COM.Models
                     {
                         int currentByte = serialPort.ReadByte();
                         byte byteData = (byte)currentByte;
-                        byte[] decodingData2 = parser.CheckEachDecodingDataCondition(byteData);
-                        if (decodingData2 != null)
+                        byte[] decodingData1 = parser.CheckEachDecodingDataCondition(byteData);
+                        if (decodingData1 != null)
                         {
-                            MessageReceived?.Invoke(decodingData2);
+                            MessageReceived?.Invoke(decodingData1);
                             Console.Write("Message (Single): ");
-                            foreach (byte dd in decodingData2)
+                            foreach (byte dd in decodingData1)
                             {
                                 Console.Write($"{dd:x2} ");
                             }
@@ -167,12 +167,12 @@ namespace Serial_COM.Models
                     int bytesToRead = serialPort.BytesToRead;
                     byte[] buffer = new byte[bytesToRead];
                     int bytesToSave = serialPort.Read(buffer, 0, bytesToRead);
-                    byte[] decodingData1 = parser.CheckFullDecodingDataCondition(buffer);
-                    if (decodingData1 != null)
+                    byte[] decodingData2 = parser.CheckFullDecodingDataCondition(buffer);
+                    if (decodingData2 != null)
                     {
-                        MessageReceived?.Invoke(decodingData1);
+                        MessageReceived?.Invoke(decodingData2);
                         Console.Write("Message (Buffer): ");
-                        foreach (byte dd in decodingData1)
+                        foreach (byte dd in decodingData2)
                         {
                             Console.Write($"{dd:x2} ");
                         }

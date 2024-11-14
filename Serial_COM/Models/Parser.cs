@@ -146,7 +146,6 @@ namespace Serial_COM.Models
                 data[nCnt++] = (byte)(speedValue & 0xFF);
 
                 len = nCnt;
-
                 return data;
             }
             catch (ArgumentException ex)
@@ -160,6 +159,94 @@ namespace Serial_COM.Models
                 return null;
             }
 
+        }
+
+        /// <summary>
+        /// [GetEncodingData]
+        /// </summary>
+        /// <param name="field"></param>
+        /// <param name="len"></param>
+        /// <returns></returns>
+        public byte[] GetEncodingData(CPCtoCCUField field, ref int len)
+        {
+            byte[] data = ParseSender(field, ref len);
+            return data == null ? null : CheckEncodingDataCondition(data);
+        }
+
+        /// <summary>
+        /// [CheckEncodingDataCondition]
+        /// </summary>
+        /// <param name="check"></param>
+        /// <returns></returns>
+        public byte[] CheckEncodingDataCondition(byte[] check)
+        {
+            List<byte> encodingData = new List<byte>();
+            byte checkSum = 0x00; // [Checksum] 초기화
+
+            // 1. [STX](0x02) 추가
+            encodingData.Add(STX);
+
+            // 2. [STX](0x02) 이후
+            byte msgLen = (byte)check.Length;
+            isCtrlText = CheckCtrlText(msgLen);
+            if (isCtrlText)
+            {
+                encodingData.Add(DLE);
+            }
+            encodingData.Add(msgLen);
+            checkSum ^= msgLen;
+
+            // 3. [DstID] 추가 (DLE 처리 포함)
+            isCtrlText = CheckCtrlText(dstID);
+            if (isCtrlText)
+            {
+                encodingData.Add(DLE);
+            }
+            encodingData.Add(dstID);
+            checkSum ^= dstID;
+
+            // 4. [SrcID] 추가 (DLE 처리 포함)
+            isCtrlText = CheckCtrlText(srcID);
+            if (isCtrlText)
+            {
+                encodingData.Add(DLE);
+            }
+            encodingData.Add(srcID);
+            checkSum ^= srcID;
+
+            // 5. [MsgData] 추가(DLE 처리 포함)
+            foreach (byte msgData in check)
+            {
+                isCtrlText = CheckCtrlText(msgData);
+                if (isCtrlText)
+                {
+                    encodingData.Add(DLE);
+                }
+                encodingData.Add(msgData);
+                checkSum ^= msgData;
+            }
+
+            // 6. [Checksum] 추가 (DLE 처리 포함)
+            isCtrlText = CheckCtrlText(checkSum);
+            if (isCtrlText)
+            {
+                encodingData.Add(DLE);
+            }
+            encodingData.Add(checkSum);
+
+            // 7. [ETX](0x03) 추가
+            encodingData.Add(ETX);
+            return encodingData.ToArray();
+        }
+
+        /// <summary>
+        /// [제어문자 여부 확인]
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        private bool CheckCtrlText(byte data)
+        {
+            return data == STX || data == ETX || data == DLE;
         }
 
         /// <summary>
@@ -392,95 +479,72 @@ namespace Serial_COM.Models
         }
 
         /// <summary>
-        /// [GetEncodingData]
-        /// </summary>
-        /// <param name="field"></param>
-        /// <param name="len"></param>
-        /// <returns></returns>
-        public byte[] GetEncodingData(CPCtoCCUField field, ref int len)
-        {
-            byte[] data = ParseSender(field, ref len);
-            return data == null ? null : CheckEncodingDataCondition(data);
-        }
-
-        /// <summary>
-        /// [CheckEncodingDataCondition]
+        /// [CheckEachDecodingDataCondition]
+        /// *. [프로토콜 샘플코드] .*
+        /// #. [DecodingPacket] 함수: [DLE](Data Link Escape) 프로토콜을 사용하는 패킷을 디코딩 하는 방식
+        /// 1. [패킷 시작] 부분 확인: STX 수신 시, [s_IsStartPacket] 변수를 1로 설정해 [패킷 시작]을 표시
+        /// 2. [데이터]: 이후, 버퍼 [s_RcvBuff]에 저장
+        /// 3. [DLE] 수신 후, [s_IsCtrlText] 플래그를 설정, 이는, 다음 바이트가 실제 데이터임을 알림
+        /// 4. [DLE] 뒤에 오는 [STX], [ETX], [DLE] 등 제어 문자는 [데이터] 취급
+        /// 5. [ETX] 확인: 즉, [수신된 메시지]의 끝을 의미하므로 [체크섬 계산] 단계로 돌입
+        /// 6. [체크섬 계산]: [수신 체크섬] 값과 [계산 체크섬] 값을 비교
+        /// 7. [체크섬 비교]: [일치] 시 [EPRS_OK] 출력, [불일치] 시 [EPRS_ERROR] 출력
+        /// 8. [구조체 저장]: [정상] 수신 패킷은 [pstPacket] 구조체에 저장
+        /// 9. [데이터 구분]: 각 필드(len, dest, src)로 데이터를 구분
         /// </summary>
         /// <param name="check"></param>
         /// <returns></returns>
-        public byte[] CheckEncodingDataCondition(byte[] check)
+        public byte[] CheckEachDecodingDataCondition(byte check)
         {
-            List<byte> encodingData = new List<byte>();
-            byte checkSum = 0x00; // [Checksum] 초기화
-
-            // 1. [STX](0x02) 추가
-            encodingData.Add(STX);
-
-            // 2. [STX](0x02) 이후
-            byte msgLen = (byte)check.Length;
-            isCtrlText = CheckCtrlText(msgLen);
+            // 1. [STX](0x02) 확인
+            if (check == STX && byteList.Count == 0)
+            {
+                byteList.Clear(); // 버퍼 초기화
+                byteList.Add(check);
+                return null;
+            }
+            // 2. [DLE](0x10) 확인
+            if (check == DLE && !isCtrlText)
+            {
+                isCtrlText = true;
+                return null;
+            }
+            // [DLE] Flag 설정 시, [제어 문자]로 간주 이후
+            // [일반 메시지] 추가 && [DLE] Flag 값 = false
             if (isCtrlText)
             {
-                encodingData.Add(DLE);
+                byteList.Add(check);
+                isCtrlText = false;
             }
-            encodingData.Add(msgLen);
-            checkSum ^= msgLen;
-
-            // 3. [DstID] 추가 (DLE 처리 포함)
-            isCtrlText = CheckCtrlText(dstID);
-            if (isCtrlText)
+            // [DLE] Flag 설정을 하지 않을 시,
+            // [제어 문자]가 아니므로
+            else
             {
-                encodingData.Add(DLE);
-            }
-            encodingData.Add(dstID);
-            checkSum ^= dstID;
-
-            // 4. [SrcID] 추가 (DLE 처리 포함)
-            isCtrlText = CheckCtrlText(srcID);
-            if (isCtrlText)
-            {
-                encodingData.Add(DLE);
-            }
-            encodingData.Add(srcID);
-            checkSum ^= srcID;
-
-            // 5. [MsgData] 추가(DLE 처리 포함)
-            foreach (byte msgData in check)
-            {
-                isCtrlText = CheckCtrlText(msgData);
-                if (isCtrlText)
+                // 3. [ETX](0x03) 확인
+                if (check == ETX)
                 {
-                    encodingData.Add(DLE);
+                    // 4-1. [Length] ~ [Message] 이후, [Checksum 단계]: [XOR] 반복 계산
+                    // # [Checksum 계산]: [STX, ETX, 기존 Checksum 제외]
+                    byte checkSum = CalculateChecksum(byteList.Skip(1).Take(byteList.Count - 3).ToArray());
+                    // 4-2. [Checksum] 추가 (ETX 전 Checksum 삽입)
+                    byteList.Insert(byteList.Count - 1, checkSum);
+                    // 5. 완성된 패킷 복사
+                    byte[] buffer = byteList.ToArray();
+                    byteList.Clear(); // 복사 완료 후, 초기화 작업
+                    return buffer;
                 }
-                encodingData.Add(msgData);
-                checkSum ^= msgData;
-            }
+                // [일반 메시지] 간주 && => [일반 메시지] 추가
+                else
+                {
+                    byteList.Add(check);
+                }
 
-            // 6. [Checksum] 추가 (DLE 처리 포함)
-            isCtrlText = CheckCtrlText(checkSum);
-            if (isCtrlText)
-            {
-                encodingData.Add(DLE);
             }
-            encodingData.Add(checkSum);
-
-            // 7. [ETX](0x03) 추가
-            encodingData.Add(ETX);
-            return encodingData.ToArray();
+            return null; // 패킷이 완성되지 않으면 [null] 반환
         }
 
         /// <summary>
-        /// [제어문자 여부 확인]
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        private bool CheckCtrlText(byte data)
-        {
-            return data == STX || data == ETX || data == DLE;
-        }
-
-        /// <summary>
-        /// [CheckDecodingDataCondition]
+        /// [CheckFullDecodingDataCondition]
         /// *. [프로토콜 샘플코드] .*
         /// #. [DecodingPacket] 함수: [DLE](Data Link Escape) 프로토콜을 사용하는 패킷을 디코딩 하는 방식
         /// 1. [패킷 시작] 부분 확인: STX 수신 시, [s_IsStartPacket] 변수를 1로 설정해 [패킷 시작]을 표시
@@ -535,55 +599,6 @@ namespace Serial_COM.Models
             // 5. [ETX](0x03) 추가
             decodingData.Add(ETX);
             return decodingData.ToArray();
-        }
-
-        public byte[] CheckEachDecodingDataCondition(byte check)
-        {
-            // 1. [STX](0x02) 확인
-            if (check == STX && byteList.Count == 0)
-            {
-                byteList.Clear(); // 버퍼 초기화
-                byteList.Add(check);
-                return null;
-            }
-            // 2. [DLE](0x10) 확인
-            if (check == DLE && !isCtrlText)
-            {
-                isCtrlText = true;
-                return null;
-            }
-            // [DLE] Flag 설정 시, [제어 문자]로 간주 이후
-            // [일반 메시지] 추가 && [DLE] Flag 값 = false
-            if (isCtrlText)
-            {
-                byteList.Add(check);
-                isCtrlText = false;
-            }
-            // [DLE] Flag 설정을 하지 않을 시,
-            // [제어 문자]가 아니므로
-            else
-            {
-                // 3. [ETX](0x03) 확인
-                if (check == ETX)
-                {
-                    // 4-1. [Length] ~ [Message] 이후, [Checksum 단계]: [XOR] 반복 계산
-                    // # [Checksum 계산]: [STX, ETX, 기존 Checksum 제외]
-                    byte checkSum = CalculateChecksum(byteList.Skip(1).Take(byteList.Count - 3).ToArray());
-                    // 4-2. [Checksum] 추가 (ETX 전 Checksum 삽입)
-                    byteList.Insert(byteList.Count - 1, checkSum);
-                    // 5. 완성된 패킷 복사
-                    byte[] buffer = byteList.ToArray();
-                    byteList.Clear(); // 복사 완료 후, 초기화 작업
-                    return buffer;
-                }
-                // [일반 메시지] 간주 && => [일반 메시지] 추가
-                else
-                {
-                    byteList.Add(check);
-                }
-
-            }
-            return null; // 패킷이 완성되지 않으면 [null] 반환
         }
 
         /// <summary>
