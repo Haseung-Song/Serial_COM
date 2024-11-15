@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.IO.Ports;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Windows;
 
 namespace Serial_COM.Models
@@ -12,8 +14,11 @@ namespace Serial_COM.Models
         #region [프로퍼티]
 
         public SerialPort serialPort;
+
         public event Action<byte[]> MessageReceived;
         public bool isSingleRead;
+
+        private readonly byte[] encryptionKey = GenerateKey();
 
         #endregion
 
@@ -133,7 +138,7 @@ namespace Serial_COM.Models
             try
             {
                 Parser parser = new Parser();
-                // 1) [ReadByte()] 함수 : 바이트를 한 번에 각각 [한 바이트씩] 수신!
+                // 1) [ReadByte()] 메서드 : 바이트를 한 번에 각각 [한 바이트씩] 수신
                 // ## [isSingleRead = SingleReadMode] ##
                 if (isSingleRead)
                 {
@@ -141,12 +146,14 @@ namespace Serial_COM.Models
                     {
                         int currentByte = serialPort.ReadByte();
                         byte byteData = (byte)currentByte;
-                        byte[] decodingData1 = parser.CheckEachDecodingDataCondition(byteData);
-                        if (decodingData1 != null)
+                        byte[] decodingData = parser.CheckEachDecodingDataCondition(byteData);
+                        if (decodingData != null)
                         {
-                            MessageReceived?.Invoke(decodingData1);
+                            byte[] encryptedEachData = Encryption(decodingData); // 암호화
+                            byte[] decryptedEachData = Decryption(encryptedEachData); // 복호화
+                            MessageReceived?.Invoke(decryptedEachData);
                             Console.Write("Message (Single): ");
-                            foreach (byte dd in decodingData1)
+                            foreach (byte dd in encryptedEachData)
                             {
                                 Console.Write($"{dd:x2} ");
                             }
@@ -156,19 +163,21 @@ namespace Serial_COM.Models
                     }
 
                 }
-                // 2) [BytesToRead] 함수 : [수신 버퍼]에 있는 바이트를 통으로 수신!
+                // 2) [BytesToRead] 메서드 : [수신 버퍼]에 있는 바이트를 통으로 수신
                 // ## [isSingleRead = !SingleReadMode] ##
                 else
                 {
-                    int bytesToRead = serialPort.BytesToRead;
-                    byte[] buffer = new byte[bytesToRead];
-                    int bytesToSave = serialPort.Read(buffer, 0, bytesToRead);
-                    byte[] decodingData2 = parser.CheckFullDecodingDataCondition(buffer);
-                    if (decodingData2 != null)
+                    int bytesReader = serialPort.BytesToRead;
+                    byte[] buffer = new byte[bytesReader];
+                    int bytesBuffer = serialPort.Read(buffer, 0, bytesReader);
+                    byte[] decodingData = parser.CheckFullDecodingDataCondition(buffer);
+                    if (decodingData != null)
                     {
-                        MessageReceived?.Invoke(decodingData2);
+                        byte[] encryptedFullData = Encryption(decodingData); // 암호화
+                        byte[] decryptedFullData = Decryption(encryptedFullData); // 복호화
+                        MessageReceived?.Invoke(decryptedFullData);
                         Console.Write("Message (Buffer): ");
-                        foreach (byte dd in decodingData2)
+                        foreach (byte dd in encryptedFullData)
                         {
                             Console.Write($"{dd:x2} ");
                         }
@@ -185,6 +194,77 @@ namespace Serial_COM.Models
             finally
             {
                 Console.WriteLine("Message received at " + "[" + DateTime.Now + "]");
+            }
+
+        }
+
+        /// <summary>
+        /// [난수 생성기]
+        /// </summary>
+        /// <returns></returns>
+        private static byte[] GenerateKey()
+        {
+            using (Aes aes = Aes.Create())
+            {
+                aes.GenerateKey();
+                return aes.Key; // 자동으로 유효한 길이로 생성
+            }
+
+        }
+
+        /// <summary>
+        /// [EncryptData]: 데이터 암호화
+        /// </summary>
+        /// <param name="plainText"></param>
+        /// <returns></returns>
+        private byte[] Encryption(byte[] plainText)
+        {
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = encryptionKey;
+                aes.GenerateIV();
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    ms.Write(aes.IV, 0, aes.IV.Length); // IV 저장
+                    using (CryptoStream cs = new CryptoStream(ms, aes.CreateEncryptor(), CryptoStreamMode.Write))
+                    {
+                        cs.Write(plainText, 0, plainText.Length);
+                        cs.FlushFinalBlock();
+                    }
+                    return ms.ToArray();
+                }
+
+            }
+
+        }
+
+        /// <summary>
+        /// [DecryptData]: 데이터 복호화
+        /// </summary>
+        /// <param name="cipherText"></param>
+        /// <returns></returns>
+        private byte[] Decryption(byte[] cipherText)
+        {
+            using (Aes aes = Aes.Create())
+            {
+                aes.Key = encryptionKey;
+                using (MemoryStream ms = new MemoryStream(cipherText))
+                {
+                    byte[] iv = new byte[16]; // AES 기본 IV 크기
+                    int ivBuffer = ms.Read(iv, 0, iv.Length);
+                    aes.IV = iv;
+                    using (CryptoStream cs = new CryptoStream(ms, aes.CreateDecryptor(), CryptoStreamMode.Read))
+                    {
+                        using (MemoryStream decryptedStream = new MemoryStream())
+                        {
+                            cs.CopyTo(decryptedStream);
+                            return decryptedStream.ToArray();
+                        }
+
+                    }
+
+                }
+
             }
 
         }
