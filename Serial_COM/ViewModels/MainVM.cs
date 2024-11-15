@@ -1194,8 +1194,8 @@ namespace Serial_COM.ViewModels
         {
             try
             {
-                int msgLen = 0;
                 Parser parser = new Parser();
+                int msgLen = 0;
                 byte[] encodingData = parser.GetEncodingData(field, ref msgLen);
                 if (encodingData != null)
                 {

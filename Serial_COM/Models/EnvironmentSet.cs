@@ -130,9 +130,9 @@ namespace Serial_COM.Models
 
         private void OnDataReceived(object sender, SerialDataReceivedEventArgs e)
         {
-            Parser parser = new Parser();
             try
             {
+                Parser parser = new Parser();
                 // 1) [ReadByte()] 함수 : 바이트를 한 번에 각각 [한 바이트씩] 수신!
                 // ## [isSingleRead = SingleReadMode] ##
                 if (isSingleRead)
