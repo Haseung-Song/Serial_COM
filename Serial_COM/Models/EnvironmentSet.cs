@@ -12,7 +12,6 @@ namespace Serial_COM.Models
         #region [프로퍼티]
 
         public SerialPort serialPort;
-
         public event Action<byte[]> MessageReceived;
         public bool isSingleRead;
 
@@ -66,29 +65,23 @@ namespace Serial_COM.Models
                     // [시리얼 포트] (열기)
                     if (!serialPort.IsOpen)
                     {
+                        serialPort = new SerialPort(portName, baudRate)
+                        {
+                            DataBits = 8, // Data bits: 8
+                            Parity = Parity.None, // Parity: None
+                            StopBits = StopBits.One,  // Stop bits: 1
+                            Handshake = Handshake.None, // Flow Control: None
+                            ReadTimeout = 500, // 데이터 읽기 타임아웃 설정 (0.5초)
+                            WriteTimeout = 500 // 데이터 쓰기 타임아웃 설정 (0.5초)
+                        };
+                        serialPort.Open();
+                        Console.WriteLine("Serial_COM opened successfully on " + portName + " port.");
                         if (baudRate == 115200)
                         {
-                            serialPort = new SerialPort(portName, baudRate)
-                            {
-                                DataBits = 8, // Data bits: 8
-                                Parity = Parity.None, // Parity: None
-                                StopBits = StopBits.One,  // Stop bits: 1
-                                Handshake = Handshake.None, // Flow Control: None
-                                ReadTimeout = 500, // 데이터 읽기 타임아웃 설정 (0.5초)
-                                WriteTimeout = 500 // 데이터 쓰기 타임아웃 설정 (0.5초)
-                            };
-                            serialPort.Open();
-                            Console.WriteLine("Serial_COM opened successfully on " + portName + " port.");
                             isSingleRead = singleReadMode;
                             serialPort.DataReceived += OnDataReceived;
-                            return true;
                         }
-                        else
-                        {
-                            _ = MessageBox.Show($"'{portName}' 포트가 닫혔습니다.", "통신 실패", MessageBoxButton.OK, MessageBoxImage.Error);
-                            throw new InvalidOperationException($"'{portName}' 포트가 닫혔습니다. 알맞은 'Baudrate:115200'으로 설정하세요.");
-                        }
-
+                        return true;
                     }
                     // [시리얼 포트] (닫기)
                     else
@@ -96,6 +89,8 @@ namespace Serial_COM.Models
                         serialPort.Close();
                         Console.WriteLine("Serial_COM closed successfully on " + portName + " port.");
                         serialPort.DataReceived -= OnDataReceived;
+                        serialPort.DiscardInBuffer();  // [수신 버퍼] 데이터 삭제
+                        serialPort.DiscardOutBuffer(); // [전송 버퍼] 데이터 삭제
                         serialPort.Dispose();
                         return false;
                     }
