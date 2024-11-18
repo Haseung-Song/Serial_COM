@@ -14,10 +14,8 @@ namespace Serial_COM.Models
         #region [프로퍼티]
 
         public SerialPort serialPort;
-
         public event Action<byte[]> MessageReceived;
         public bool isSingleRead;
-
         private readonly byte[] encryptionKey = GenerateKey();
 
         #endregion
