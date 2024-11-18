@@ -1134,7 +1134,7 @@ namespace Serial_COM.ViewModels
             {
                 return;
             }
-            IsPortConnected = EnvironmentSet.OpenToClose(SelectedPort, SelectedBaudRate, true);
+            IsPortConnected = EnvironmentSet.OpenToClose(SelectedPort, SelectedBaudRate, false);
             if (IsPortConnected)
             {
                 IsAltitudeOn = true;

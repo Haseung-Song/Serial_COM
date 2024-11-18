@@ -152,8 +152,14 @@ namespace Serial_COM.Models
                             byte[] encryptedEachData = Encryption(decodingData); // 암호화
                             byte[] decryptedEachData = Decryption(encryptedEachData); // 복호화
                             MessageReceived?.Invoke(decryptedEachData);
-                            Console.Write("Message (Single): ");
+                            Console.Write("Message (Single) (Encrypted): ");
                             foreach (byte dd in encryptedEachData)
+                            {
+                                Console.Write($"{dd:x2} ");
+                            }
+                            Console.WriteLine();
+                            Console.Write("Message (Single) (Decrypted): ");
+                            foreach (byte dd in decryptedEachData)
                             {
                                 Console.Write($"{dd:x2} ");
                             }
@@ -176,8 +182,14 @@ namespace Serial_COM.Models
                         byte[] encryptedFullData = Encryption(decodingData); // 암호화
                         byte[] decryptedFullData = Decryption(encryptedFullData); // 복호화
                         MessageReceived?.Invoke(decryptedFullData);
-                        Console.Write("Message (Buffer): ");
+                        Console.Write("Message (Buffer) (Encrypted): ");
                         foreach (byte dd in encryptedFullData)
+                        {
+                            Console.Write($"{dd:x2} ");
+                        }
+                        Console.WriteLine();
+                        Console.Write("Message (Buffer) (Decrypted): ");
+                        foreach (byte dd in decryptedFullData)
                         {
                             Console.Write($"{dd:x2} ");
                         }

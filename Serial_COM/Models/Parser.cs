@@ -8,15 +8,14 @@ namespace Serial_COM.Models
 {
     public class Parser
     {
+        // 연속된 데이터 스트림 => 수신 데이터 누적용 버퍼 목적!
+        private readonly List<byte> byteList = new List<byte>();
         private const byte STX = 0x02; // 시작 문자
         private const byte DLE = 0x10; // 제어 문자
         private const byte ETX = 0x03; // 종료 문자
         private bool isCtrlText = false;
         private const byte dstID = 0xC1; // CPC (dstID) 식별자
         private const byte srcID = 0xA5; // CCU (srcID) 식별자
-
-        // 연속된 데이터 스트림 => 수신 데이터 누적용 버퍼 목적!
-        private readonly List<byte> byteList = new List<byte>();
 
         /// <summary>
         /// [예시 데이터 함수]
@@ -149,7 +148,6 @@ namespace Serial_COM.Models
                 data[nCnt++] = (byte)((speedValue >> 8) & 0xFF);
                 // [Byte #7.] 하위 바이트(LSB)
                 data[nCnt++] = (byte)(speedValue & 0xFF);
-
                 len = nCnt;
                 return data;
             }
@@ -505,7 +503,7 @@ namespace Serial_COM.Models
             if (check == STX && byteList.Count == 0)
             {
                 byteList.Clear(); // 버퍼 초기화
-                byteList.Add(check);
+                byteList.Add(check); // STX 추가
                 return null;
             }
             // 2. [DLE](0x10) 확인
@@ -518,7 +516,7 @@ namespace Serial_COM.Models
             // [일반 메시지] 추가 && [DLE] Flag 값 = false
             if (isCtrlText)
             {
-                byteList.Add(check);
+                byteList.Add(check); // DLE 추가
                 isCtrlText = false;
             }
             // [DLE] Flag 설정을 하지 않을 시,
@@ -529,10 +527,12 @@ namespace Serial_COM.Models
                 if (check == ETX)
                 {
                     // 4-1. [Length] ~ [Message] 이후, [Checksum 단계]: [XOR] 반복 계산
-                    // # [Checksum 계산]: [STX, ETX, 기존 Checksum 제외]
-                    byte checkSum = CalculateChecksum(byteList.Skip(1).Take(byteList.Count - 3).ToArray());
+                    byte[] xorRange = byteList.Skip(1).Take(byteList.Count - 1).ToArray();
+                    // # [Checksum 계산]: STX, ETX 제외
+                    byte checkSum = CalculateChecksum(xorRange);
                     // 4-2. [Checksum] 추가 (ETX 전 Checksum 삽입)
-                    byteList.Insert(byteList.Count - 1, checkSum);
+                    byteList.Add(checkSum);
+                    byteList.Add(check); // ETX 추가
                     // 5. 완성된 패킷 복사
                     byte[] buffer = byteList.ToArray();
                     byteList.Clear(); // 복사 완료 후, 초기화 작업
