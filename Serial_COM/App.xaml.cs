@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using Serial_COM.Models;
+using System.Windows;
 
 namespace Serial_COM
 {
@@ -7,5 +8,13 @@ namespace Serial_COM
     /// </summary>
     public partial class App : Application
     {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            base.OnStartup(e);
+            EnvironmentSet envSet = new EnvironmentSet();
+            envSet.IntializeLogFile(); // [로그 파일] 초기화!
+        }
+
     }
+
 }

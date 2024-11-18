@@ -16,7 +16,9 @@ namespace Serial_COM.Models
         public SerialPort serialPort;
         public event Action<byte[]> MessageReceived;
         public bool isSingleRead;
+
         private readonly byte[] encryptionKey = GenerateKey();
+        private readonly string logDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
 
         #endregion
 
@@ -31,6 +33,11 @@ namespace Serial_COM.Models
 
         #region [함수 및 기능]
 
+        /// <summary>
+        /// [GetPortNames()] 함수
+        /// 시스템 [포트 이름] 가져오기 (기능)
+        /// </summary>
+        /// <returns></returns>
         public List<string> GetPortNames()
         {
             List<string> lstPortNames = new List<string>();
@@ -44,6 +51,11 @@ namespace Serial_COM.Models
             return lstSortedPN;
         }
 
+        /// <summary>
+        /// [GetBaudRates()] 함수
+        /// 정의된 [포트 속도] 가져오기 (기능)
+        /// </summary>
+        /// <returns></returns>
         public List<int> GetBaudRates()
         {
             List<int> lstBaudRates = new List<int>
@@ -59,6 +71,14 @@ namespace Serial_COM.Models
             return lstSortedBR;
         }
 
+        /// <summary>
+        /// [OpenToClose] 메서드
+        /// [Connect/Disconnect] (기능)
+        /// </summary>
+        /// <param name="portName">포트 이름</param>
+        /// <param name="baudRate">포트 속도</param>
+        /// <param name="singleReadMode">읽기 모드</param>
+        /// <returns></returns>
         public bool OpenToClose(string portName, int baudRate, bool singleReadMode)
         {
             if (serialPort != null)
@@ -131,6 +151,54 @@ namespace Serial_COM.Models
             return false;
         }
 
+        /// <summary>
+        /// [GetLogFilePath()] 메서드
+        /// [로그 파일 전체 경로 반환] 및 [디렉토리 생성]
+        /// </summary>
+        /// <param name="logFileName">로그 파일명</param>
+        /// <returns>로그 파일 전체 경로</returns>
+        private string GetLogFilePath(string logFileName = "SerialComLog.txt")
+        {
+            if (!Directory.Exists(logDirectory))
+            {
+                Directory.CreateDirectory(logDirectory); // 로그 폴더 생성
+            }
+            return Path.Combine(logDirectory, logFileName);
+        }
+
+        /// <summary>
+        /// [LogMessageData()] 메서드
+        /// [로그 메시지] 기록 (기능)
+        /// </summary>
+        /// <param name="logMsg">로그 메시지</param>
+        /// <param name="logFileName">로그 파일명</param>
+        private void LogMessageData(string logMsg, string logFileName = "SerialComLog.txt", bool addEmptyLine = false)
+        {
+            string logFilePath = GetLogFilePath(logFileName);
+            string timeStampedMsg = $"{DateTime.Now:[yyyy-MM-dd HH:mm:ss]} - {logMsg}";
+            if (addEmptyLine)
+            {
+                timeStampedMsg += Environment.NewLine;
+            }
+            File.AppendAllText(logFilePath, timeStampedMsg + Environment.NewLine);
+        }
+
+        /// <summary>
+        /// [IntializeLogFile()] 메서드
+        /// [로그 파일] 초기화 (기능)
+        /// </summary>
+        /// <param name="logFileName">로그 파일명</param>
+        public void IntializeLogFile(string logFileName = "SerialComLog.txt")
+        {
+            string logFilePath = GetLogFilePath(logFileName);
+            File.WriteAllText(logFilePath, string.Empty); // 로그 파일 초기화!
+        }
+
+        /// <summary>
+        /// [OnDataReceived]: [수신 데이터] 이벤트 핸들러
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnDataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             try
@@ -147,8 +215,13 @@ namespace Serial_COM.Models
                         byte[] decodingData = parser.CheckEachDecodingDataCondition(byteData);
                         if (decodingData != null)
                         {
+                            LogMessageData($"OriginDecodedData (Hex) : {BitConverter.ToString(decodingData)}");
+                            LogMessageData("", addEmptyLine: true); // 빈 줄 추가
                             byte[] encryptedEachData = Encryption(decodingData); // 암호화
                             byte[] decryptedEachData = Decryption(encryptedEachData); // 복호화
+                            LogMessageData($"EncryptedEachData (Hex): {BitConverter.ToString(encryptedEachData)}"); // [암호화] 로그 데이터
+                            LogMessageData($"DecryptedEachData (Hex): {BitConverter.ToString(decryptedEachData)}"); // [복호화] 로그 데이터
+                            LogMessageData("", addEmptyLine: true); // 빈 줄 추가
                             MessageReceived?.Invoke(decryptedEachData);
                             Console.Write("Message (Single) (Encrypted): ");
                             foreach (byte dd in encryptedEachData)
@@ -177,8 +250,13 @@ namespace Serial_COM.Models
                     byte[] decodingData = parser.CheckFullDecodingDataCondition(buffer);
                     if (decodingData != null)
                     {
+                        LogMessageData($"OriginDecodedData (Hex) : {BitConverter.ToString(decodingData)}");
+                        LogMessageData("", addEmptyLine: true); // 빈 줄 추가
                         byte[] encryptedFullData = Encryption(decodingData); // 암호화
                         byte[] decryptedFullData = Decryption(encryptedFullData); // 복호화
+                        LogMessageData($"EncryptedEachData (Hex): {BitConverter.ToString(encryptedFullData)}"); // [암호화] 로그 데이터
+                        LogMessageData($"DecryptedEachData (Hex): {BitConverter.ToString(decryptedFullData)}"); // [복호화] 로그 데이터
+                        LogMessageData("", addEmptyLine: true); // 빈 줄 추가
                         MessageReceived?.Invoke(decryptedFullData);
                         Console.Write("Message (Buffer) (Encrypted): ");
                         foreach (byte dd in encryptedFullData)
