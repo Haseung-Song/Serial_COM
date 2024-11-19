@@ -16,7 +16,6 @@ namespace Serial_COM.Models
         public SerialPort serialPort;
         public event Action<byte[]> MessageReceived;
         public bool isSingleRead;
-
         private readonly byte[] encryptionKey = GenerateKey();
         private readonly string logDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs");
 
@@ -172,13 +171,16 @@ namespace Serial_COM.Models
         /// </summary>
         /// <param name="logMsg">로그 메시지</param>
         /// <param name="logFileName">로그 파일명</param>
+        /// <param name="addEmptyLine">빈 줄 추가 여부</param>
         private void LogMessageData(string logMsg, string logFileName = "SerialComLog.txt", bool addEmptyLine = false)
         {
             string logFilePath = GetLogFilePath(logFileName);
             string timeStampedMsg = $"{DateTime.Now:[yyyy-MM-dd HH:mm:ss]} - {logMsg}";
+            // 빈 줄 추가하기
             if (addEmptyLine)
             {
-                timeStampedMsg += Environment.NewLine;
+                File.AppendAllText(logFilePath, Environment.NewLine);
+                return;
             }
             File.AppendAllText(logFilePath, timeStampedMsg + Environment.NewLine);
         }
@@ -215,24 +217,29 @@ namespace Serial_COM.Models
                         byte[] decodingData = parser.CheckEachDecodingDataCondition(byteData);
                         if (decodingData != null)
                         {
-                            LogMessageData($"OriginDecodedData (Hex) : {BitConverter.ToString(decodingData)}");
-                            LogMessageData("", addEmptyLine: true); // 빈 줄 추가
+                            LogMessageData($"OriginData (Hex) : {BitConverter.ToString(decodingData)}"); // [원본] 로그 데이터
                             byte[] encryptedEachData = Encryption(decodingData); // 암호화
                             byte[] decryptedEachData = Decryption(encryptedEachData); // 복호화
                             LogMessageData($"EncryptedEachData (Hex): {BitConverter.ToString(encryptedEachData)}"); // [암호화] 로그 데이터
                             LogMessageData($"DecryptedEachData (Hex): {BitConverter.ToString(decryptedEachData)}"); // [복호화] 로그 데이터
                             LogMessageData("", addEmptyLine: true); // 빈 줄 추가
                             MessageReceived?.Invoke(decryptedEachData);
-                            Console.Write("Message (Single) (Encrypted): ");
-                            foreach (byte dd in encryptedEachData)
+                            Console.Write("Message (Origin): ");
+                            foreach (byte dd in decodingData)
                             {
                                 Console.Write($"{dd:x2} ");
                             }
                             Console.WriteLine();
-                            Console.Write("Message (Single) (Decrypted): ");
-                            foreach (byte dd in decryptedEachData)
+                            Console.Write("Message (Single) (Encrypted): ");
+                            foreach (byte eed in encryptedEachData)
                             {
-                                Console.Write($"{dd:x2} ");
+                                Console.Write($"{eed:x2} ");
+                            }
+                            Console.WriteLine();
+                            Console.Write("Message (Single) (Decrypted): ");
+                            foreach (byte ded in decryptedEachData)
+                            {
+                                Console.Write($"{ded:x2} ");
                             }
                             Console.WriteLine();
                         }
@@ -250,24 +257,29 @@ namespace Serial_COM.Models
                     byte[] decodingData = parser.CheckFullDecodingDataCondition(buffer);
                     if (decodingData != null)
                     {
-                        LogMessageData($"OriginDecodedData (Hex) : {BitConverter.ToString(decodingData)}");
-                        LogMessageData("", addEmptyLine: true); // 빈 줄 추가
+                        LogMessageData($"OriginData (Hex) : {BitConverter.ToString(decodingData)}"); // [원본] 로그 데이터
                         byte[] encryptedFullData = Encryption(decodingData); // 암호화
                         byte[] decryptedFullData = Decryption(encryptedFullData); // 복호화
                         LogMessageData($"EncryptedEachData (Hex): {BitConverter.ToString(encryptedFullData)}"); // [암호화] 로그 데이터
                         LogMessageData($"DecryptedEachData (Hex): {BitConverter.ToString(decryptedFullData)}"); // [복호화] 로그 데이터
                         LogMessageData("", addEmptyLine: true); // 빈 줄 추가
                         MessageReceived?.Invoke(decryptedFullData);
-                        Console.Write("Message (Buffer) (Encrypted): ");
-                        foreach (byte dd in encryptedFullData)
+                        Console.Write("Message (Origin): ");
+                        foreach (byte dd in decodingData)
                         {
                             Console.Write($"{dd:x2} ");
                         }
                         Console.WriteLine();
-                        Console.Write("Message (Buffer) (Decrypted): ");
-                        foreach (byte dd in decryptedFullData)
+                        Console.Write("Message (Buffer) (Encrypted): ");
+                        foreach (byte efd in encryptedFullData)
                         {
-                            Console.Write($"{dd:x2} ");
+                            Console.Write($"{efd:x2} ");
+                        }
+                        Console.WriteLine();
+                        Console.Write("Message (Buffer) (Decrypted): ");
+                        foreach (byte dfd in decryptedFullData)
+                        {
+                            Console.Write($"{dfd:x2} ");
                         }
                         Console.WriteLine();
                     }
