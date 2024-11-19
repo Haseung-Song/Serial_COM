@@ -258,7 +258,7 @@ namespace Serial_COM.Models
         /// </summary>
         /// <param name="data">대상 바이트</param>
         /// <param name="bitPosition">시작 비트 위치</param>
-        /// <returns></returns>
+        /// <returns>추출된 하나 비트 값</returns>
         public byte GetBit(byte data, int bitPosition)
         {
             return (byte)((data >> bitPosition) & 1);
@@ -271,7 +271,7 @@ namespace Serial_COM.Models
         /// <param name="data">대상 바이트</param>
         /// <param name="bitPosition">시작 비트 위치</param>
         /// <param name="bitCount">추출할 비트 개수</param>
-        /// <returns>추출된 비트 값</returns>
+        /// <returns>추출된 여러 비트 값</returns>
         public byte GetBits(byte data, int bitPosition, int bitCount)
         {
             int mask = (1 << bitCount) - 1;
