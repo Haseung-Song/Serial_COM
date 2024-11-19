@@ -13,7 +13,7 @@
         xmlns:viewmodels="clr-namespace:Serial_COM.ViewModels"
         d:DataContext="{d:DesignInstance Type=viewmodels:MainVM}"
         mc:Ignorable="d"
-        Title="CPC 시뮬레이터 v1.2.3.4(Nov. 18 2024)"
+        Title="CPC 시뮬레이터 v1.1.1.1(Nov. 19 2024)"
         Height="680"
         Width="730">
     <Window.Resources>
