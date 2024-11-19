@@ -160,7 +160,7 @@ namespace Serial_COM.Models
         {
             if (!Directory.Exists(logDirectory))
             {
-                Directory.CreateDirectory(logDirectory); // 로그 폴더 생성
+                _ = Directory.CreateDirectory(logDirectory); // 로그 폴더 생성
             }
             return Path.Combine(logDirectory, logFileName);
         }
