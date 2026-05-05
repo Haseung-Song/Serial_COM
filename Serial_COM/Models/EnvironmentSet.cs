@@ -45,8 +45,10 @@ namespace Serial_COM.Models
             {
                 lstPortNames.Add(portName);
             }
-            // 숫자 부분으로 정렬  (COM3, COM4...)
-            List<string> lstSortedPN = new List<string>(lstPortNames.OrderBy(item => int.Parse(item.Substring(3))));
+            // COM 아닌 포트를 걸러내고 숫자만 뽑아서 정렬 (COM1, COM2...)    
+            var lstSortedPN = lstPortNames.Where(p => p.StartsWith("COM"))
+                .OrderBy(p => int.Parse(p.Replace("COM", "")))
+                .ToList();
             return lstSortedPN;
         }
 
@@ -160,7 +162,7 @@ namespace Serial_COM.Models
         {
             if (!Directory.Exists(logDirectory))
             {
-                Directory.CreateDirectory(logDirectory); // 로그 폴더 생성
+                _ = Directory.CreateDirectory(logDirectory); // 로그 폴더 생성
             }
             return Path.Combine(logDirectory, logFileName);
         }
